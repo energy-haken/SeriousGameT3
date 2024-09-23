@@ -19,13 +19,15 @@ class ModelHandler:
         self.parameters = {"selected_model": self.models[0],"max_length": 76,"num_return_sequences":1,"do_sample":True,"repetition_penalty":1.2,
                            "temperature":0.7,"top_k":4,"early_stopping":True,"num_beams":20,"truncation":True}
 
-        self.parameters["selected_model"].create_pipeline()
-        ModelsManagement.add_model(self.model_management, new_model=self.parameters["selected_model"])
+        for model in self.models:
+            ModelsManagement.add_model(self.model_management, new_model=model)
+        #self.parameters["selected_model"]
         self.is_active = False
 
 
     def generate_dialog(self,prompt):
         output = None
+        self.parameters["selected_model"].create_pipeline()
         if self.is_active:
             output = self.model_management.generate_prompt(
                 prompt, model_name=self.parameters["selected_model"].model_name, max_length=self.parameters["max_length"],
