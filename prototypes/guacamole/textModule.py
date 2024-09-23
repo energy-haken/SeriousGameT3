@@ -1,6 +1,6 @@
 from tkinter import *
 
-import modelHandler
+
 from modelHandler import ModelHandler
 
 #from tkinter.messagebox import *
@@ -14,6 +14,7 @@ class TextModule:
     prompt_label_global = None
     user_input_global = None
     model_handler = None
+    model_label = None
 
     def __init__(self,window):
         self.prompt = "I like trains"
@@ -54,6 +55,28 @@ class TextModule:
 
         button_stop = Button(input_frame, text="Stop", command=lambda : self.unload_model())
         button_stop.pack()
+
+        frame_models = Frame(input_frame, borderwidth=2, relief=GROOVE)
+        frame_models.pack(side=RIGHT, padx=30, pady=30)
+        Label(frame_models, text="Select Model").pack(padx=10, pady=10)
+
+        list_models = Listbox(frame_models)
+        for model in self.model_handler.get_models_name():
+            list_models.insert(1, model)
+
+        list_models.pack()
+
+        button_select_model = Button(frame_models, text="Apply", command=lambda : self.select_model(list_models))
+        button_select_model.pack()
+        self.model_label = Label(frame_models, text="Model name will be here")
+        self.model_label.pack()
+
+    def select_model(self,list_models):
+        selected_model = "nothing"
+        for i in list_models.curselection():
+            selected_model = list_models.get(i)
+        self.model_handler.select_model(selected_model)
+        self.model_label.config(text=self.model_handler.get_current_model())
 
     def generate_dialog(self):
         self.update_prompt()
