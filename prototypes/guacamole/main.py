@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter.messagebox import *
 import initMenu
 import textModule
-from textModule import initTextInput
+from textModule import TextModule
 
 
 # https://python.doctor/page-tkinter-interface-graphique-python-tutoriel
@@ -23,9 +23,5 @@ initMenu.init(window)
 textFrame = LabelFrame(window, text="Text Frame", padx=20, pady=20)
 textFrame.pack(fill="both", expand=1)
 
-initTextInput(window)
-
-
-
-
+text_module = TextModule(window)
 window.mainloop()

@@ -1,108 +1,73 @@
 from tkinter import *
+
+import modelHandler
+from modelHandler import ModelHandler
+
 #from tkinter.messagebox import *
 
-import sdk
-from sdk import ModelsManagement
 
-model_management = ModelsManagement()
-selected_model = sdk.MicrosoftPhi2()
-selected_model.create_pipeline()
-ModelsManagement.add_model(model_management ,new_model=selected_model)
-is_active = False
-prompt = "I like trains"
-output = "I hate trains"
-output_label_global = None
-prompt_label_global = None
-user_input_global = None
+class TextModule:
 
-def initTextInput(window):
-    #def sendText(): # éclaté mais tkt c'est un prototype
-        #results.config(text=userInput.get())
-   #     prompt = user_input.get()
-   #     updatePrompt()
+    prompt = None
+    output = None
+    output_label_global = None
+    prompt_label_global = None
+    user_input_global = None
+    model_handler = None
 
-    global output_label_global
-    global prompt_label_global
-    global user_input_global
+    def __init__(self,window):
+        self.prompt = "I like trains"
+        self.output = "I hate trains"
+        self.output_label_global = None
+        self.prompt_label_global = None
+        self.user_input_global = None
+        self.model_handler = ModelHandler()
 
-    ### Draw the frame for the user input & output
-    input_frame = LabelFrame(window, text="Text Zone", padx=20, pady=20)
-    input_frame.pack(fill="both", expand=1)
+        ### Draw the frame for the user input & output
+        input_frame = LabelFrame(window, text="Text Zone", padx=20, pady=20)
+        input_frame.pack(fill="both", expand=1)
 
-    prompt_frame = LabelFrame(window, text="Prompt", padx=20, pady=20)
-    prompt_frame.pack(fill="both", expand=1)
+        prompt_frame = LabelFrame(window, text="Prompt", padx=20, pady=20)
+        prompt_frame.pack(fill="both", expand=1)
 
-    output_frame = LabelFrame(window, text="Results", padx=20, pady=20)
-    output_frame.pack(fill="both", expand=1)
+        output_frame = LabelFrame(window, text="Results", padx=20, pady=20)
+        output_frame.pack(fill="both", expand=1)
 
+        prompt_label = Label(prompt_frame, text="The prompt will be here")
+        prompt_label.pack()
 
+        output_label = Label(output_frame, text="The dialog will be here")
+        output_label.pack()
 
-    prompt_label = Label(prompt_frame, text="The prompt will be here")
-    prompt_label.pack()
+        value = StringVar()
+        value.set("Enter a dialog")
+        user_input = Entry(input_frame, textvariable=value, width=30)
+        user_input.pack()
 
-    output_label = Label(output_frame, text="The dialog will be here")
-    output_label.pack()
+        # init labels
+        self.output_label_global = output_label
+        self.prompt_label_global = prompt_label
+        self.user_input_global = user_input
 
-    output_label_global = output_label
-    prompt_label_global = prompt_label
+        button_model = Button(input_frame, text="Generate", command=lambda : self.generate_dialog())
+        button_model.pack()
 
-    value = StringVar()
-    value.set("Enter a dialog")
-    user_input = Entry(input_frame, textvariable=value, width=30)
-    user_input.pack()
-    user_input_global = user_input
+        button_stop = Button(input_frame, text="Stop", command=lambda : self.unload_model())
+        button_stop.pack()
 
-    #button = Button(input_frame, text="Send", command=sendText)
-    #button.pack()
+    def generate_dialog(self):
+        self.update_prompt()
+        self.output =  self.model_handler.generate_dialog(self.prompt)
+        self.update_output()
 
-    button_model = Button(input_frame, text="Generate", command=generateDialog)
-    button_model.pack()
+    def unload_model(self):
+        self.model_handler.turn_off_model()
 
-    button_stop = Button(input_frame, text="Stop", command=unloadModel)
-    button_stop.pack()
-
-    ### END
-
-def generateDialog():
-    global output
-    global prompt
-    updatePrompt()
-    if is_active:
-        output = model_management.generate_prompt(prompt, model_name=selected_model.model_name, max_length=76,
-                                                              num_return_sequences=1, do_sample=True,
-                                                              repetition_penalty=1.2, temperature=0.7, top_k=4,
-                                                              early_stopping=True, num_beams=20,
-                                                              truncation=True)
-        updateOutput()
-    else:
-        launchModel()
-def updateOutput():
-    global output_label_global
-    output_label_global.config(text=output[0]['generated_text'])
-def updatePrompt():
-    global user_input_global
-    global prompt
-    prompt = user_input_global.get()
-    prompt_label_global.config(text=prompt)
-
-
-def selectModel(model):
-    global selected_model
-    selected_model = model # temp
-
-
-def launchModel():
-    global is_active
-    model_management.load_model(selected_model.model_name)
-    is_active = True
-
-def unloadModel():
-    global is_active
-    model_management.unload()
-    is_active = False
-
-
-
+    def update_output(self):
+        self.output_label_global.config(text=self.output[0]['generated_text'])
+    def update_prompt(self):
+        self.prompt = self.user_input_global.get()
+        self.prompt_label_global.config(text=self.prompt)
 
 
 

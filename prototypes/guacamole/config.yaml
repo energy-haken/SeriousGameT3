@@ -19,6 +19,21 @@ models:
       isdownloaded: true
       version: "2024-02-06T12:36:24.000Z"
       accesstoken: ""
+    - name: openai-community/openai-gpt
+      path: models/openai-community/openai-gpt/model
+      module: transformers
+      class: OpenAIGPTLMHeadModel
+      options: {}
+      tokenizers:
+        - path: models/openai-community/openai-gpt/AutoTokenizer
+          class: AutoTokenizer
+          options: {}
+      pipelinetag: text-generation
+      source: hugging_face
+      addtobinaryfile: true
+      isdownloaded: true
+      version: ""
+      accesstoken: ""
 name: Œstro-gen
 sdk-tag: v1.1.3
 update-suggested: true
