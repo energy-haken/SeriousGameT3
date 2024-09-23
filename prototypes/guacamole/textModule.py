@@ -26,24 +26,29 @@ class TextModule:
 
         ### Draw the frame for the user input & output
         input_frame = LabelFrame(window, text="Text Zone", padx=20, pady=20)
-        input_frame.pack(fill="both", expand=1)
+        input_frame.pack(fill="both", expand=0, side=TOP)
+
+
 
         prompt_frame = LabelFrame(window, text="Prompt", padx=20, pady=20)
-        prompt_frame.pack(fill="both", expand=1)
-
-        output_frame = LabelFrame(window, text="Results", padx=20, pady=20)
-        output_frame.pack(fill="both", expand=1)
+        prompt_frame.pack(fill="both", expand=1, side=LEFT)
 
         prompt_label = Label(prompt_frame, text="The prompt will be here")
         prompt_label.pack()
 
+        output_frame = LabelFrame(window, text="Results", padx=20, pady=20)
+        output_frame.pack(fill="both", expand=1, side=RIGHT)
+
         output_label = Label(output_frame, text="The dialog will be here")
         output_label.pack()
+
+
+
 
         value = StringVar()
         value.set("Enter a dialog")
         user_input = Entry(input_frame, textvariable=value, width=30)
-        user_input.pack()
+        user_input.pack(side=LEFT)
 
         # init labels
         self.output_label_global = output_label
@@ -51,13 +56,13 @@ class TextModule:
         self.user_input_global = user_input
 
         button_model = Button(input_frame, text="Generate", command=lambda : self.generate_dialog())
-        button_model.pack()
+        button_model.pack(side=LEFT)
 
         button_stop = Button(input_frame, text="Stop", command=lambda : self.unload_model())
-        button_stop.pack()
+        button_stop.pack(side=LEFT)
 
         frame_models = Frame(input_frame, borderwidth=2, relief=GROOVE)
-        frame_models.pack(side=RIGHT, padx=30, pady=30)
+        frame_models.pack(side=RIGHT, padx=10, pady=10)
         Label(frame_models, text="Select Model").pack(padx=10, pady=10)
 
         list_models = Listbox(frame_models)

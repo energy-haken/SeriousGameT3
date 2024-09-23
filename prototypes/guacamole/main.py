@@ -20,8 +20,8 @@ window.title("Œstro-gen")
 
 initMenu.init(window)
 
-textFrame = LabelFrame(window, text="Text Frame", padx=20, pady=20)
-textFrame.pack(fill="both", expand=1)
+#textFrame = LabelFrame(window, text="Text Frame", padx=20, pady=20)
+#textFrame.grid(row=1,  column=2,  padx=10,  pady=5)
 
 text_module = TextModule(window)
 window.mainloop()
