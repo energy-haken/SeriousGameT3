@@ -16,8 +16,16 @@ class ModelHandler:
     def __init__(self):
         self.model_management = ModelsManagement()
         self.models = [sdk.OpenaiCommunityOpenaiGpt(), sdk.MicrosoftPhi2()]
-        self.parameters = {"selected_model": self.models[0],"max_length": 76,"num_return_sequences":1,"do_sample":True,"repetition_penalty":1.2,
-                           "temperature":0.7,"top_k":4,"early_stopping":True,"num_beams":20,"truncation":True}
+        self.parameters = {"selected_model": self.models[0],
+                           "max_length": 76,
+                           "num_return_sequences":1,
+                           "do_sample":True,
+                           "repetition_penalty":1.2,
+                           "temperature":0.7,
+                           "top_k":4,
+                           "early_stopping":True,
+                           "num_beams":20,
+                           "truncation":True}
 
         for model in self.models:
             ModelsManagement.add_model(self.model_management, new_model=model)
@@ -76,3 +84,16 @@ class ModelHandler:
         return self.parameters["selected_model"].model_name
     def update_parameters(self,new_parameters):
         self.parameters = new_parameters
+        self.select_model(self.parameters["selected_model"]) # update properly the model
+        # put back manually some parameters not yet handled by the text module (boolean)
+        self.parameters["do_sample"] = True
+        self.parameters["early_stopping"] = True
+        self.parameters["truncation"] = True
+        # Mass cast because I hate Tkinter (integer)
+        self.parameters["max_length"] = int(self.parameters["max_length"])
+        self.parameters["num_return_sequences"] = int(self.parameters["num_return_sequences"])
+        self.parameters["top_k"] = int(self.parameters["top_k"])
+        self.parameters["num_beams"] = int(self.parameters["num_beams"])
+
+    def get_parameters(self):
+        return self.parameters
