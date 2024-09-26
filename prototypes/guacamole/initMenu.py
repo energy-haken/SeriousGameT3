@@ -26,7 +26,7 @@ def init(window):
 
     menu4 = Menu(menubar, tearoff=0)
     menu4.add_command(label="Stable Diffusion", command=placeHolder)
-    menu4.add_command(label="XXstrem-Omega-p0rn", command=placeHolder)
+    menu4.add_command(label="XXstrem-Omega-ZimZoom", command=placeHolder)
     menubar.add_cascade(label="Model", menu=menu4)
 
     window.config(menu=menubar)
