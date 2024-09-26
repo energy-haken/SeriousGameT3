@@ -74,7 +74,6 @@ class TextModule:
         frame_parameters.pack(side=LEFT, padx=10, pady=10)
 
         # Parameter_input = p_i
-        # TODO : Add default value in each
         Label(frame_parameters, text="Max length").pack(padx=10, pady=10)
         value1 = StringVar()
         value1.set(self.get_specific_param("max_length"))
