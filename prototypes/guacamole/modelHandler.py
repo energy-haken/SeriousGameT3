@@ -36,7 +36,6 @@ class ModelHandler:
         #self.models = [sdk.OpenaiCommunityOpenaiGpt(), sdk.MicrosoftPhi2()]
         self.gather_downloaded_models()
         self.add_models_with_type("text-generation")
-        sdk.CompvisStableDiffusionV14
         self.parameters = {"selected_model": self.available_models[0],
                            "max_length": 76,
                            "num_return_sequences":1,
@@ -55,17 +54,16 @@ class ModelHandler:
         print("Downloaded models")
         for name, downloaded_model in inspect.getmembers(sdk):
             if inspect.isclass(downloaded_model) and downloaded_model not in CONST_BASE_MODELS:
-                print(name)
 
                 ### Temp fix because I can't gather the model list from the model_management
                 ### and it will break the whole application if someone select an unavailable
                 ### model in model_management
                 try:
-                    if downloaded_model().task == type:
+                    if downloaded_model().task == "text-generation":
                         self.available_models.append(downloaded_model())
+                        print(name)
                 except:
                     print("No task defined")
-
 
     def add_models_with_type(self,type):
         for model in self.available_models:
