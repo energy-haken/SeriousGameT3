@@ -17,4 +17,4 @@ Il inclut :
 - un studio de création de personnages
 - un studio de création d'histoires avec des dialogues
 
-![screen.png](Screen.png) 
+![./images/screen.png](Screen.png) 
