@@ -17,4 +17,4 @@ Il inclu :
 - un studio de création de characters
 - un studio de création d'histoire avec dialogue
 
-![screen.png](screen.png "Image que tu devrais apprecier") 
+![screen.png](screen.png) 
