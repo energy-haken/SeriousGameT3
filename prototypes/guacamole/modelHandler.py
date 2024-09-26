@@ -33,9 +33,11 @@ class ModelHandler:
 
     def __init__(self):
         self.model_management = ModelsManagement()
-        #self.models = [sdk.OpenaiCommunityOpenaiGpt(), sdk.MicrosoftPhi2()]
-        self.gather_downloaded_models()
-        self.add_models_with_type("text-generation")
+        # Gather all downloaded model and select the ones available for tex-generation
+        self.__gather_downloaded_models()
+        self.__add_models_with_type("text-generation")
+        # reset the available models with the currently loaded ones
+        self.available_models = self.get_loaded_model()
         self.parameters = {"selected_model": self.available_models[0],
                            "max_length": 76,
                            "num_return_sequences":1,
@@ -49,26 +51,26 @@ class ModelHandler:
         #self.parameters["selected_model"]
         self.is_active = False
 
-    def gather_downloaded_models(self):
+    def __get_loaded_model(self):
+        return self.model_management.loaded_models_cache
+    def get_loaded_model(self):
+        model_list = []
+        for model in self.__get_loaded_model().values():
+            model_list.append(model)
+        return model_list
+
+    def __gather_downloaded_models(self):
         ### check for downloaded models
         print("Downloaded models")
         for name, downloaded_model in inspect.getmembers(sdk):
             if inspect.isclass(downloaded_model) and downloaded_model not in CONST_BASE_MODELS:
+                self.available_models.append(downloaded_model())
 
-                ### Temp fix because I can't gather the model list from the model_management
-                ### and it will break the whole application if someone select an unavailable
-                ### model in model_management
-                try:
-                    if downloaded_model().task == "text-generation":
-                        self.available_models.append(downloaded_model())
-                        print(name)
-                except:
-                    print("No task defined")
 
-    def add_models_with_type(self,type):
+    def __add_models_with_type(self, model_type):
         for model in self.available_models:
             try:
-                if model.task == type:
+                if model.task == model_type:
                     ModelsManagement.add_model(self.model_management, new_model=model)
             except:
                 print("No task defined")
