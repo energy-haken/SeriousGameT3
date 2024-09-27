@@ -1,7 +1,7 @@
 from tkinter import *
 
 
-from modelHandler import ModelHandler
+from model_handler import ModelHandler
 
 #from tkinter.messagebox import *
 
@@ -143,15 +143,20 @@ class TextModule:
     #    self.model_label.config(text=self.model_handler.get_current_model())
 
     def generate_dialog(self):
+        message = "none"
         self.update_prompt()
         self.output =  self.model_handler.generate_dialog(self.prompt)
-        self.update_output()
+        if 'error' in self.output[0]:
+            message = self.output[0]['error']
+        else:
+            message = self.output[0]['generated_text']
+        self.update_output(message)
 
     def unload_model(self):
         self.model_handler.turn_off_model()
 
-    def update_output(self):
-        self.output_label_global.config(text=self.output[0]['generated_text'])
+    def update_output(self,message):
+        self.output_label_global.config(text=message)
     def update_prompt(self):
         self.prompt = self.user_input_global.get()
         self.prompt_label_global.config(text=self.prompt)

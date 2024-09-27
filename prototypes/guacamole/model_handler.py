@@ -1,10 +1,9 @@
+import importlib
 import inspect
-from importlib.metadata import Deprecated
-
 import sdk
+from generation_type import GenerationType
 from sdk import ModelsManagement
 
-global CONST_BASE_MODELS
 # Basic models we don't want in our model list
 CONST_BASE_MODELS = [sdk.AutoTokenizer,
                      sdk.DemoTextGen,
@@ -22,12 +21,14 @@ CONST_BASE_MODELS = [sdk.AutoTokenizer,
                      sdk.OpenAIGPTLMHeadModel,
                      sdk.PhiForCausalLM
                      ]
+# Models type that we can use either for text or image generation
+#CONST_VALID_MODELS_TYPE = [sdk.ModelTransformers,
+#                           sdk.ModelDiffusers]
 
 class ModelHandler:
-
     model_management = None
-    available_models = []
-    #selected_model = None
+    available_models = {}
+    generation_type = GenerationType.TEXT
     is_active = False
     parameters = None
 
@@ -35,10 +36,9 @@ class ModelHandler:
         self.model_management = ModelsManagement()
         # Gather all downloaded model and select the ones available for tex-generation
         self.__gather_downloaded_models()
-        self.__add_models_with_type("text-generation")
         # reset the available models with the currently loaded ones
-        self.available_models = self.get_loaded_model()
-        self.parameters = {"selected_model": self.available_models[0],
+        self.available_models = self.__get_loaded_model()
+        self.parameters = {"selected_model": None,
                            "max_length": 76,
                            "num_return_sequences":1,
                            "do_sample":True,
@@ -48,36 +48,41 @@ class ModelHandler:
                            "early_stopping":True,
                            "num_beams":20,
                            "truncation":True}
-        #self.parameters["selected_model"]
         self.is_active = False
 
     def __get_loaded_model(self):
         return self.model_management.loaded_models_cache
-    def get_loaded_model(self):
-        model_list = []
-        for model in self.__get_loaded_model().values():
-            model_list.append(model)
-        return model_list
 
     def __gather_downloaded_models(self):
         ### check for downloaded models
-        print("Downloaded models")
-        for name, downloaded_model in inspect.getmembers(sdk):
-            if inspect.isclass(downloaded_model) and downloaded_model not in CONST_BASE_MODELS:
-                self.available_models.append(downloaded_model())
+        diffusers = []
+        transformers = []
+        # Gather diffusers (for image gen)
+        for model in sdk.ModelDiffusers.__subclasses__():
+            if model not in CONST_BASE_MODELS:
+                diffusers.append(model)
+        # Gather transformers (for text gen)
+        for model in sdk.ModelTransformers.__subclasses__():
+            if model not in CONST_BASE_MODELS: # Get rid of unwanted model from the original sdk
+                transformers.append(model)
 
-
-    def __add_models_with_type(self, model_type):
-        for model in self.available_models:
-            try:
-                if model.task == model_type:
-                    ModelsManagement.add_model(self.model_management, new_model=model)
-            except:
-                print("No task defined")
+        # Add models to the manager according to the chosen generation type
+        if self.generation_type == GenerationType.TEXT:
+            for model in transformers:
+                ModelsManagement.add_model(self.model_management, new_model=model())
+        else:
+            for model in diffusers:
+                ModelsManagement.add_model(self.model_management, new_model=model())
+        # Original way to get all models
+        # for name, downloaded_model in inspect.getmembers(sdk):
+        #     if inspect.isclass(downloaded_model) and downloaded_model not in CONST_BASE_MODELS:
+        #         new_model = downloaded_model()
+        #         if self.generation_type == GenerationType.TEXT and issubclass(downloaded_model, sdk.ModelTransformers):
+        #             ModelsManagement.add_model(self.model_management, new_model= new_model)
+        #             print(new_model.model_name)
 
     def generate_dialog(self,prompt):
-        output = None
-        self.parameters["selected_model"].create_pipeline()
+        output = []
         if self.is_active:
             output = self.model_management.generate_prompt(
                 prompt, model_name=self.parameters["selected_model"].model_name, max_length=self.parameters["max_length"],
@@ -86,41 +91,31 @@ class ModelHandler:
                 top_k=self.parameters["top_k"], early_stopping=self.parameters["early_stopping"],
                 num_beams=self.parameters["num_beams"],truncation=self.parameters["truncation"])
         else:
-            self.model_management.load_model(self.parameters["selected_model"].model_name)
-            self.is_active = True
-            output =  self.generate_dialog(prompt)
+            output.append({"error":"Select a model first"})
         return output
 
     def select_model(self,model_name):
-        model1 = self.available_models[0] # temporaire, car il ne voulait pas le faire dans les cases
-        model2 = self.available_models[1]
-        match model_name:
-            case(model1.model_name):
-                print("GPT")
-                self.parameters["selected_model"] = self.available_models[0]
-            case (model2.model_name):
-                print("MICRO")
-                self.parameters["selected_model"] = self.available_models[1]
-            case _:
-                print("Unknown model")
+        for name in self.available_models.keys():
+            if name == model_name:
+                self.parameters["selected_model"] = self.available_models.get(model_name)
+                self.load_model()
+                break
 
-    def turn_off_model(self):
-        self.model_management.unload_model(self.parameters["selected_model"].model_name)
-        self.is_active = False
-
-    # Deprecated
-    def turn_model(self):
-        if self.is_active:
-            self.model_management.unload_model(self.parameters["selected_model"].model_name)
-            self.is_active = False
-        else:
+    def load_model(self):
+        if not self.is_active:
+            self.parameters["selected_model"].create_pipeline()
             self.model_management.load_model(self.parameters["selected_model"].model_name)
             self.is_active = True
 
+    def turn_off_model(self):
+        if self.is_active:
+            self.model_management.unload_model(self.parameters["selected_model"].model_name)
+            self.is_active = False
+
     def get_models_name(self):
         name_liste = []
-        for model in self.available_models:
-            name_liste.append(model.model_name)
+        for name in self.available_models.keys():
+            name_liste.append(name)
         return name_liste
     def get_current_model(self):
         return self.parameters["selected_model"].model_name
