@@ -126,30 +126,25 @@ Résumer en une phrase ce que vous avez éventuellement appris :
 Autres justifications :
 
 ## Documentation
-- Procédures d'installation et d'exécution
-  - [ ] Elle inclus les dépendances et le logiciel lui-même.
-  - [ ] Elle inclus le logiciel.
-  - [ ] Elle n'est pas inclus.
 - Plénitude de la documentation
   - [ ] La documentation couvre l'ensemble des fonctionnalités du logiciel.
   - [ ] La documentation couvre une partie des fonctionnalités du logiciel.
   - [x] La documentation couvre peu voir aucune des fonctionnalités du logiciel.
 
-
 ## Présentation README.md
 
 - Présentation du projet
-  - [ ] Cette partie est informative et succincte (1 phrase).
-  - [ ] Cette partie est informative.
-  - [ ] Cette partie n'est pas informative.
+  - [ ] Cette exemple est informatif et succinct (1 phrase).
+  - [ ] Cette exemple est informatif.
+  - [ ] Cette exemple n'est pas informatif.
 - Captures d'écran
   - [ ] Des captures d'écran soignées sont données.
   - [ ] Une capture d'écran est donnée.
   - [ ] Aucune capture d'écran n'est donnée.
 - Procédures d'installation et d'exécution
-  - [ ] Cette partie est informative et succincte (1 phrase).
-  - [ ] Cette partie est informative.
-  - [ ] Cette partie n'est pas informative.
+  - [ ] Elles inclus les dépendances et le logiciel lui-même.
+  - [ ] Elles inclus le logiciel.
+  - [x] Aucune procédures n'est incluse.
 
 ## Cahier des charges 
 
