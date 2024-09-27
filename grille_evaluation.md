@@ -125,6 +125,17 @@ Résumer en une phrase ce que vous avez éventuellement appris :
 
 Autres justifications :
 
+## Documentation
+- Procédures d'installation et d'exécution
+  - [ ] Elle inclus les dépendances et le logiciel lui-même.
+  - [ ] Elle inclus le logiciel.
+  - [ ] Elle n'est pas inclus.
+- Plénitude de la documentation
+  - [ ] La documentation couvre l'ensemble des fonctionnalités du logiciel.
+  - [ ] La documentation couvre une partie des fonctionnalités du logiciel.
+  - [x] La documentation couvre peu voir aucune des fonctionnalités du logiciel.
+
+
 ## Présentation README.md
 
 - Présentation du projet
