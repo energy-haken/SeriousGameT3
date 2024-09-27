@@ -100,7 +100,7 @@ Les étapes du projet tuteuré T2 sont les suivantes :
 Justifications :
 
 ## Prototype
-- Installation
+- Installation (probablement à retirer sauf si on propose un client connecté à un serveur)
   - [ ] Le prototype s'installe sans effort.
   - [ ] Le prototype s'installe en suivant une procédure.
   - [x] Le prototype ne s'installe pas.
@@ -113,9 +113,9 @@ Justifications :
   - [ ] Le prototype est rarement instable
   - [x] Le prototype est instable
 - Affordabilité
-  - [ ] Toutes les instructions de jeu sont inclues dans le prototype au cours d'une partie normale.
-  - [ ] Les instructions de jeu sont sous forme d'un manuel ou d'un tutoriel à part.
-  - [x] Les instructions de jeu ne sont pas données.
+  - [ ] Toutes les instructions d'utilisation sont inclues dans le prototype.
+  - [ ] Les instructions d'utilisation sont sous forme d'un manuel ou d'un tutoriel à part.
+  - [x] Les instructions d'utilisation ne sont pas données.
 - Transmission du concept
   - [ ] J'ai appris quelque chose en jouant.
   - [ ] J'ai eu de l'intérêt en jouant, mais sans rien apprendre.
