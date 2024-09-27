@@ -47,7 +47,9 @@ class ModelHandler:
                            "top_k":4,
                            "early_stopping":True,
                            "num_beams":20,
-                           "truncation":True}
+                           "truncation":True,
+                           "height":512,
+                           "width":512}
         self.is_active = False
 
     def __get_loaded_model(self):
@@ -81,11 +83,23 @@ class ModelHandler:
         #             ModelsManagement.add_model(self.model_management, new_model= new_model)
         #             print(new_model.model_name)
 
+    def generate_image(self,user_prompt):
+        img = []
+        if self.is_active:
+            # img = self.model.generate_prompt(prompt=self.textbox.get(), height=512, width=512)[0]
+            img = self.model_management.generate_prompt(model_name=self.parameters["selected_model"].model_name,
+                                                        prompt = user_prompt,
+                                                        height=512,width=512)[0]
+        else:
+            img.append({"error": "Select a model first"})
+        return img
+
     def generate_dialog(self,prompt):
         output = []
         if self.is_active:
-            output = self.model_management.generate_prompt(
-                prompt, model_name=self.parameters["selected_model"].model_name, max_length=self.parameters["max_length"],
+            output = self.model_management.generate_prompt(prompt = prompt,
+                model_name=self.parameters["selected_model"].model_name,
+                max_length=self.parameters["max_length"],
                 num_return_sequences=self.parameters["num_return_sequences"], do_sample=self.parameters["do_sample"],
                 repetition_penalty=self.parameters["repetition_penalty"], temperature=self.parameters["temperature"],
                 top_k=self.parameters["top_k"], early_stopping=self.parameters["early_stopping"],
@@ -131,6 +145,15 @@ class ModelHandler:
         self.parameters["num_return_sequences"] = int(self.parameters["num_return_sequences"])
         self.parameters["top_k"] = int(self.parameters["top_k"])
         self.parameters["num_beams"] = int(self.parameters["num_beams"])
+    def get_generation_type(self):
+        return self.generation_type
+    def set_generation_type(self,new_type):
+        self.generation_type = new_type
+        self.turn_off_model() # in case it is already loaded
+        self.__gather_downloaded_models()
+        # Once a model is loaded, it can't be loaded twice or removed
+        self.available_models = self.__get_loaded_model()
+
 
     def get_parameters(self):
         return self.parameters

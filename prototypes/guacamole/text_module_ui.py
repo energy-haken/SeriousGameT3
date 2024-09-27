@@ -1,14 +1,13 @@
 from tkinter import *
 from tkinter.messagebox import showerror
 
+from PIL import ImageTk
+
+from generation_type import GenerationType
 from model_handler import ModelHandler
-
-#from tkinter.messagebox import *
-
 
 def error_handler(message):
     showerror("Error", message)
-
 
 class TextModule:
 
@@ -21,6 +20,9 @@ class TextModule:
     model_label = None
     parameters = None
     parameters_entry_list = None
+    image_label = None
+    generation_type = GenerationType.TEXT
+    gen_type_label = None
 
     def __init__(self,window):
         self.prompt = "I like trains"
@@ -58,7 +60,11 @@ class TextModule:
         self.prompt_label_global = prompt_label
         self.user_input_global = user_input
 
-        button_model = Button(input_frame, text="Generate", command=lambda : self.generate_dialog())
+        image_label = Label(input_frame)
+        image_label.pack()
+        self.image_label = image_label
+
+        button_model = Button(input_frame, text="Generate", command=lambda : self.generate())
         button_model.pack()
 
         button_stop = Button(input_frame, text="Stop", command=lambda : self.unload_model())
@@ -112,14 +118,18 @@ class TextModule:
         button_apply_parameters = Button(frame_parameters, text="Apply", command=lambda : self.update_parameters())
         button_apply_parameters.pack()
 
-        # Model UI
-        list_models = Listbox(frame_models)
-        for model in self.model_handler.get_models_name():
-            list_models.insert(1, model)
-
-        list_models.pack()
 
         # Add all user input entries to the global list
+
+
+        # Model UI
+        self.model_label = Label(frame_models, text="Model name will be here")
+        self.model_label.pack()
+
+        list_models = Listbox(frame_models)
+
+
+
         self.parameters_entry_list = {"selected_model":list_models,
                                       "temperature":p_i_temperature,
                                       "num_beams":p_i_num_beams,
@@ -127,8 +137,33 @@ class TextModule:
                                       "num_return_sequences":p_i_num_return_sequences,
                                       "top_k":p_i_top_k,
                                       "max_length":p_i_max_length}
-        self.model_label = Label(frame_models, text="Model name will be here")
-        self.model_label.pack()
+        self.gen_type_label = Label(frame_models, text="TEXT")
+        self.update_models_list()
+        list_models.pack()
+        self.gen_type_label.pack()
+
+        button_update_gen_type = Button(frame_models, text="Change", command=lambda : self.update_gen_type())
+        button_update_gen_type.pack()
+
+    def update_gen_type(self):
+        if self.generation_type == GenerationType.TEXT:
+            self.model_handler.set_generation_type(GenerationType.IMAGE)
+            self.generation_type = GenerationType.IMAGE
+        else:
+            self.model_handler.set_generation_type(GenerationType.TEXT)
+            self.generation_type = GenerationType.TEXT
+        self.gen_type_label.config(text=self.generation_type)
+        self.update_models_list()
+    def update_models_list(self):
+        self.parameters_entry_list["selected_model"].delete(0,END)
+        for model in self.model_handler.get_models_name():
+            self.parameters_entry_list["selected_model"].insert(1, model)
+
+    def generate(self):
+        if self.generation_type == GenerationType.TEXT:
+            self.generate_dialog()
+        else:
+            self.generate_image()
 
     def generate_dialog(self):
         message = "none"
@@ -140,6 +175,17 @@ class TextModule:
         else:
             message = self.output[0]['generated_text']
             self.update_output(message)
+    def generate_image(self):
+        self.update_prompt()
+        img = self.model_handler.generate_image(self.prompt)
+
+        # img = self.model.generate_prompt(prompt=self.textbox.get(), height=512, width=512)[0]
+        self.update_image(img)
+
+    def update_image(self,img):
+        tkimg = ImageTk.PhotoImage(img[0])
+        self.image_label.config(image=tkimg)
+        self.image_label.image = tkimg
 
     def unload_model(self):
         self.model_handler.turn_off_model()
