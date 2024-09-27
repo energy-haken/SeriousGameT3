@@ -1,9 +1,13 @@
 from tkinter import *
-
+from tkinter.messagebox import showerror
 
 from model_handler import ModelHandler
 
 #from tkinter.messagebox import *
+
+
+def error_handler(message):
+    showerror("Error", message)
 
 
 class TextModule:
@@ -26,13 +30,10 @@ class TextModule:
         self.user_input_global = None
         self.model_handler = ModelHandler()
         self.parameters = {}
-        #self.parameters_entry_list = {}
 
         ### Draw the frame for the user input & output
         input_frame = LabelFrame(window, text="Text Zone", padx=20, pady=20)
         input_frame.pack(fill="both", expand=0, side=TOP)
-
-
 
         prompt_frame = LabelFrame(window, text="Prompt", padx=20, pady=20)
         prompt_frame.pack(fill="both", expand=1, side=LEFT)
@@ -45,8 +46,6 @@ class TextModule:
 
         output_label = Label(output_frame, text="The dialog will be here")
         output_label.pack()
-
-
 
         # Prompt input
         value = StringVar()
@@ -128,19 +127,8 @@ class TextModule:
                                       "num_return_sequences":p_i_num_return_sequences,
                                       "top_k":p_i_top_k,
                                       "max_length":p_i_max_length}
-
-        #button_select_model = Button(frame_models, text="Apply", command=lambda : self.select_model(list_models))
-        #button_select_model.pack()
         self.model_label = Label(frame_models, text="Model name will be here")
         self.model_label.pack()
-
-    # DEPRECATED
-    #def select_model(self,list_models):
-    #    selected_model = "nothing"
-    #    for i in list_models.curselection():
-    #        selected_model = list_models.get(i)
-    #    self.model_handler.select_model(selected_model)
-    #    self.model_label.config(text=self.model_handler.get_current_model())
 
     def generate_dialog(self):
         message = "none"
@@ -148,33 +136,23 @@ class TextModule:
         self.output =  self.model_handler.generate_dialog(self.prompt)
         if 'error' in self.output[0]:
             message = self.output[0]['error']
+            error_handler(message)
         else:
             message = self.output[0]['generated_text']
-        self.update_output(message)
+            self.update_output(message)
 
     def unload_model(self):
         self.model_handler.turn_off_model()
+        self.model_label.config(text="None")
 
     def update_output(self,message):
         self.output_label_global.config(text=message)
+
     def update_prompt(self):
         self.prompt = self.user_input_global.get()
         self.prompt_label_global.config(text=self.prompt)
+
     def update_parameters(self):
-
-        # Fetch the parameters from the inputs
-        # for entry_id,entry in enumerate(self.parameters_entry_list):
-        #     if entry_id == "selected_model":
-        #         selected_model = "nothing"
-        #         for i in entry.curselection(): # search the selected model
-        #             selected_model = entry.get(i)
-        #         if selected_model != "nothing":
-        #             self.parameters["selected_model"] = selected_model
-        #         else:   # in case there's no selected model
-        #             self.parameters["selected_model"] = self.get_specific_param("selected_model")
-        #     else:
-        #         self.parameters[entry_id] = entry.get()
-
         for index in self.parameters_entry_list.keys():
             if index == "selected_model":
                 selected_model = "nothing"
@@ -193,7 +171,6 @@ class TextModule:
 
     def get_specific_param(self,param):
         return self.model_handler.get_parameters()[param]
-
 
 
 
