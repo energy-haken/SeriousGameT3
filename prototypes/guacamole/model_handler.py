@@ -22,8 +22,8 @@ CONST_BASE_MODELS = [sdk.AutoTokenizer,
                      sdk.PhiForCausalLM
                      ]
 # Models type that we can use either for text or image generation
-#CONST_VALID_MODELS_TYPE = [sdk.ModelTransformers,
-#                           sdk.ModelDiffusers]
+CONST_VALID_MODELS_TYPE = [sdk.ModelTransformers,
+                          sdk.ModelDiffusers]
 
 class ModelHandler:
     model_management = None
@@ -153,7 +153,13 @@ class ModelHandler:
         self.__gather_downloaded_models()
         # Once a model is loaded, it can't be loaded twice or removed
         self.available_models = self.__get_loaded_model()
+        self.sort_model_by_type()
 
+    # Get rid of unused model according to the current generation type
+    def sort_model_by_type(self):
+        for name in self.available_models.copy().keys(): # So you can pop the unused models without an error
+            if not issubclass(self.available_models.get(name).__class__,CONST_VALID_MODELS_TYPE[self.generation_type.value]):
+                self.available_models.pop(name)
 
     def get_parameters(self):
         return self.parameters

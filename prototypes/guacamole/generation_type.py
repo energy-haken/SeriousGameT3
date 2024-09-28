@@ -2,6 +2,6 @@ import enum
 
 
 class GenerationType(enum.Enum):
-    TEXT = 1
-    IMAGE = 2
+    TEXT = 0
+    IMAGE = 1
 
