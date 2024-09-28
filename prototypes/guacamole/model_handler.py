@@ -31,6 +31,7 @@ class ModelHandler:
     generation_type = GenerationType.TEXT
     is_active = False
     parameters = None
+    processing = "CPU"
 
     def __init__(self):
         self.model_management = ModelsManagement()
@@ -71,10 +72,14 @@ class ModelHandler:
         # Add models to the manager according to the chosen generation type
         if self.generation_type == GenerationType.TEXT:
             for model in transformers:
-                ModelsManagement.add_model(self.model_management, new_model=model())
+                model_m = model()
+                model_m.device = self.return_processing_method()
+                ModelsManagement.add_model(self.model_management, new_model=model_m)
         else:
             for model in diffusers:
-                ModelsManagement.add_model(self.model_management, new_model=model())
+                model_m = model()
+                model_m.device = self.return_processing_method()
+                ModelsManagement.add_model(self.model_management, new_model=model_m)
         # Original way to get all models
         # for name, downloaded_model in inspect.getmembers(sdk):
         #     if inspect.isclass(downloaded_model) and downloaded_model not in CONST_BASE_MODELS:
@@ -82,6 +87,22 @@ class ModelHandler:
         #         if self.generation_type == GenerationType.TEXT and issubclass(downloaded_model, sdk.ModelTransformers):
         #             ModelsManagement.add_model(self.model_management, new_model= new_model)
         #             print(new_model.model_name)
+
+    def change_processing_method(self):
+        if self.processing == "CPU":
+            self.processing = "GPU"
+        else:
+            self.processing = "CPU"
+        self.__reload()
+
+    def get_processing_method(self):
+        return self.processing
+
+    def return_processing_method(self):
+        if self.processing=="CPU":
+            return sdk.Devices.CPU
+        else:
+            return sdk.Devices.GPU
 
     def generate_image(self,user_prompt):
         img = []
@@ -149,7 +170,11 @@ class ModelHandler:
         return self.generation_type
     def set_generation_type(self,new_type):
         self.generation_type = new_type
-        self.turn_off_model() # in case it is already loaded
+        self.__reload()
+
+    def __reload(self):
+        self.turn_off_model()  # in case it is already loaded
+        self.model_management.loaded_models_cache.clear() # clean up the cache to reload properly the models
         self.__gather_downloaded_models()
         # Once a model is loaded, it can't be loaded twice or removed
         self.available_models = self.__get_loaded_model()

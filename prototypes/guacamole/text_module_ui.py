@@ -23,6 +23,7 @@ class TextModule:
     image_label = None
     generation_type = GenerationType.TEXT
     gen_type_label = None
+    processing_type_button = None
 
     def __init__(self,window):
         self.prompt = "I like trains"
@@ -70,6 +71,10 @@ class TextModule:
         button_stop = Button(input_frame, text="Stop", command=lambda : self.unload_model())
         button_stop.pack()
 
+        button_processing_type = Button(input_frame, text="CURRENTLY : CPU MODE", command=lambda: self.change_processing_type())
+        button_processing_type.pack()
+        self.processing_type_button = button_processing_type
+
         frame_models = LabelFrame(input_frame, text = "Models selection", borderwidth=2, relief=GROOVE)
         frame_models.pack(side=RIGHT, padx=10, pady=10)
         Label(frame_models, text="Select Model").pack(padx=10, pady=10)
@@ -115,7 +120,7 @@ class TextModule:
         p_i_num_beams = Entry(frame_parameters, textvariable=value6, width=30)
         p_i_num_beams.pack()
 
-        button_apply_parameters = Button(frame_parameters, text="Apply", command=lambda : self.update_parameters())
+        button_apply_parameters = Button(frame_parameters, text="Apply Parameters & model", command=lambda : self.update_parameters())
         button_apply_parameters.pack()
 
 
@@ -142,8 +147,13 @@ class TextModule:
         list_models.pack()
         self.gen_type_label.pack()
 
-        button_update_gen_type = Button(frame_models, text="Change", command=lambda : self.update_gen_type())
+        button_update_gen_type = Button(frame_models,
+                                        text="Change generation type", command=lambda : self.update_gen_type())
         button_update_gen_type.pack()
+    def change_processing_type(self):
+        self.model_handler.change_processing_method()
+        self.processing_type_button.config(text="CURRENTLY : " +
+                                                self.model_handler.get_processing_method()+" MODE")
 
     def update_gen_type(self):
         if self.generation_type == GenerationType.TEXT:
