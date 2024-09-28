@@ -18,4 +18,4 @@ Une fois que emf-cli a télécharger les modules nécéssaire au bon fonctionnem
 
 
 
-![Logo Guacamole](\oestro-gen\prototypes\guacamole\images\guacamole.png) 
+![Logo Guacamole](/prototypes/guacamole/images/guacamole.png) 
