@@ -5,11 +5,13 @@ from PIL import ImageTk
 
 from generation_type import GenerationType
 from model_handler import ModelHandler
+from observer import Observer
+
 
 def error_handler(message):
     showerror("Error", message)
 
-class TextModule:
+class TextModule(Observer):
 
     prompt = None
     output = None
@@ -32,6 +34,7 @@ class TextModule:
         self.prompt_label_global = None
         self.user_input_global = None
         self.model_handler = ModelHandler()
+        self.model_handler.add_observer(self)
         self.parameters = {}
 
         ### Draw the frame for the user input & output
@@ -199,7 +202,9 @@ class TextModule:
 
     def unload_model(self):
         self.model_handler.turn_off_model()
-        self.model_label.config(text="None")
+
+    def update_current_model(self):
+        self.model_label.config(text=self.model_handler.get_current_model())
 
     def update_output(self,message):
         self.output_label_global.config(text=message)
@@ -228,6 +233,14 @@ class TextModule:
     def get_specific_param(self,param):
         return self.model_handler.get_parameters()[param]
 
+    # TODO : complete it so the observer won't have to interact with the model/controller
+    def update(self,subject) -> None:
+        """
+        Receive update from subject.
+        """
+
+        self.update_current_model()
+        pass
 
 
 

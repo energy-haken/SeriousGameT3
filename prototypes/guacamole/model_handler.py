@@ -2,6 +2,7 @@ import importlib
 import inspect
 import sdk
 from generation_type import GenerationType
+from observer import Observer
 from sdk import ModelsManagement
 
 # Basic models we don't want in our model list
@@ -32,6 +33,7 @@ class ModelHandler:
     is_active = False
     parameters = None
     processing = "CPU"
+    __observers = []
 
     def __init__(self):
         self.model_management = ModelsManagement()
@@ -52,6 +54,13 @@ class ModelHandler:
                            "height":512,
                            "width":512}
         self.is_active = False
+    def add_observer(self,observer: Observer):
+        self.__observers.append(observer)
+    def remove_observer(self,observer: Observer):
+        self.__observers.remove(observer)
+    def update_observers(self):
+        for obs in self.__observers:
+            obs.update(self)
 
     def __get_loaded_model(self):
         return self.model_management.loaded_models_cache
@@ -140,11 +149,14 @@ class ModelHandler:
         if not self.is_active:
             self.parameters["selected_model"].create_pipeline()
             self.model_management.load_model(self.parameters["selected_model"].model_name)
+            self.update_observers()
             self.is_active = True
 
     def turn_off_model(self):
         if self.is_active:
             self.model_management.unload_model(self.parameters["selected_model"].model_name)
+            self.parameters["selected_model"] = None
+            self.update_observers()
             self.is_active = False
 
     def get_models_name(self):
@@ -153,7 +165,11 @@ class ModelHandler:
             name_liste.append(name)
         return name_liste
     def get_current_model(self):
-        return self.parameters["selected_model"].model_name
+        if self.parameters["selected_model"] == None:
+            return "None"
+        else:
+            return self.parameters["selected_model"].model_name
+
     def update_parameters(self,new_parameters):
         self.parameters = new_parameters
         self.select_model(self.parameters["selected_model"]) # update properly the model
@@ -180,11 +196,13 @@ class ModelHandler:
         self.available_models = self.__get_loaded_model()
         self.sort_model_by_type()
 
+
     # Get rid of unused model according to the current generation type
     def sort_model_by_type(self):
         for name in self.available_models.copy().keys(): # So you can pop the unused models without an error
             if not issubclass(self.available_models.get(name).__class__,CONST_VALID_MODELS_TYPE[self.generation_type.value]):
                 self.available_models.pop(name)
+        self.update_observers()
 
     def get_parameters(self):
         return self.parameters
