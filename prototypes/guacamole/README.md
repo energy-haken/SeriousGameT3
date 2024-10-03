@@ -14,7 +14,10 @@ Une fois EMF-CLI installé et le prototype téléchargé, effectuez la commande 
 ```
 emf-cli install
 ```
-Une fois que emf-cli a télécharger les modules nécéssaire au bon fonctionnement du prototype, vous n'avez plus qu'à lancer l'éxécutable main.py
+Une fois que emf-cli a télécharger les modules nécéssaire au bon fonctionnement du prototype, vous n'avez plus qu'à lancer l'éxécutable main.py avec la commande (pour Windows):
+```
+.\venv\Scripts\python.exe main.py
+```
 
 
 
