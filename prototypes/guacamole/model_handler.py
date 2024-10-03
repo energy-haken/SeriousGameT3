@@ -121,7 +121,7 @@ class ModelHandler:
                                                         prompt = user_prompt,
                                                         height=512,width=512)[0]
         else:
-            img.append("Select a model first, then presse apply")
+            img.append("error")
         return img
 
     def generate_dialog(self,prompt):

@@ -196,8 +196,8 @@ class TextModule(Observer):
         self.update_image(img)
 
     def update_image(self,img):
-        if len(img)<=1:
-            error_handler(img[0])
+        if img[0]=="error":
+            error_handler("Select a model first, then presse apply")
         else:
             tkimg = ImageTk.PhotoImage(img[0])
             self.image_label.config(image=tkimg)
