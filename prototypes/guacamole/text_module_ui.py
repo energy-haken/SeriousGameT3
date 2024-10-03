@@ -196,9 +196,12 @@ class TextModule(Observer):
         self.update_image(img)
 
     def update_image(self,img):
-        tkimg = ImageTk.PhotoImage(img[0])
-        self.image_label.config(image=tkimg)
-        self.image_label.image = tkimg
+        if len(img)<=1:
+            error_handler(img[0])
+        else:
+            tkimg = ImageTk.PhotoImage(img[0])
+            self.image_label.config(image=tkimg)
+            self.image_label.image = tkimg
 
     def unload_model(self):
         self.model_handler.turn_off_model()

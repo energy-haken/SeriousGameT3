@@ -121,7 +121,7 @@ class ModelHandler:
                                                         prompt = user_prompt,
                                                         height=512,width=512)[0]
         else:
-            img.append({"error": "Select a model first"})
+            img.append("Select a model first, then presse apply")
         return img
 
     def generate_dialog(self,prompt):
@@ -135,7 +135,7 @@ class ModelHandler:
                 top_k=self.parameters["top_k"], early_stopping=self.parameters["early_stopping"],
                 num_beams=self.parameters["num_beams"],truncation=self.parameters["truncation"])
         else:
-            output.append({"error":"Select a model first"})
+            output.append({"error":"Select a model first, then presse apply"})
         return output
 
     def select_model(self,model_name):
