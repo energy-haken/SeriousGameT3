@@ -21,7 +21,7 @@ Une fois que emf-cli a télécharger les modules nécéssaire au bon fonctionnem
 ```
 (Pour linux)
 ```
-.\venv\bin\python main.py
+./.venv/bin/python main.py
 ```
 
 
