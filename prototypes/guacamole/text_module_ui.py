@@ -1,7 +1,9 @@
+from pathlib import Path
 from tkinter import *
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror, showinfo
 
 from PIL import ImageTk
+from sympy.core.random import random
 
 from generation_type import GenerationType
 from model_handler import ModelHandler
@@ -26,6 +28,8 @@ class TextModule(Observer):
     generation_type = GenerationType.TEXT
     gen_type_label = None
     processing_type_button = None
+    image_cache = None # stored image if the user want to save it
+
 
     def __init__(self,window):
         self.prompt = "I like trains"
@@ -55,7 +59,7 @@ class TextModule(Observer):
 
         # Prompt input
         value = StringVar()
-        value.set("Enter a dialog")
+        value.set("Write your prompt here")
         user_input = Entry(input_frame, textvariable=value, width=30)
         user_input.pack()
 
@@ -71,12 +75,15 @@ class TextModule(Observer):
         button_model = Button(input_frame, text="Generate", command=lambda : self.generate())
         button_model.pack()
 
-        button_stop = Button(input_frame, text="Stop", command=lambda : self.unload_model())
+        button_stop = Button(input_frame, text="Stop", command=lambda : self.stop())
         button_stop.pack()
 
         button_processing_type = Button(input_frame, text="CURRENTLY : CPU MODE", command=lambda: self.change_processing_type())
         button_processing_type.pack()
         self.processing_type_button = button_processing_type
+
+        save = Button(input_frame, text="Save image", command=lambda: self.save_image())
+        save.pack()
 
         frame_models = LabelFrame(input_frame, text = "Models selection", borderwidth=2, relief=GROOVE)
         frame_models.pack(side=RIGHT, padx=10, pady=10)
@@ -158,6 +165,11 @@ class TextModule(Observer):
         self.processing_type_button.config(text="CURRENTLY : " +
                                                 self.model_handler.get_processing_method()+" MODE")
 
+    def stop(self):
+        self.unload_model()
+        self.image_label.config(image="") # clear the image
+        self.image_cache = None
+
     def update_gen_type(self):
         if self.generation_type == GenerationType.TEXT:
             self.model_handler.set_generation_type(GenerationType.IMAGE)
@@ -177,6 +189,20 @@ class TextModule(Observer):
             self.generate_dialog()
         else:
             self.generate_image()
+
+    def save_image(self):
+        base_path = "resources/images/"
+        file_name = "generated_img"
+        if not self.image_cache is None:
+            img = ImageTk.getimage(self.image_cache) # get the actual image
+            nb = 1
+            if Path(base_path).is_dir():    # if the directory exist, do
+                while Path(base_path + file_name + str(nb) + ".png").is_file():
+                    nb+=1
+                img.save(base_path + file_name + str(nb) + ".png", "PNG")
+                showinfo("Saved", "Image saved at : "+base_path)
+        else:
+            error_handler("No image to save")
 
     def generate_dialog(self):
         message = "none"
@@ -202,6 +228,7 @@ class TextModule(Observer):
             tkimg = ImageTk.PhotoImage(img[0])
             self.image_label.config(image=tkimg)
             self.image_label.image = tkimg
+            self.image_cache = tkimg
 
     def unload_model(self):
         self.model_handler.turn_off_model()
