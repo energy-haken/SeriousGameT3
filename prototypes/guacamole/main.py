@@ -1,10 +1,6 @@
-from functools import partial
-from idlelib.editor import keynames
 from tkinter import *
 from tkinter.messagebox import *
 import menu_ui
-import text_module_ui
-from test_window import TestWindow
 from text_module_ui import TextModule
 import torch
 
