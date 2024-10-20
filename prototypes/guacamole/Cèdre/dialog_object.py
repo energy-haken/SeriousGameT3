@@ -1,6 +1,5 @@
 from tkinter import *
 
-from numpy.matlib import empty
 from sympy.core.random import random, randint
 
 
@@ -184,6 +183,25 @@ class DialogObject():
                 obj = obj.get_parent()
         return obj
 
+    def get_mainline_length(self):
+        """
+        Get the length of the main timeline
+        """
+        index = 0
+        origin = self.get_origin_object()
+        index = origin.get_line_length(index)
+
+        return index
+    def get_line_length(self,index):
+        """
+        Get the length of one timeline
+        """
+        if self.get_descendants():
+            index = self.get_descendants()[0].get_line_length(index)
+            index += 1
+        return index
+
+
     def add_descendant_gui(self,canvas):
         """
         Create a new descendant on the called object before adding it to the canvas
@@ -278,5 +296,7 @@ class DialogObject():
 
         build_ui_part(origin, index_x,index_y, canvas)
         build_descendant(origin.get_descendants(),index_x,index_y, canvas)
+        print("### Mainline : " + str(self.get_mainline_length()))
+        canvas.configure(scrollregion=(0, 0, 120 * self.get_mainline_length(), 2000))
 
 
