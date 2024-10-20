@@ -14,7 +14,8 @@ def build_descendant(descendants_list, index_x,index_y, canvas):
     if descendants_list:
         for descendant in descendants_list:
             # Adding the GUI canvas part (Shapes)
-            index_y = descendants_list.index(descendant)
+            #index_y = descendants_list.index(descendant)
+            index_y = descendant.get_index_y_level()
             build_ui_part(descendant,index_x,index_y, canvas)
             build_descendant(descendant.get_descendants(), index_x,index_y, canvas)
 
@@ -176,9 +177,11 @@ class DialogObject():
         return index
 
     def get_origin_object(self):
-        obj = self.get_parent()
-        while obj.get_parent() is not None:
-            obj = obj.get_parent()
+        obj = self
+        if self.get_parent():
+            obj = self.get_parent()
+            while obj.get_parent() is not None:
+                obj = obj.get_parent()
         return obj
 
     def add_descendant_gui(self,canvas):
@@ -191,9 +194,9 @@ class DialogObject():
         obj.set_img("Beans")
         obj.set_text("I hate " + "shitray[i % 5]")
         obj.set_parent(self)
-        #origin = obj.get_origin_object()
-        #origin.build_tree(canvas)
-        build_ui_part(obj, obj.get_index_x_level(),obj.get_index_y_level(), canvas)
+        origin = obj.get_origin_object()
+        self.build_tree(canvas)
+        #build_ui_part(obj, obj.get_index_x_level(),obj.get_index_y_level(), canvas)
 
 
 
@@ -222,11 +225,12 @@ class DialogObject():
         Destroy the object from which the function is called and all its descendants
         """
         self.destroy_downhill(canvas)
-
-        self.destroy_all_gui_objects(canvas)
+        self.destroy_tree(canvas)
         if self.get_parent():
             index = self.get_parent().get_descendants().index(self)
             self.get_parent().get_descendants().pop(index) # kill itself by garbage collector
+        self.build_tree(canvas) # rebuild once everything is cleared
+
 
     def destroy_all_gui_objects(self, canvas):
         """
@@ -236,30 +240,43 @@ class DialogObject():
         canvas.delete(self.get_tkinter_label())
         canvas.delete(self.get_tkinter_line())
         # Destroy buttons
-        self.get_tkinter_kill_button().destroy()
-        self.get_tkinter_add_button().destroy()
+        if self.get_tkinter_kill_button():
+            self.get_tkinter_kill_button().destroy()
+        if self.get_tkinter_add_button():
+            self.get_tkinter_add_button().destroy()
 
     def destroy_tree(self,canvas):
         """
         Destroy the whole GUI tree, without deleting the objects themselves
         """
+        origin = self.get_origin_object()
+        origin.destroy_tree_branch(canvas)
 
+    def destroy_tree_branch(self, canvas):
+        """
+        Destroy part of the GUI tree, without deleting the objects themselves
+        """
+        #origin = self.get_origin_object()
+        self.destroy_all_gui_objects(canvas)
         for descendant in self.descendants:
-            descendant.destroy_tree(canvas)
+            descendant.destroy_tree_branch(canvas)
             descendant.destroy_all_gui_objects(canvas)
 
 
     def build_tree(self,canvas):
         """
-        build the dialog tree, starting from the object from which the function is called.
+        build the dialog tree, starting from the origin object.
         """
+        origin = self.get_origin_object()
+        self.destroy_tree(canvas)
 
-        self.tkinter_object =  canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
-        canvas.move(self.tkinter_object, 0, 0)
+        origin.tkinter_object =  canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
+        canvas.move(origin.tkinter_object, 0, 0)
         index_x = 0
         index_y = 0
 
-        build_ui_part(self, index_x,index_y, canvas)
-        build_descendant(self.get_descendants(),index_x,index_y, canvas)
+
+        build_ui_part(origin, index_x,index_y, canvas)
+        build_descendant(origin.get_descendants(),index_x,index_y, canvas)
 
 
