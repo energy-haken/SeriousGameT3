@@ -4,34 +4,39 @@ from numpy.matlib import empty
 from sympy.core.random import random, randint
 
 
-def build_descendant(descendants_list, index_x, canvas):
+def build_descendant(descendants_list, index_x,index_y, canvas):
     """
     Static function building all descendants of a dialog object on the tkinter canvas
     """
 
     index_x+=1
+
     if descendants_list:
         for descendant in descendants_list:
             # Adding the GUI canvas part (Shapes)
-            build_ui_part(descendant,index_x, canvas)
-            build_descendant(descendant.get_descendants(), index_x, canvas)
+            index_y = descendants_list.index(descendant)
+            build_ui_part(descendant,index_x,index_y, canvas)
+            build_descendant(descendant.get_descendants(), index_x,index_y, canvas)
 
-def build_ui_part(descendant,index_x, canvas):
+def build_ui_part(descendant,index_x,index_y, canvas):
     """
     Static function building a single dialog object on the tkinter canvas, and storing each drawn elements in the object
     """
 
     offset_x = 80
-    offset_y = 0
-    index_y = 0 # not yet implemented
-    tempt_obj = canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
-    canvas.move(tempt_obj, 0 + offset_x * index_x, 0 + offset_y * index_y)
-    descendant.set_tkinter_object(tempt_obj)
-    coords_current_obj = canvas.coords(tempt_obj)
-    line = canvas.create_line(coords_current_obj[2] + 20,  # end point x
-                              int(coords_current_obj[3] / 2) + 5,  # end point y
-                              coords_current_obj[2],  # start point x
-                              int(coords_current_obj[3] / 2) + 5)  # start point y
+    offset_y = 100
+    descendant_object = canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
+    canvas.move(descendant_object, 0 + offset_x * index_x, 0 + offset_y * index_y)
+    descendant.set_tkinter_object(descendant_object)
+    parent_object = descendant.get_parent().get_tkinter_object()
+    coords_current_obj = canvas.coords(descendant_object)
+    coords_parent_obj = canvas.coords(parent_object)
+
+
+    line = canvas.create_line(coords_parent_obj[2]+10,  # end point x
+                              int((coords_current_obj[3] / 2) + 5 + offset_y * index_y),  # end point y
+                              coords_parent_obj[2],  # start point x
+                              int(coords_parent_obj[3] / 2) + 5)  # start point y
     descendant.set_tkinter_line(line)
     label = canvas.create_text(40 + offset_x * index_x, 40 + offset_y * index_y,
                                text=descendant.get_character(),
@@ -164,11 +169,11 @@ class DialogObject():
         obj.set_img("Beans")
         obj.set_text("I hate " + "shitray[i % 5]")
         obj.set_parent(self)
-        build_ui_part(obj,obj.get_index_level(),canvas)
+        build_ui_part(obj, obj.get_index_x_level(),obj.get_index_y_level(), canvas)
 
-    def get_index_level(self):
+    def get_index_x_level(self):
         """
-        Get the index starting from the object from which the function is called to the first object.
+        Get the x index starting from the object from which the function is called to the first object.
         It is used only for drawing on the tkinter canvas.
         """
 
@@ -178,6 +183,25 @@ class DialogObject():
             index+=1
             obj = obj.get_parent()
         return index
+
+    def get_index_y_level(self):
+        """
+        Get the y index starting from the object from which the function is called to the first object.
+        It is used only for drawing on the tkinter canvas.
+        """
+
+        obj = self.get_parent()
+        index = 0
+        child = self
+
+        while obj.get_parent() is not None:
+            index+=obj.get_descendants().index(child)
+            child = obj
+            obj = obj.get_parent()
+
+        return index
+
+
 
     def __del__(self):
         print(self.character + " has died :(\n")
@@ -190,7 +214,8 @@ class DialogObject():
 
         self.tkinter_object =  canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
         canvas.move(self.tkinter_object, 0, 0)
-        index = 0
-        build_descendant(self.get_descendants(),index, canvas)
+        index_x = 0
+        index_y = 0
+        build_descendant(self.get_descendants(),index_x,index_y, canvas)
 
 
