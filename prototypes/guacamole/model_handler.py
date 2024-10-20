@@ -27,6 +27,19 @@ CONST_VALID_MODELS_TYPE = [sdk.ModelTransformers,
                           sdk.ModelDiffusers]
 
 class ModelHandler:
+    """
+    A model handler allowing to manipulate transformer and diffuser models thanks to the ModelsManagement from the EMF sdk.
+
+    Attributes :
+    model_management : ModelManagement
+    available_models : Dict
+    generation_type : GenerationType (Enum)
+    is_active : Bool
+    parameters : Dict
+    processing : String
+    __observers : ArrayList
+    """
+
     model_management = None
     available_models = {}
     generation_type = GenerationType.TEXT
@@ -59,13 +72,24 @@ class ModelHandler:
     def remove_observer(self,observer: Observer):
         self.__observers.remove(observer)
     def update_observers(self):
+        # Really crappy way to notify observers, To Be Done (hopefully) one day
         for obs in self.__observers:
             obs.update(self)
 
     def __get_loaded_model(self):
+        """
+        Get currently added models directly from the ModelsManagement cache
+        """
         return self.model_management.loaded_models_cache
 
     def __gather_downloaded_models(self):
+        """
+        Gather configured models from the EMF installation.
+        If a model is not showing up, ensure it was correctly configured by following the instruction on the
+        EMF documentation.
+
+        It also sorts models according to the generation type (Diffusers/Transformers).
+        """
         ### check for downloaded models
         diffusers = []
         transformers = []
@@ -98,6 +122,13 @@ class ModelHandler:
         #             print(new_model.model_name)
 
     def change_processing_method(self):
+        """
+        Change which processor to use, either CPU or GPU.
+        CPU can always be used, while GPU can only be used with NVIDIA GPUs
+        with CUDA and Torch CUDA properly configured.
+        Thus, the CPU version is always a safe bet,
+        though it will take much longer to load the model and generate prompts.
+        """
         if self.processing == "CPU":
             self.processing = "GPU"
         else:
@@ -105,6 +136,9 @@ class ModelHandler:
         self.__reload()
 
     def get_processing_method(self):
+        """
+        Get which processing method the model handler is using (CPU or GPU)
+        """
         return self.processing
 
     def return_processing_method(self):
@@ -114,6 +148,10 @@ class ModelHandler:
             return sdk.Devices.GPU
 
     def generate_image(self,user_prompt):
+        """
+        Generate an image with the user prompt, if the model allows it (The model must be a diffuser type).
+        """
+
         img = []
         if self.is_active:
             # img = self.model.generate_prompt(prompt=self.textbox.get(), height=512, width=512)[0]
@@ -125,6 +163,10 @@ class ModelHandler:
         return img
 
     def generate_dialog(self,prompt):
+        """
+        Generate a dialog with the user prompt, if the model allows it (The model must be a transformer type.)
+        """
+
         output = []
         if self.is_active:
             output = self.model_management.generate_prompt(prompt = prompt,
@@ -139,6 +181,10 @@ class ModelHandler:
         return output
 
     def select_model(self,model_name):
+        """
+        Select a model amidst the configured and selected generation type models.
+        """
+
         for name in self.available_models.keys():
             if name == model_name:
                 self.parameters["selected_model"] = self.available_models.get(model_name)
@@ -146,6 +192,10 @@ class ModelHandler:
                 break
 
     def load_model(self):
+        """
+        Load the model by creating a pipeline first, then loading it in the model management for future uses.
+        """
+
         if not self.is_active:
             self.parameters["selected_model"].create_pipeline()
             self.model_management.load_model(self.parameters["selected_model"].model_name)
@@ -153,6 +203,10 @@ class ModelHandler:
             self.is_active = True
 
     def turn_off_model(self):
+        """
+        Unload the currently loaded model without removing it from the cache.
+        """
+
         if self.is_active:
             self.model_management.unload_model(self.parameters["selected_model"].model_name)
             self.parameters["selected_model"] = None
@@ -165,12 +219,20 @@ class ModelHandler:
             name_liste.append(name)
         return name_liste
     def get_current_model(self):
+        """
+        Get currently loaded model name
+        """
         if self.parameters["selected_model"] == None:
             return "None"
         else:
             return self.parameters["selected_model"].model_name
 
     def update_parameters(self,new_parameters):
+        """
+        Update all parameters sent by the Controller and/or View.
+        Not all parameters are supported yet, while some need to be cast to avoid errors.
+        """
+
         self.parameters = new_parameters
         self.select_model(self.parameters["selected_model"]) # update properly the model
         # put back manually some parameters not yet handled by the text module (boolean)
@@ -189,6 +251,11 @@ class ModelHandler:
         self.__reload()
 
     def __reload(self):
+        """
+        Reload the models completely, meaning it will first unload the currently loaded model, clear all added model
+        before gathering them all again in the cache.
+        """
+
         self.turn_off_model()  # in case it is already loaded
         self.model_management.loaded_models_cache.clear() # clean up the cache to reload properly the models
         self.__gather_downloaded_models()
@@ -199,6 +266,10 @@ class ModelHandler:
 
     # Get rid of unused model according to the current generation type
     def sort_model_by_type(self):
+        """
+        Sorts models according to the generation type (Only for the UI).
+        """
+
         for name in self.available_models.copy().keys(): # So you can pop the unused models without an error
             if not issubclass(self.available_models.get(name).__class__,CONST_VALID_MODELS_TYPE[self.generation_type.value]):
                 self.available_models.pop(name)

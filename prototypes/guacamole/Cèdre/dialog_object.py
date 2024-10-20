@@ -1,9 +1,14 @@
 from tkinter import *
 
 from numpy.matlib import empty
+from sympy.core.random import random, randint
 
 
 def build_descendant(descendants_list, index_x, canvas):
+    """
+    Static function building all descendants of a dialog object on the tkinter canvas
+    """
+
     index_x+=1
     if descendants_list:
         for descendant in descendants_list:
@@ -12,6 +17,10 @@ def build_descendant(descendants_list, index_x, canvas):
             build_descendant(descendant.get_descendants(), index_x, canvas)
 
 def build_ui_part(descendant,index_x, canvas):
+    """
+    Static function building a single dialog object on the tkinter canvas, and storing each drawn elements in the object
+    """
+
     offset_x = 80
     offset_y = 0
     index_y = 0 # not yet implemented
@@ -40,16 +49,18 @@ def build_ui_part(descendant,index_x, canvas):
     btn_add.place(x=0 + offset_x * index_x, y=50 + offset_y * index_y)
     descendant.set_tkinter_add_button(btn_add)
 
-
-    # canvas.create_line(coords_current_obj[2] + 40,  # end point x
-    #                    coords_current_obj[3] / 2, # end point y
-    #                    coords_current_obj[2],       # start point x
-    #                    coords_current_obj[3] / 2)     # start point x
     # for index, descendant in enumerate(self.descendants): # can be useful for y position later
     #     self.build_descendant(descendant, index,canvas)
 
 
 class DialogObject():
+    """
+    A graphical object containing infos about a dialog scene or part of a dialog scene.
+    Still WIP
+
+    Attributes :
+        Lots of shit still being developed, thus To Be Done
+    """
 
     character = None
     text = None
@@ -116,7 +127,13 @@ class DialogObject():
         return self.tkinter_add_button
 
     def destroy_downhill(self,canvas):
+        """
+        Destroy all descendants, and their descendants etc... from the called object
+        without destroying the object itself.
+        """
+
         for descendant in self.descendants:
+            print("Currently killing : "  + descendant.get_character())
             descendant.destroy_downhill(canvas)
             # Destroy canvas shapes
             canvas.delete(descendant.get_tkinter_object())
@@ -125,22 +142,38 @@ class DialogObject():
             # Destroy buttons
             descendant.get_tkinter_kill_button().destroy()
             descendant.get_tkinter_add_button().destroy()
-            # Destroy in object
-            temp_descendant = descendant
-            self.descendants.remove(descendant)
-            # Destroy
-            del temp_descendant
+            # Destroy Object
+            del descendant
+        # Cleanup just in case
+        self.descendants = []
+
+    def destroy(self,canvas):
+        """
+        Destroy the object from which the function is called and all its descendants
+        """
+        self.destroy_downhill(canvas)
+        del self
+
     def add_descendant_gui(self,canvas):
+        """
+        Create a new descendant on the called object before adding it to the canvas
+        """
+
         obj = DialogObject()
-        obj.set_character("shitray[i % 5]")
+        obj.set_character(str(randint(0,10)))
         obj.set_img("Beans")
         obj.set_text("I hate " + "shitray[i % 5]")
         obj.set_parent(self)
         build_ui_part(obj,obj.get_index_level(),canvas)
 
     def get_index_level(self):
+        """
+        Get the index starting from the object from which the function is called to the first object.
+        It is used only for drawing on the tkinter canvas.
+        """
+
         obj = self.get_parent()
-        index = 0
+        index = 1
         while obj.get_parent() is not None:
             index+=1
             obj = obj.get_parent()
@@ -149,7 +182,12 @@ class DialogObject():
     def __del__(self):
         print(self.character + " has died :(\n")
 
+
     def build_tree(self,canvas):
+        """
+        build the dialog tree, starting from the object from which the function is called.
+        """
+
         self.tkinter_object =  canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
         canvas.move(self.tkinter_object, 0, 0)
         index = 0
