@@ -47,15 +47,42 @@ def build_ui_part(descendant,index_x,index_y, canvas):
     descendant.set_tkinter_label(label)
 
     # Adding the buttons
-    btn = Button(canvas, text='KILL', width=5,
-                 height=1, bd='1', command=lambda: descendant.destroy_self(canvas))
-    btn.place(x=40 + offset_x * index_x, y=50 + offset_y * index_y)
-    descendant.set_tkinter_kill_button(btn)
 
-    btn_add = Button(canvas, text='Add', width=5,
-                     height=1, bd='1', command=lambda: descendant.add_descendant_gui(canvas))
-    btn_add.place(x=0 + offset_x * index_x, y=50 + offset_y * index_y)
+
+    # btn = Button(canvas, text='KILL', width=5,
+    #              height=1, bd='1', command=lambda: descendant.destroy_self(canvas))
+    # btn.place(x=40 + offset_x * index_x, y=50 + offset_y * index_y)
+    # descendant.set_tkinter_kill_button(btn)
+    #
+    # btn_add = Button(canvas, text='Add', width=5,
+    #                  height=1, bd='1', command=lambda: descendant.add_descendant_gui(canvas))
+    # btn_add.place(x=0 + offset_x * index_x, y=50 + offset_y * index_y)
+    # descendant.set_tkinter_add_button(btn_add)
+    btn_kill = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="red", width=2)
+    canvas.move(btn_kill, 10 + offset_x * index_x, 50 + offset_y * index_y)
+    btn_add = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="green", width=2)
+    canvas.move(btn_add, 30 + offset_x * index_x, 50 + offset_y * index_y)
+
+    descendant.set_tkinter_kill_button(btn_kill)
     descendant.set_tkinter_add_button(btn_add)
+    # super source :
+    # https://stackoverflow.com/questions/2786877/how-to-bind-events-to-canvas-items
+
+    # Events for the canvas
+
+    def click_remove(event):
+        print('Got object click', event.x, event.y)
+        print(event.widget.find_closest(event.x, event.y))
+        descendant.destroy_self(canvas)
+    def click_add(event):
+        print('Got object click', event.x, event.y)
+        print(event.widget.find_closest(event.x, event.y))
+        descendant.add_descendant_gui(canvas)
+
+
+    #canvas.bind("<Button-1>", click)
+    canvas.tag_bind(btn_kill, '<ButtonPress-1>', click_remove)
+    canvas.tag_bind(btn_add, '<ButtonPress-1>', click_add)
 
     # for index, descendant in enumerate(self.descendants): # can be useful for y position later
     #     self.build_descendant(descendant, index,canvas)
@@ -286,11 +313,13 @@ class DialogObject():
         canvas.delete(self.get_tkinter_object())
         canvas.delete(self.get_tkinter_label())
         canvas.delete(self.get_tkinter_line())
+        canvas.delete(self.get_tkinter_kill_button())
+        canvas.delete(self.get_tkinter_add_button())
         # Destroy buttons
-        if self.get_tkinter_kill_button():
-            self.get_tkinter_kill_button().destroy()
-        if self.get_tkinter_add_button():
-            self.get_tkinter_add_button().destroy()
+        # if self.get_tkinter_kill_button():
+        #     self.get_tkinter_kill_button().destroy()
+        # if self.get_tkinter_add_button():
+        #     self.get_tkinter_add_button().destroy()
 
     def destroy_tree(self,canvas):
         """
