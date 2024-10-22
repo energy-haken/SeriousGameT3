@@ -2,6 +2,8 @@ from tkinter import *
 
 from sympy.core.random import random, randint
 
+from Cèdre.scene_edit_window import SceneEditWindow
+
 
 def build_descendant(descendants_list, index_x,index_y, canvas):
     """
@@ -22,6 +24,7 @@ def build_ui_part(descendant,index_x,index_y, canvas):
     """
     Static function building a single dialog object on the tkinter canvas, and storing each drawn elements in the object
     """
+    descendant.set_canvas(canvas)
 
     offset_x = 80
     offset_y = 100
@@ -58,13 +61,19 @@ def build_ui_part(descendant,index_x,index_y, canvas):
     #                  height=1, bd='1', command=lambda: descendant.add_descendant_gui(canvas))
     # btn_add.place(x=0 + offset_x * index_x, y=50 + offset_y * index_y)
     # descendant.set_tkinter_add_button(btn_add)
+
+    # "BUTTON" (Home-made button made on the canvas, it's in fact just shapes)
+
     btn_kill = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="red", width=2)
     canvas.move(btn_kill, 10 + offset_x * index_x, 50 + offset_y * index_y)
+    btn_window = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="grey", width=2)
+    canvas.move(btn_window, 30 + offset_x * index_x, 50 + offset_y * index_y)
     btn_add = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="green", width=2)
-    canvas.move(btn_add, 30 + offset_x * index_x, 50 + offset_y * index_y)
+    canvas.move(btn_add, 50 + offset_x * index_x, 50 + offset_y * index_y)
 
     descendant.set_tkinter_kill_button(btn_kill)
     descendant.set_tkinter_add_button(btn_add)
+    descendant.set_tkinter_window_button(btn_window)
     # super source :
     # https://stackoverflow.com/questions/2786877/how-to-bind-events-to-canvas-items
 
@@ -78,17 +87,21 @@ def build_ui_part(descendant,index_x,index_y, canvas):
         print('Got object click', event.x, event.y)
         print(event.widget.find_closest(event.x, event.y))
         descendant.add_descendant_gui(canvas)
+    def click_window(event):
+        print('Got object click', event.x, event.y)
+        print(event.widget.find_closest(event.x, event.y))
+        scene_window = SceneEditWindow(Toplevel(),descendant)
 
 
-    #canvas.bind("<Button-1>", click)
     canvas.tag_bind(btn_kill, '<ButtonPress-1>', click_remove)
     canvas.tag_bind(btn_add, '<ButtonPress-1>', click_add)
+    canvas.tag_bind(btn_window, '<ButtonPress-1>', click_window)
 
     # for index, descendant in enumerate(self.descendants): # can be useful for y position later
     #     self.build_descendant(descendant, index,canvas)
 
 
-class DialogObject():
+class DialogObject:
     """
     A graphical object containing infos about a dialog scene or part of a dialog scene.
     Still WIP
@@ -107,19 +120,25 @@ class DialogObject():
     tkinter_line = None
     tkinter_kill_button = None
     tkinter_add_button = None
+    tkinter_window_button = None
+    canvas = None
 
     def __init__(self):
         self.character = "placeholder character"
         self.text = "placeholder text"
         self.img = "placeholder"
         self.descendants = []
+    def set_canvas(self,canvas):
+        self.canvas = canvas
 
     def set_character(self,character):
         self.character = character
+        if self.tkinter_label:
+            self.update_tkinter_character_label()
     def set_text(self,text):
         self.text = text
-        if self.tkinter_label is not None:
-            self.tkinter_label.config(text=self.text)
+    def update_tkinter_character_label(self):
+        self.canvas.itemconfig(self.tkinter_label, text=self.character)
     def set_img(self,img):
         self.img = img
     def set_parent(self,parent):
@@ -139,6 +158,8 @@ class DialogObject():
         self.tkinter_kill_button = obj
     def set_tkinter_add_button(self,obj):
         self.tkinter_add_button = obj
+    def set_tkinter_window_button(self,obj):
+        self.tkinter_window_button = obj
 
     def get_character(self):
         return self.character
@@ -161,6 +182,8 @@ class DialogObject():
         return self.tkinter_kill_button
     def get_tkinter_add_button(self):
         return self.tkinter_add_button
+    def get_tkinter_window_button(self):
+        return self.tkinter_window_button
 
     def get_index_x_level(self):
         """
@@ -315,6 +338,7 @@ class DialogObject():
         canvas.delete(self.get_tkinter_line())
         canvas.delete(self.get_tkinter_kill_button())
         canvas.delete(self.get_tkinter_add_button())
+        canvas.delete(self.get_tkinter_window_button())
         # Destroy buttons
         # if self.get_tkinter_kill_button():
         #     self.get_tkinter_kill_button().destroy()
@@ -357,4 +381,12 @@ class DialogObject():
         print("### Mainline : " + str(self.get_mainline_length()))
         canvas.configure(scrollregion=(0, 0, 120 * self.get_mainline_length(), 2000))
 
+    def write_in_script(self):
+        generated_text = ""
+        generated_text += self.get_character() + "\n"
+        for descendant in self.descendants:
+            generated_text += descendant.write_in_script()
+        return generated_text
 
+    def convert_to_script(self):
+        return self.get_origin_object().write_in_script()

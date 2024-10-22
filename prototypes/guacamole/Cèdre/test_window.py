@@ -5,13 +5,21 @@ from PIL import ImageTk, Image
 
 from Cèdre.dialog_object import DialogObject
 from Cèdre.dialog_tree_object import DialogTreeObject
+from Cèdre.file_writer import HomeMadeFileWriter
 from Cèdre.resizable_canvas import ResizingCanvas
 
 
 # https://www.askpython.com/python-modules/tkinter/tkinter-create-oval
 # https://tkinterpython.top/drawing/
 
-class TestWindow():
+def generate_text(origin):
+    file_writer = HomeMadeFileWriter()
+    file_writer.set_mode("w")
+    file_writer.set_file("script_test.rpy")
+    file_writer.write(origin.convert_to_script())
+
+
+class TestWindow:
 
     photo = None    # needed otherwise Python fucking garbage collector snatch the picture
 
@@ -37,32 +45,6 @@ class TestWindow():
         vbar.pack(side=RIGHT, fill=Y)
         vbar.config(command=canvas.yview)
         canvas.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
-        # canvas.configure(scrollregion=canvas.bbox(ALL))
-
-        # oval = canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
-        #
-        # coords_current_obj = canvas.coords(oval)
-        # canvas.create_line(coords_current_obj[2]+40, # end point x
-        #                    coords_current_obj[3] / 2, # end point y
-        #                    coords_current_obj[2],       # start point x
-        #                    coords_current_obj[3] / 2)     # start point x
-        #
-        #
-        # # canvas.create_image(50, 50, image=self.photo)
-        #
-        # obj = DialogTreeObject(canvas,oval,0)
-        # obj.addDescendant("banana")
-        #
-        #
-        # objx = obj
-        #
-        #
-        #
-        # nb_obj = 20
-        # for i in range(nb_obj):
-        #     objx = DialogTreeObject(canvas, objx.getObject(),0)
-
-        #self.build_shit(canvas,oval)
 
         first_obj = DialogObject()
         first_obj.set_character("Willy Wonka")
@@ -72,24 +54,6 @@ class TestWindow():
         shitray = ["Woma","Wikon","Wiky","Wololo","Wubur"]
 
         obj_p = first_obj
-
-        # obj = DialogObject()
-        # obj.set_character(shitray[0])
-        # obj.set_img("Beans")
-        # obj.set_text("I hate ")
-        # obj.set_parent(obj_p)
-        #
-        # obj1 = DialogObject()
-        # obj1.set_character(shitray[1])
-        # obj1.set_img("Beans")
-        # obj1.set_text("I hate ")
-        # obj1.set_parent(obj)
-        #
-        # obj2 = DialogObject()
-        # obj2.set_character(shitray[2])
-        # obj2.set_img("Beans")
-        # obj2.set_text("I hate ")
-        # obj2.set_parent(obj1)
 
         for i in range(10):
             obj = DialogObject()
@@ -105,4 +69,6 @@ class TestWindow():
         canvas.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
         canvas.pack(fill=BOTH, expand=True)
 
+        button_send = Button(window, text="Generate as file", command=lambda : generate_text(first_obj))
+        button_send.pack()
 
