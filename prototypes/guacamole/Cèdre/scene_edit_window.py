@@ -43,9 +43,6 @@ class SceneEditWindow:
         self.photo = self.photo.resize((500,500))
         self.photo = ImageTk.PhotoImage(self.photo)
 
-        lab = Label(window, text=descendant.get_character())
-        lab.pack()
-
         canvas = Canvas(window, width=500, height=500, highlightthickness=0)
         canvas.create_image(10, 10, image=self.photo,anchor=NW)
         canvas.pack(fill=BOTH, expand=True)

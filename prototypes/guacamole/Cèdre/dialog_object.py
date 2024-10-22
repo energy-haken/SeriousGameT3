@@ -381,12 +381,18 @@ class DialogObject:
         print("### Mainline : " + str(self.get_mainline_length()))
         canvas.configure(scrollregion=(0, 0, 120 * self.get_mainline_length(), 2000))
 
-    def write_in_script(self):
-        generated_text = ""
-        generated_text += self.get_character() + "\n"
-        for descendant in self.descendants:
-            generated_text += descendant.write_in_script()
-        return generated_text
+    def gather_object_information(self):
+        character_list = [self.get_character()]
+        dialog_dict = {self.get_character(): self.get_text()}
+        dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
 
-    def convert_to_script(self):
-        return self.get_origin_object().write_in_script()
+        for descendant in self.descendants:
+            temp_dict_info = descendant.gather_object_information() # get information from downstream
+            # append the information to the characters list
+            dialog_tree_info["characters"].extend(temp_dict_info["characters"])
+            # append the information to the dialogs dictionary
+            dialog_tree_info["dialogs"].update(temp_dict_info["dialogs"])
+        return dialog_tree_info
+
+    def get_tree_information(self):
+        return self.get_origin_object().gather_object_information()

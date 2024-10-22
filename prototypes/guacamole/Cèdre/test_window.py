@@ -6,6 +6,7 @@ from PIL import ImageTk, Image
 from Cèdre.dialog_object import DialogObject
 from Cèdre.dialog_tree_object import DialogTreeObject
 from Cèdre.file_writer import HomeMadeFileWriter
+from Cèdre.object_to_script_converter import ObjToScriptConverter
 from Cèdre.resizable_canvas import ResizingCanvas
 
 
@@ -13,10 +14,21 @@ from Cèdre.resizable_canvas import ResizingCanvas
 # https://tkinterpython.top/drawing/
 
 def generate_text(origin):
+    # Init fileWriter
     file_writer = HomeMadeFileWriter()
     file_writer.set_mode("w")
     file_writer.set_file("script_test.rpy")
-    file_writer.write(origin.convert_to_script())
+
+    # Gather information on tree
+    tree_information = origin.get_tree_information()
+
+    # Init ObjConverter
+    obj_converter = ObjToScriptConverter()
+    obj_converter.set_dialogs_list(tree_information["dialogs"])
+    obj_converter.set_characters_list(tree_information["characters"])
+
+    # Convert and write to file
+    file_writer.write(obj_converter.convert())
 
 
 class TestWindow:
@@ -25,17 +37,7 @@ class TestWindow:
 
     def __init__(self,window):
 
-        # input_frame = LabelFrame(window,width=300,height=300,text="You are an idiot", padx=20, pady=20)
-        # input_frame.pack(fill=BOTH, expand=True)
-
-
-        # self.photo = Image.open("resources/images/angry.png")
-        # self.photo = self.photo.resize((50,50))
-        # self.photo = ImageTk.PhotoImage(self.photo)
-
-        # canvas = Canvas(window)
         canvas = Canvas(window,width=500, height=500,highlightthickness=0)
-        # canvas.config(width=1000, height=1000)
 
         # SCROLLBARS ZONE
         hbar = Scrollbar(window, orient=HORIZONTAL)
