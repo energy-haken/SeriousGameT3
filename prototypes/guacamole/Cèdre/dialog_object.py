@@ -71,6 +71,14 @@ def build_ui_part(descendant,index_x,index_y, canvas):
     btn_add = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="green", width=2)
     canvas.move(btn_add, 50 + offset_x * index_x, 50 + offset_y * index_y)
 
+    i = 0
+    if not len(descendant.get_descendants())<=1:
+        for child in descendant.get_descendants():
+            btn_choice = canvas.create_rectangle(0, 0, 10, 10, outline="black", fill="orange", width=2)
+            canvas.move(btn_choice, 70 + offset_x * index_x, 30 +10*i + offset_y * index_y)
+            descendant.add_tkinter_choice(btn_choice)
+            i+=1
+
     descendant.set_tkinter_kill_button(btn_kill)
     descendant.set_tkinter_add_button(btn_add)
     descendant.set_tkinter_window_button(btn_window)
@@ -122,12 +130,14 @@ class DialogObject:
     tkinter_add_button = None
     tkinter_window_button = None
     canvas = None
+    tkinter_choices = None
 
     def __init__(self):
         self.character = "placeholder character"
         self.text = "placeholder text"
         self.img = "placeholder"
         self.descendants = []
+        self.tkinter_choices = []
     def set_canvas(self,canvas):
         self.canvas = canvas
 
@@ -160,7 +170,8 @@ class DialogObject:
         self.tkinter_add_button = obj
     def set_tkinter_window_button(self,obj):
         self.tkinter_window_button = obj
-
+    def add_tkinter_choice(self,choice):
+        self.tkinter_choices.append(choice)
     def get_character(self):
         return self.character
     def get_text(self):
@@ -316,6 +327,9 @@ class DialogObject:
             del descendant
         # Cleanup just in case
         self.descendants = []
+    def destroy_ui_choices(self,canvas):
+        for choice in self.tkinter_choices:
+            canvas.delete(choice)
 
     def destroy_self(self,canvas):
         """
@@ -339,6 +353,7 @@ class DialogObject:
         canvas.delete(self.get_tkinter_kill_button())
         canvas.delete(self.get_tkinter_add_button())
         canvas.delete(self.get_tkinter_window_button())
+        self.destroy_ui_choices(canvas)
         # Destroy buttons
         # if self.get_tkinter_kill_button():
         #     self.get_tkinter_kill_button().destroy()
