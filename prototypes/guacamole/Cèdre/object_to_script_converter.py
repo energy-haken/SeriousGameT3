@@ -28,6 +28,22 @@ class ObjToScriptConverter:
         return character_instantiation
 
 
+    #TODO : class menu and choice
+    def generate_menu(self,menu):
+        menu_text = "\tmenu:\n"
+        menu_text += "\t" + menu.get_first_dialog()
+
+        for choice in menu.get_choices():
+            menu_text += self.generate_choice(choice)
+
+        return menu_text
+
+    def generate_choice(self,choice):
+        choice_text = "\t\t" + choice.get_choice_text()
+        choice_text += "\t\t" + choice.get_choice_dialog()
+        choice_text += "\t\t" + choice.get_choice_jump()
+
+        return choice_text
 
     def generate_dialogs(self):
         dialog_string = ""

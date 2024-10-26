@@ -1,3 +1,4 @@
+from importlib.metadata import Deprecated
 from tkinter import *
 
 from sympy.core.random import random, randint
@@ -28,9 +29,6 @@ def build_ui_part(descendant,index_x,index_y, canvas):
 
     offset_x = 80
     offset_y = 100
-    descendant_object = canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
-    canvas.move(descendant_object, 0 + offset_x * index_x, 0 + offset_y * index_y)
-    descendant.set_tkinter_object(descendant_object)
     parent_object = None
     coords_parent_obj = [0,0,0,0]
     parent_index_y = 0
@@ -38,6 +36,10 @@ def build_ui_part(descendant,index_x,index_y, canvas):
         parent_object = descendant.get_parent().get_tkinter_object()
         coords_parent_obj = canvas.coords(parent_object)
         parent_index_y = descendant.get_y_level_parent_scope()
+
+    descendant_object = canvas.create_oval(10, 10, 80, 80, outline="black", fill="white", width=2)
+    canvas.move(descendant_object, 0 + offset_x * index_x, 0 + offset_y * index_y)
+    descendant.set_tkinter_object(descendant_object)
 
     line = canvas.create_line(coords_parent_obj[2]+10,  # end point x
                               int((coords_parent_obj[3]) -35 + offset_y * parent_index_y),  # end point y
@@ -88,16 +90,16 @@ def build_ui_part(descendant,index_x,index_y, canvas):
     # Events for the canvas
 
     def click_remove(event):
-        print('Got object click', event.x, event.y)
-        print(event.widget.find_closest(event.x, event.y))
+        # print('Got object click', event.x, event.y)
+        # print(event.widget.find_closest(event.x, event.y))
         descendant.destroy_self(canvas)
     def click_add(event):
-        print('Got object click', event.x, event.y)
-        print(event.widget.find_closest(event.x, event.y))
+        # print('Got object click', event.x, event.y)
+        # print(event.widget.find_closest(event.x, event.y))
         descendant.add_descendant_gui(canvas)
     def click_window(event):
-        print('Got object click', event.x, event.y)
-        print(event.widget.find_closest(event.x, event.y))
+        # print('Got object click', event.x, event.y)
+        # print(event.widget.find_closest(event.x, event.y))
         scene_window = SceneEditWindow(Toplevel(),descendant)
 
 
@@ -154,9 +156,9 @@ class DialogObject:
     def set_parent(self,parent):
         self.parent = parent
         parent.add_descendant(self)
-        print("My dad is : " + parent.get_character())
+        # print("My dad is : " + parent.get_character())
     def add_descendant(self,descendant):
-        print("added : " + descendant.get_character()+" to : "+self.character)
+        # print("added : " + descendant.get_character()+" to : "+self.character)
         self.descendants.append(descendant)
     def set_tkinter_label(self,obj):
         self.tkinter_label = obj
@@ -181,7 +183,7 @@ class DialogObject:
     def get_parent(self):
         return self.parent
     def get_descendants(self):
-        print("Nb descendants for "+self.character+ " : "+str(len(self.descendants)))
+        # print("Nb descendants for "+self.character+ " : "+str(len(self.descendants)))
         return self.descendants
     def get_tkinter_label(self):
         return self.tkinter_label
@@ -219,7 +221,7 @@ class DialogObject:
         index = 0
         child = self
 
-        while obj.get_parent() is not None:
+        while obj is not None:
             index+=obj.get_descendants().index(child)
             child = obj
             obj = obj.get_parent()
@@ -319,7 +321,7 @@ class DialogObject:
         """
 
         for descendant in self.descendants:
-            print("Currently killing : "  + descendant.get_character())
+            # print("Currently killing : "  + descendant.get_character())
             descendant.destroy_downhill(canvas)
             # Destroy canvas shapes
             descendant.destroy_all_gui_objects(canvas)
@@ -393,7 +395,7 @@ class DialogObject:
 
         build_ui_part(origin, index_x,index_y, canvas)
         build_descendant(origin.get_descendants(),index_x,index_y, canvas)
-        print("### Mainline : " + str(self.get_mainline_length()))
+        # print("### Mainline : " + str(self.get_mainline_length()))
         canvas.configure(scrollregion=(0, 0, 120 * self.get_mainline_length(), 2000))
 
     def gather_object_information(self):

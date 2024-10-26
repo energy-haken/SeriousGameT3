@@ -1,13 +1,8 @@
 from tkinter import *
-from tkinter.messagebox import showerror
-
-from PIL import ImageTk, Image
 
 from Cèdre.dialog_object import DialogObject
-from Cèdre.dialog_tree_object import DialogTreeObject
 from Cèdre.file_writer import HomeMadeFileWriter
 from Cèdre.object_to_script_converter import ObjToScriptConverter
-from Cèdre.resizable_canvas import ResizingCanvas
 
 
 # https://www.askpython.com/python-modules/tkinter/tkinter-create-oval
