@@ -69,12 +69,15 @@ class ModelHandler:
         self.is_active = False
     def add_observer(self,observer: Observer):
         self.__observers.append(observer)
+        self.update_observers("parameters",self.parameters)
+        #self.update_reload()
+
+
     def remove_observer(self,observer: Observer):
         self.__observers.remove(observer)
-    def update_observers(self):
-        # Really crappy way to notify observers, To Be Done (hopefully) one day
+    def update_observers(self,data_type,data):
         for obs in self.__observers:
-            obs.update(self)
+            obs.update(self,data_type,data)
 
     def __get_loaded_model(self):
         """
@@ -160,7 +163,8 @@ class ModelHandler:
                                                         height=512,width=512)[0]
         else:
             img.append("error")
-        return img
+        self.update_observers("image",img)
+        # return img
 
     def generate_dialog(self,prompt):
         """
@@ -178,7 +182,8 @@ class ModelHandler:
                 num_beams=self.parameters["num_beams"],truncation=self.parameters["truncation"])
         else:
             output.append({"error":"Select a model first, then presse apply"})
-        return output
+        self.update_observers("output",output)
+        #return output
 
     def select_model(self,model_name):
         """
@@ -199,7 +204,7 @@ class ModelHandler:
         if not self.is_active:
             self.parameters["selected_model"].create_pipeline()
             self.model_management.load_model(self.parameters["selected_model"].model_name)
-            self.update_observers()
+            self.update_observers("current_model",self.get_current_model())
             self.is_active = True
 
     def turn_off_model(self):
@@ -210,7 +215,7 @@ class ModelHandler:
         if self.is_active:
             self.model_management.unload_model(self.parameters["selected_model"].model_name)
             self.parameters["selected_model"] = None
-            self.update_observers()
+            self.update_observers("current_model",self.get_current_model())
             self.is_active = False
 
     def get_models_name(self):
@@ -222,7 +227,7 @@ class ModelHandler:
         """
         Get currently loaded model name
         """
-        if self.parameters["selected_model"] == None:
+        if self.parameters["selected_model"] is None:
             return "None"
         else:
             return self.parameters["selected_model"].model_name
@@ -244,6 +249,10 @@ class ModelHandler:
         self.parameters["num_return_sequences"] = int(self.parameters["num_return_sequences"])
         self.parameters["top_k"] = int(self.parameters["top_k"])
         self.parameters["num_beams"] = int(self.parameters["num_beams"])
+
+        # update model
+        self.update_observers("current_model",self.get_current_model())
+
     def get_generation_type(self):
         return self.generation_type
     def set_generation_type(self,new_type):
@@ -262,7 +271,14 @@ class ModelHandler:
         # Once a model is loaded, it can't be loaded twice or removed
         self.available_models = self.__get_loaded_model()
         self.sort_model_by_type()
+        self.update_reload()
 
+    def update_reload(self):
+        data = {"processing_type":self.get_processing_method(),
+                "current_model":self.get_current_model(),
+                "model_list":self.get_models_name(),
+                "parameters":self.parameters}
+        self.update_observers("reload",data)
 
     # Get rid of unused model according to the current generation type
     def sort_model_by_type(self):
@@ -273,7 +289,7 @@ class ModelHandler:
         for name in self.available_models.copy().keys(): # So you can pop the unused models without an error
             if not issubclass(self.available_models.get(name).__class__,CONST_VALID_MODELS_TYPE[self.generation_type.value]):
                 self.available_models.pop(name)
-        self.update_observers()
+        # self.update_observers()
 
     def get_parameters(self):
         return self.parameters

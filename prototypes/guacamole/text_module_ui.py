@@ -37,9 +37,10 @@ class TextModule(Observer):
         self.output_label_global = None
         self.prompt_label_global = None
         self.user_input_global = None
+        self.parameters = {}
         self.model_handler = ModelHandler()
         self.model_handler.add_observer(self)
-        self.parameters = {}
+
 
         ### Draw the frame for the user input & output
         input_frame = LabelFrame(window, text="Text Zone", padx=20, pady=20)
@@ -153,18 +154,21 @@ class TextModule(Observer):
                                       "top_k":p_i_top_k,
                                       "max_length":p_i_max_length}
         self.gen_type_label = Label(frame_models, text="TEXT")
-        self.update_models_list()
+        #self.update_models_list()
         list_models.pack()
         self.gen_type_label.pack()
 
         button_update_gen_type = Button(frame_models,
                                         text="Change generation type", command=lambda : self.update_gen_type())
         button_update_gen_type.pack()
+
+        self.model_handler.update_reload() # force update
+
     def change_processing_type(self):
         self.model_handler.change_processing_method()
-        self.processing_type_button.config(text="CURRENTLY : " +
-                                                self.model_handler.get_processing_method()+" MODE")
-
+    def obs_update_processing_type(self,processing_type):
+        if self.processing_type_button is not None:
+            self.processing_type_button.config(text="CURRENTLY : " +processing_type+" MODE")
     def stop(self):
         self.unload_model()
         self.image_label.config(image="") # clear the image
@@ -178,11 +182,13 @@ class TextModule(Observer):
             self.model_handler.set_generation_type(GenerationType.TEXT)
             self.generation_type = GenerationType.TEXT
         self.gen_type_label.config(text=self.generation_type)
-        self.update_models_list()
-    def update_models_list(self):
-        self.parameters_entry_list["selected_model"].delete(0,END)
-        for model in self.model_handler.get_models_name():
-            self.parameters_entry_list["selected_model"].insert(1, model)
+        #self.update_models_list()
+
+    def obs_update_models_list(self, model_list):
+        if self.parameters_entry_list is not None:
+            self.parameters_entry_list["selected_model"].delete(0,END)
+            for model in model_list:
+                self.parameters_entry_list["selected_model"].insert(1, model)
 
     def generate(self):
         if self.generation_type == GenerationType.TEXT:
@@ -207,19 +213,13 @@ class TextModule(Observer):
     def generate_dialog(self):
         message = "none"
         self.update_prompt()
-        self.output =  self.model_handler.generate_dialog(self.prompt)
-        if 'error' in self.output[0]:
-            message = self.output[0]['error']
-            error_handler(message)
-        else:
-            message = self.output[0]['generated_text']
-            self.update_output(message)
+        self.model_handler.generate_dialog(self.prompt)
     def generate_image(self):
         self.update_prompt()
-        img = self.model_handler.generate_image(self.prompt)
+        self.model_handler.generate_image(self.prompt)
 
         # img = self.model.generate_prompt(prompt=self.textbox.get(), height=512, width=512)[0]
-        self.update_image(img)
+        # self.update_image(img)
 
     def update_image(self,img):
         if img[0]=="error":
@@ -233,11 +233,12 @@ class TextModule(Observer):
     def unload_model(self):
         self.model_handler.turn_off_model()
 
-    def update_current_model(self):
-        self.model_label.config(text=self.model_handler.get_current_model())
 
     def update_output(self,message):
-        self.output_label_global.config(text=message)
+        if 'error' in message[0]:
+            error_handler(message[0]['error'])
+        else:
+            self.output_label_global.config(text=message[0]['generated_text'])
 
     def update_prompt(self):
         self.prompt = self.user_input_global.get()
@@ -258,18 +259,44 @@ class TextModule(Observer):
 
         # Update the parameters of the model_handler with the updated parameters
         self.model_handler.update_parameters(self.parameters)
-        self.model_label.config(text=self.model_handler.get_current_model())
+    def obs_update_parameters(self,data):
+        self.parameters = data
+
+    def obs_update_current_model(self, current_model):
+        if self.model_label is not None:
+            self.model_label.config(text=current_model)
 
     def get_specific_param(self,param):
-        return self.model_handler.get_parameters()[param]
+        # return self.model_handler.get_parameters()[param]
+        return self.parameters[param]
 
-    # TODO : complete it so the observer won't have to interact with the model/controller
-    def update(self,subject) -> None:
+    def update(self,subject,data_type,data) -> None:
         """
         Receive update from subject.
         """
 
-        self.update_current_model()
+        # Determine the type of update given
+        match data_type:
+            case "output":
+                self.update_output(data)
+            case "model_list":
+                self.obs_update_models_list(data)
+            # case "gen_type": # Since it's a button exclusive command, shouldn't be used with observer-type update
+            #     self.update_gen_type()
+            case "current_model":
+                self.obs_update_current_model(data)
+            case "image":
+                self.update_image(data)
+            case "parameters":
+                self.obs_update_parameters(data)
+            case "reload":
+                self.obs_update_models_list(data["model_list"])
+                # self.update_gen_type() # same as above
+                self.obs_update_current_model(data["current_model"])
+                self.obs_update_processing_type(data["processing_type"])
+                self.obs_update_parameters(data["parameters"])
+            case _:
+                print("ERROR : COULDN'T READ SUBJECT DATA")
         pass
 
 
