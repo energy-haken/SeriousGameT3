@@ -1,35 +1,31 @@
-# Projet tuteuré T2
+# Gamelab T2
 
 Les étapes du projet tuteuré T2 sont les suivantes :
 
 1. 13h30
     1. Consulter le groupe qui vous est attribué dans le document des groupes.
     1. Dupliquer le contenu de ce fichier d’évaluation dans leur GIT, en suivant la règle de nommage `evaluation-Prénom_Nom.md` 
-      - Simplement cliquer sur "lien évaluation T4" (ou le copier dans un explorateur) devrait créer le fichier.
+      - Cliquer sur "lien évaluation T4" (ou le copier dans un explorateur) pour créer le fichier.
       - Copier le corps du texte d'ici dans le fichier créé.
-      - Demander aux S4 de le faire si besoin, et vérifier que vous pouvez le modifier, en faisant un premier commit (bouton "source control" à gauche dans l'éditeur).
-    1. Lire le cahier des charges, sans communiquer avec le groupe T4.
-    1. Formuler des propositions d'amélioration du cahier des charges dans la section ci-dessous
-        - l'objectif principal ici est d'identifier tout ce qui n'est pas parfaitement clair pour préparer un développement en T3 l'an prochain.
+      - Demander aux S4 de le faire si besoin, et vérifier que vous pouvez le modifier, en faisant un premier commit (bouton "source control" en haut a gauche sur VS Code).
+    
+    
 1. 14h30
     1. Rejoindre votre groupe T4
         - Regarder leur localisation dans le document des groupes.
-    1. Jouer au jeu, et proposer des améliorations dans la section ci-dessous.
+    1. Jouer au "jeu", et proposer des améliorations dans la section ci-dessous.
     1. Remplir la grille d'évaluation T4 ci-dessous, et remplir le résultat T4.
         - Un soin particulier doit être apporté aux justifications.
-        - Ne pas juste réécrire ou paraphraser un critère (Exemple : "_les commits sont pertients_").
+        - Ne pas juste réécrire ou paraphraser un critère (Exemple : "_les commits sont pertinents_").
         - Apporter des informations concrètes (Exemple : "_il y a eu x commits par y personnes, et la moitié sont commentés clairement_").
     1. Faire le décompte "Résultat T4"
 1. 15h30
     1. Assister à la présentation plénière dans les amphis 1 ou 2.
 1. Rendu avant 17h30.
 
-# Propositions d'amélioration du cahier des charges
 
-- Proposition 1
-- Proposition 2
 
-# Propositions d'amélioration du jeu
+# Propositions d'amélioration du Logiciel
 
 - Proposition 1
 - Proposition 2
@@ -39,12 +35,8 @@ Les étapes du projet tuteuré T2 sont les suivantes :
 - Procédure
   - [ ] La procédure a été suivie à la lettre sans le moindre écart.
   - [ ] La procédure a été globalement suivie.
-  - [x] La procédure n'a pas été bien suivie.
-- Propositions d'amélioration du Cahier des charges
-  - [ ] Au moins cinq propositions d'améliorations pertinente sont faites.
-  - [ ] Au moins cinq propositions d'améliorations sont faites.
-  - [x] Moins de cinq propositions d'améliorations sont faites.  
-- Propositions d'amélioration du jeu
+  - [x] La procédure n'a pas été bien suivie. 
+- Propositions d'amélioration du logiciel
   - [ ] Au moins trois propositions d'améliorations pertinente sont faites.
   - [ ] Au moins trois propositions d'améliorations sont faites.
   - [x] Moins de trois propositions d'améliorations sont faites.
