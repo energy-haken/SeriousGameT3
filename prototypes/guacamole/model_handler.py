@@ -244,17 +244,17 @@ class ModelHandler:
         Not all parameters are supported yet, while some need to be cast to avoid errors.
         """
 
-        self.parameters = new_parameters
-        self.select_model(self.parameters["selected_model"]) # update properly the model
+        # self.parameters = new_parameters
+        self.select_model(new_parameters["selected_model"]) # update properly the model
         # put back manually some parameters not yet handled by the text module (boolean)
         self.parameters["do_sample"] = True
         self.parameters["early_stopping"] = True
         self.parameters["truncation"] = True
         # Mass cast because I hate Tkinter (integer)
-        self.parameters["max_length"] = int(self.parameters["max_length"])
-        self.parameters["num_return_sequences"] = int(self.parameters["num_return_sequences"])
-        self.parameters["top_k"] = int(self.parameters["top_k"])
-        self.parameters["num_beams"] = int(self.parameters["num_beams"])
+        self.parameters["max_length"] = int(new_parameters["max_length"])
+        self.parameters["num_return_sequences"] = int(new_parameters["num_return_sequences"])
+        self.parameters["top_k"] = int(new_parameters["top_k"])
+        self.parameters["num_beams"] = int(new_parameters["num_beams"])
 
         # update model
         self.update_observers("current_model",self.get_current_model())
