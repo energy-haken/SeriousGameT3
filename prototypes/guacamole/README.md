@@ -27,25 +27,8 @@ Une fois que emf-cli a télécharger les modules nécéssaire au bon fonctionnem
 
 ### Mise en place du launcher automatisé 
 
-Ouvrir AppLauncher.bat 
-
-```
-@echo off
-cmd /k "cd /d C:\Users\username\Desktop\oestro-gen\prototypes\guacamole\.venv\Scripts & .\activate & cd /d C:\Users\username\Desktop\oestro-gen & python .\main.py"
-``` 
-
-Remplacez le chemin d'accés par le votre.
-Faite un clique droit sur le fichier AppLauncher.bat et faite "Creer un raccourci"
-Deplacez le raccourci sur le bureau
-Les proprietes du raccourci devrait être : 
-
-Target: ```C:\Users\username\Desktop\oestro-gen\prototypes\guacamole\AppLauncher.bat``` 
-
-Start In: ```C:\Users\username\Desktop\oestro-gen\prototypes\guacamole```
-
-Shortcut Key: None
-
-Start In: Normal Window
+#### 1) Ouvrir AppLauncher.bat 
+#### 2) Profit
 
 
 ![Logo Guacamole](/prototypes/guacamole/images/guacamole.png) 

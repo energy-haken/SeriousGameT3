@@ -1,2 +1,8 @@
 @echo off
-cmd /k "cd /d C:\Users\username\Desktop\oestro-gen\prototypes\guacamole\.venv\Scripts & .\activate & cd /d C:\Users\username\Desktop\oestro-gen\prototypes\guacamole & python .\main.py"
+
+echo Lancement en cours, ne paniquez pas.
+echo Tous vos mots de passe sont nous appartient.
+
+SET CURRENTDIR="%~dp0"
+
+cmd /k "cd /d %CURRENTDIR%\.venv\Scripts & .\activate & cd /d %CURRENTDIR% & python .\main.py"
