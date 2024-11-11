@@ -191,10 +191,8 @@ class TextModule(Observer):
                 self.parameters_entry_list["selected_model"].insert(1, model)
 
     def generate(self):
-        if self.generation_type == GenerationType.TEXT:
-            self.generate_dialog()
-        else:
-            self.generate_image()
+        self.update_prompt()
+        self.model_handler.generate(self.prompt)
 
     def save_image(self):
         base_path = "resources/images/"
@@ -209,17 +207,6 @@ class TextModule(Observer):
                 showinfo("Saved", "Image saved at : "+base_path)
         else:
             error_handler("No image to save")
-
-    def generate_dialog(self):
-        message = "none"
-        self.update_prompt()
-        self.model_handler.generate_dialog(self.prompt)
-    def generate_image(self):
-        self.update_prompt()
-        self.model_handler.generate_image(self.prompt)
-
-        # img = self.model.generate_prompt(prompt=self.textbox.get(), height=512, width=512)[0]
-        # self.update_image(img)
 
     def update_image(self,img):
         if img[0]=="error":

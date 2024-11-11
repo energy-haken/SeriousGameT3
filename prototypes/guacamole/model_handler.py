@@ -150,6 +150,12 @@ class ModelHandler:
         else:
             return sdk.Devices.GPU
 
+    def generate(self,user_prompt):
+        if self.generation_type == GenerationType.TEXT:
+            self.generate_dialog(user_prompt)
+        else:
+            self.generate_image(user_prompt)
+
     def generate_image(self,user_prompt):
         """
         Generate an image with the user prompt, if the model allows it (The model must be a diffuser type).
