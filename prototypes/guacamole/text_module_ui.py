@@ -181,7 +181,7 @@ class TextModule(Observer):
         else:
             self.model_handler.set_generation_type(GenerationType.TEXT)
             self.generation_type = GenerationType.TEXT
-        self.gen_type_label.config(text=self.generation_type)
+        self.gen_type_label.config(text=self.generation_type.name)
         #self.update_models_list()
 
     def obs_update_models_list(self, model_list):
