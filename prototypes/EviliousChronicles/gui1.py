@@ -47,6 +47,7 @@ class Gui(Observer):
     gen_type_label = None
     processing_type_button = None
     image_cache = None # stored image if the user want to save it
+    image_image_1 = None
 
     def __init__(self,window):
 
@@ -84,12 +85,12 @@ class Gui(Observer):
         fill="#D9D9D9",
         outline="")
 
-        image_image_1 = PhotoImage(
+        self.image_image_1 = PhotoImage(
             file=relative_to_assets("image_1.png"))
         image_1 = canvas.create_image(
             960.0,
             540.0,
-            image=image_image_1
+            image=self.image_image_1
         )     
 
         canvas.create_rectangle(
@@ -253,7 +254,7 @@ class Gui(Observer):
         )
         #
         # window.geometry("1920x1080")
-        window.configure(bg = "#FFFFFF")
+        window.configure(bg = "#288FA7")
         #
         #
         # window.resizable(False, False)
