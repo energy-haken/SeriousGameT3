@@ -1,7 +1,7 @@
 from importlib.metadata import Deprecated
 from tkinter import *
 
-from sympy.core.random import random, randint
+from sympy.core.random import randint
 
 from scene_edit_window import SceneEditWindow
 
@@ -400,7 +400,9 @@ class DialogObject:
 
     def gather_object_information(self):
         character_list = [self.get_character()]
-        dialog_dict = {self.get_character(): self.get_text()}
+        dialog_dict = {(self.get_character()).replace(" ", "_")
+                       +"*"+ str(randint(0,100))
+                       +str(randint(0,100)): self.get_text()}
         dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
 
         for descendant in self.descendants:
