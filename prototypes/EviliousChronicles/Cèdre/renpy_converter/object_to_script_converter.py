@@ -49,11 +49,11 @@ class ObjToScriptConverter:
         dialog_string = ""
         last_character = ""
         for character,dialog in self.dialogs_dict.items():
-            if not last_character.__eq__(character) and last_character is not "":
+            if not last_character.__eq__(character) and last_character != "":
                 dialog_string += "\t" + "hide " + last_character + "\n"
                 dialog_string += "\t" + "show " + str(character) + "\n"
                 dialog_string += "\t" + str(character) + " \" " + dialog + " \" \n"
-            elif last_character is "":
+            elif last_character == "":
                 dialog_string += "\t" + "show " + str(character) + "\n"
                 dialog_string += "\t" + str(character) + " \" " + dialog + " \" \n"
             else:
