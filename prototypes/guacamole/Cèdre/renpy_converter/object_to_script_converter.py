@@ -56,14 +56,16 @@ class ObjToScriptConverter:
         dialog_string = ""
         last_character = ""
         for character,dialog in self.dialogs_dict.items():
-            if (not last_character.split("*", 1)[0].__eq__(character.split("*", 1)[0])
-                    and not last_character.split("*", 1)[0].__eq__("")):
+            if (not last_character.__eq__(character.split("*", 1)[0])
+                    and not last_character.__eq__("")):
                 dialog_string += "    " + "hide " + str(last_character.split("*", 1)[0]) + "\n"
                 dialog_string += "    " + "show " + str(character.split("*", 1)[0]) + "\n"
                 dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
+                last_character = str(character.split("*", 1)[0])
             elif last_character == "":
                 dialog_string += "    " + "show " + str(character.split("*", 1)[0]) + "\n"
                 dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
+                last_character = str(character.split("*", 1)[0])
             else:
                 dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
         return dialog_string
