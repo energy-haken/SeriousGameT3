@@ -18,7 +18,7 @@ class ObjToScriptConverter:
         return list(dict.fromkeys(dup_list)) # remove duplicated elements
 
     def instantiate_character(self,character):
-        return_string = "define " + character.replace(" ", "_") + " = Character(\""+character+"\")\n"
+        return_string = "define " + (character.replace(" ", "_")).lower() + " = Character(\""+character+"\")\n"
         return return_string
 
     def instantiate_characters(self):
