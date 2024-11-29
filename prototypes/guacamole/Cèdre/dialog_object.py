@@ -400,9 +400,9 @@ class DialogObject:
 
     def gather_object_information(self):
         character_list = [self.get_character()]
-        dialog_dict = {(self.get_character()).replace(" ", "_")
+        dialog_dict = {((self.get_character()).replace(" ", "_")
                        +"*"+ str(randint(0,100))
-                       +str(randint(0,100)): self.get_text()}
+                       +str(randint(0,100))).lower(): self.get_text()}
         dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
 
         for descendant in self.descendants:

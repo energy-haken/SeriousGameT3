@@ -1,41 +1,41 @@
-define Willy_Wonka = Character("Willy Wonka")
-define Woma = Character("Woma")
-define Wikon = Character("Wikon")
-define Wiky = Character("Wiky")
-define Wololo = Character("Wololo")
-define Wubur = Character("Wubur")
+define willy_wonka = Character("Willy Wonka")
+define woma = Character("Woma")
+define wikon = Character("Wikon")
+define wiky = Character("Wiky")
+define wololo = Character("Wololo")
+define wubur = Character("Wubur")
 label start:
     scene bg room
-    show Willy_Wonka
-    Willy_Wonka " I hate cappuccino " 
-    hide Willy_Wonka
-    show Woma
-    Woma " I hate Woma " 
-    hide Woma
-    show Wikon
-    Wikon " I hate Wikon " 
-    hide Wikon
-    show Wiky
-    Wiky " I hate Wiky " 
-    hide Wiky
-    show Wololo
-    Wololo " I hate Wololo " 
-    hide Wololo
-    show Wubur
-    Wubur " I hate Wubur " 
-    hide Wubur
-    show Woma
-    Woma " I hate Woma " 
-    hide Woma
-    show Wikon
-    Wikon " I hate Wikon " 
-    hide Wikon
-    show Wiky
-    Wiky " I hate Wiky " 
-    hide Wiky
-    show Wololo
-    Wololo " I hate Wololo " 
-    hide Wololo
-    show Wubur
-    Wubur " I hate Wubur " 
+    show willy_wonka
+    willy_wonka " I hate cappuccino " 
+    hide willy_wonka
+    show woma
+    woma " I hate Woma " 
+    hide woma
+    show wikon
+    wikon " I hate Wikon " 
+    hide wikon
+    show wiky
+    wiky " I hate Wiky " 
+    hide wiky
+    show wololo
+    wololo " I hate Wololo " 
+    hide wololo
+    show wubur
+    wubur " I hate Wubur " 
+    hide wubur
+    show woma
+    woma " I hate Woma " 
+    hide woma
+    show wikon
+    wikon " I hate Wikon " 
+    hide wikon
+    show wiky
+    wiky " I hate Wiky " 
+    hide wiky
+    show wololo
+    wololo " I hate Wololo " 
+    hide wololo
+    show wubur
+    wubur " I hate Wubur " 
     return
