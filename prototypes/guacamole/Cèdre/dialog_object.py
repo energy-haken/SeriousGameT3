@@ -3,7 +3,7 @@ from tkinter import *
 
 from sympy.core.random import randint
 
-from scene_edit_window import SceneEditWindow
+from Cèdre.scene_edit_window import SceneEditWindow
 
 
 def build_descendant(descendants_list, index_x,index_y, canvas):
