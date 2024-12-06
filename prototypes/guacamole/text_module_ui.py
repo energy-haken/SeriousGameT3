@@ -32,14 +32,14 @@ class TextModule(Observer):
     image_cache = None # stored image if the user want to save it
 
 
-    def __init__(self,window):
+    def __init__(self,window,model_handler):
         self.prompt = "I like trains"
         self.output = "I hate trains"
         self.output_label_global = None
         self.prompt_label_global = None
         self.user_input_global = None
         self.parameters = {}
-        self.model_handler = ModelHandler()
+        self.model_handler = model_handler
         self.model_handler.add_observer(self)
 
 
@@ -258,18 +258,6 @@ class TextModule(Observer):
         # return self.model_handler.get_parameters()[param]
         return self.parameters[param]
 
-    def file_writer(self, message) :
-        file_writer = HomeMadeFileWriter()
-        file_writer.set_mode("w")
-        file_writer.set_file("testGuaca.rpy")
-        
-        if 'error' in message[0]:
-            error_handler(message[0]['error'])
-            
-        else:
-            file_writer.write(message[0]['generated_text'])
-            
-
     def update(self,subject,data_type,data) -> None:
         """
         Receive update from subject.
@@ -279,7 +267,6 @@ class TextModule(Observer):
         match data_type:
             case "output":
                 self.update_output(data)
-                self.file_writer(data)
             case "model_list":
                 self.obs_update_models_list(data)
             # case "gen_type": # Since it's a button exclusive command, shouldn't be used with observer-type update

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.messagebox import *
 import menu_ui
+from model_handler import ModelHandler
 from text_module_ui import TextModule
 import torch
 
@@ -27,7 +28,7 @@ if not torch.cuda.is_available():
     error_handler("CUDA not available, expect unhandled bugs")
 
 menu_ui.init(window)
-text_module = TextModule(window)
+text_module = TextModule(window,ModelHandler())
 
 #test = TestWindow(window)
 #textFrame = LabelFrame(window, text="Text Frame", padx=20, pady=20)
