@@ -8,7 +8,6 @@ from sympy.core.random import random
 from generation_type import GenerationType
 from model_handler import ModelHandler
 from observer import Observer
-from Cèdre.file_writer import HomeMadeFileWriter
 
 
 def error_handler(message):
@@ -162,7 +161,6 @@ class TextModule(Observer):
         button_update_gen_type = Button(frame_models,
                                         text="Change generation type", command=lambda : self.update_gen_type())
         button_update_gen_type.pack()
-
         self.model_handler.update_reload() # force update
 
     def change_processing_type(self):
