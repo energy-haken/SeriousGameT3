@@ -8,7 +8,6 @@ from sympy.core.random import random
 from generation_type import GenerationType
 from model_handler import ModelHandler
 from observer import Observer
-from Cèdre.file_writer import HomeMadeFileWriter
 
 
 def error_handler(message):
@@ -32,14 +31,14 @@ class TextModule(Observer):
     image_cache = None # stored image if the user want to save it
 
 
-    def __init__(self,window):
+    def __init__(self,window,model_handler):
         self.prompt = "I like trains"
         self.output = "I hate trains"
         self.output_label_global = None
         self.prompt_label_global = None
         self.user_input_global = None
         self.parameters = {}
-        self.model_handler = ModelHandler()
+        self.model_handler = model_handler
         self.model_handler.add_observer(self)
 
 
@@ -162,7 +161,6 @@ class TextModule(Observer):
         button_update_gen_type = Button(frame_models,
                                         text="Change generation type", command=lambda : self.update_gen_type())
         button_update_gen_type.pack()
-
         self.model_handler.update_reload() # force update
 
     def change_processing_type(self):
@@ -258,18 +256,6 @@ class TextModule(Observer):
         # return self.model_handler.get_parameters()[param]
         return self.parameters[param]
 
-    def file_writer(self, message) :
-        file_writer = HomeMadeFileWriter()
-        file_writer.set_mode("w")
-        file_writer.set_file("testGuaca.rpy")
-        
-        if 'error' in message[0]:
-            error_handler(message[0]['error'])
-            
-        else:
-            file_writer.write(message[0]['generated_text'])
-            
-
     def update(self,subject,data_type,data) -> None:
         """
         Receive update from subject.
@@ -279,7 +265,6 @@ class TextModule(Observer):
         match data_type:
             case "output":
                 self.update_output(data)
-                self.file_writer(data)
             case "model_list":
                 self.obs_update_models_list(data)
             # case "gen_type": # Since it's a button exclusive command, shouldn't be used with observer-type update
