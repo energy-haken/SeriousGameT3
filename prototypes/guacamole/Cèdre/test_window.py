@@ -8,16 +8,23 @@ from renpy_converter.object_to_script_converter import ObjToScriptConverter
 # https://www.askpython.com/python-modules/tkinter/tkinter-create-oval
 # https://tkinterpython.top/drawing/
 
+
+
+
 def generate_text(origin):
+    base_path = "resources/renpy_project/Les Zamours/game/"
     # Init fileWriter
     file_writer = HomeMadeFileWriter()
     file_writer.set_mode("w")
-    file_writer.set_file("script_test.rpy")
+    file_writer.set_file(base_path+"script.rpy")
 
     # Gather information on tree
     tree_information = origin.get_tree_information()
 
     # Init ObjConverter
+
+
+
     obj_converter = ObjToScriptConverter()
     obj_converter.set_dialogs_dict(tree_information["dialogs"])
     obj_converter.set_characters_list(tree_information["characters"])
