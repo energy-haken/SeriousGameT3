@@ -136,7 +136,7 @@ class DialogObject:
     model_controller = None
 
     def __init__(self):
-        self.character = "placeholder character"
+        self.character = "Bob"
         self.text = "placeholder text"
         self.img = "placeholder"
         self.descendants = []
@@ -313,9 +313,9 @@ class DialogObject:
         """
 
         obj = DialogObject()
-        obj.set_character(str(randint(0,10)))
+        # obj.set_character(str(randint(0,10)))
         obj.set_img("Beans")
-        obj.set_text("I hate " + "shitray[i % 5]")
+        obj.set_text("Hi, I'm "+obj.get_character())
         obj.set_parent(self)
         origin = obj.get_origin_object()
         self.build_tree(canvas)

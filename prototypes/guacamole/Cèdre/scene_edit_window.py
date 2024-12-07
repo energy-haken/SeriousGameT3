@@ -74,6 +74,7 @@ class SceneEditWindow(Observer):
         print("KILLING DAD")
         if self.text_module_window is not None: # close its child window properly
             self.text_module_window.quit_window()
+        self.text_module_window = None
         self.model_controller.remove_observer(self)
         self.window.destroy()
 
@@ -85,7 +86,8 @@ class SceneEditWindow(Observer):
         self.reload_image()
 
     def launch_ia(self):
-        self.text_module_window = TextModule(Toplevel(self.window), self.model_controller)
+        if not self.text_module_window:
+            self.text_module_window = TextModule(Toplevel(self.window), self.model_controller)
 
     def update_output(self,data):
         self.descendant.set_text(data[0]['generated_text'])
