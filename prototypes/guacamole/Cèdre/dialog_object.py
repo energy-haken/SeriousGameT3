@@ -100,7 +100,7 @@ def build_ui_part(descendant,index_x,index_y, canvas):
     def click_window(event):
         # print('Got object click', event.x, event.y)
         # print(event.widget.find_closest(event.x, event.y))
-        scene_window = SceneEditWindow(Toplevel(),descendant)
+        scene_window = SceneEditWindow(Toplevel(descendant.get_model_controller().get_current_window()),descendant)
 
 
     canvas.tag_bind(btn_kill, '<ButtonPress-1>', click_remove)
@@ -133,6 +133,7 @@ class DialogObject:
     tkinter_window_button = None
     canvas = None
     tkinter_choices = None
+    model_controller = None
 
     def __init__(self):
         self.character = "placeholder character"
@@ -156,7 +157,19 @@ class DialogObject:
     def set_parent(self,parent):
         self.parent = parent
         parent.add_descendant(self)
+        self.set_model_controller_from_parent() # add the model controller from the parent
         # print("My dad is : " + parent.get_character())
+
+    def set_model_controller(self, controller):
+        self.model_controller = controller
+
+    # add the model controller from the parent
+    def set_model_controller_from_parent(self):
+        if self.parent is not None:
+            self.set_model_controller(self.parent.get_model_controller())
+    def get_model_controller(self):
+        return self.model_controller
+
     def add_descendant(self,descendant):
         # print("added : " + descendant.get_character()+" to : "+self.character)
         self.descendants.append(descendant)

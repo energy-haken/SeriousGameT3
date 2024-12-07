@@ -20,7 +20,7 @@ class TextModule(Observer):
     output_label_global = None
     prompt_label_global = None
     user_input_global = None
-    model_handler = None
+    model_controller = None
     model_label = None
     parameters = None
     parameters_entry_list = None
@@ -29,30 +29,30 @@ class TextModule(Observer):
     gen_type_label = None
     processing_type_button = None
     image_cache = None # stored image if the user want to save it
+    window = None
 
-
-    def __init__(self,window,model_handler):
+    def __init__(self, window, model_controller):
         self.prompt = "I like trains"
         self.output = "I hate trains"
         self.output_label_global = None
         self.prompt_label_global = None
         self.user_input_global = None
         self.parameters = {}
-        self.model_handler = model_handler
-        self.model_handler.add_observer(self)
-
+        self.model_controller = model_controller
+        self.model_controller.add_observer(self)
+        self.window = window
 
         ### Draw the frame for the user input & output
-        input_frame = LabelFrame(window, text="Text Zone", padx=20, pady=20)
+        input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20)
         input_frame.pack(fill="both", expand=0, side=TOP)
 
-        prompt_frame = LabelFrame(window, text="Prompt", padx=20, pady=20)
+        prompt_frame = LabelFrame(self.window, text="Prompt", padx=20, pady=20)
         prompt_frame.pack(fill="both", expand=1, side=LEFT)
 
         prompt_label = Label(prompt_frame, text="The prompt will be here")
         prompt_label.pack()
 
-        output_frame = LabelFrame(window, text="Results", padx=20, pady=20)
+        output_frame = LabelFrame(self.window, text="Results", padx=20, pady=20)
         output_frame.pack(fill="both", expand=1, side=RIGHT)
 
         output_label = Label(output_frame, text="The dialog will be here")
@@ -161,10 +161,19 @@ class TextModule(Observer):
         button_update_gen_type = Button(frame_models,
                                         text="Change generation type", command=lambda : self.update_gen_type())
         button_update_gen_type.pack()
-        self.model_handler.update_reload() # force update
+        self.model_controller.update_reload() # force update
+
+        # close the window properly
+        self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
+
+    # close the window properly
+    def quit_window(self):
+        print("KILLING CHILD")
+        self.model_controller.remove_observer(self)
+        self.window.destroy()
 
     def change_processing_type(self):
-        self.model_handler.change_processing_method()
+        self.model_controller.change_processing_method()
     def obs_update_processing_type(self,processing_type):
         if self.processing_type_button is not None:
             self.processing_type_button.config(text="CURRENTLY : " +processing_type+" MODE")
@@ -175,10 +184,10 @@ class TextModule(Observer):
 
     def update_gen_type(self):
         if self.generation_type == GenerationType.TEXT:
-            self.model_handler.set_generation_type(GenerationType.IMAGE)
+            self.model_controller.set_generation_type(GenerationType.IMAGE)
             self.generation_type = GenerationType.IMAGE
         else:
-            self.model_handler.set_generation_type(GenerationType.TEXT)
+            self.model_controller.set_generation_type(GenerationType.TEXT)
             self.generation_type = GenerationType.TEXT
         self.gen_type_label.config(text=self.generation_type.name)
         #self.update_models_list()
@@ -191,7 +200,7 @@ class TextModule(Observer):
 
     def generate(self):
         self.update_prompt()
-        self.model_handler.generate(self.prompt)
+        self.model_controller.generate(self.prompt)
 
     def save_image(self):
         base_path = "resources/images/"
@@ -217,7 +226,7 @@ class TextModule(Observer):
             self.image_cache = tkimg
 
     def unload_model(self):
-        self.model_handler.turn_off_model()
+        self.model_controller.turn_off_model()
 
 
     def update_output(self,message):
@@ -244,7 +253,7 @@ class TextModule(Observer):
                 self.parameters.update({index:float(self.parameters_entry_list.get(index).get())}) # float so the sdk don't break
 
         # Update the parameters of the model_handler with the updated parameters
-        self.model_handler.update_parameters(self.parameters)
+        self.model_controller.update_parameters(self.parameters)
     def obs_update_parameters(self,data):
         self.parameters = data
 

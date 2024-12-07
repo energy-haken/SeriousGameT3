@@ -72,9 +72,9 @@ class ModelHandler:
         self.update_observers("parameters",self.parameters)
         #self.update_reload()
 
-
     def remove_observer(self,observer: Observer):
-        self.__observers.remove(observer)
+        if observer in self.__observers:
+            self.__observers.remove(observer)
     def update_observers(self,data_type,data):
         for obs in self.__observers:
             obs.update(self,data_type,data)
