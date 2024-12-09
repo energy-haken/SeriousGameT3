@@ -60,14 +60,14 @@ class ObjToScriptConverter:
                     and not last_character.__eq__("")):
                 dialog_string += "    " + "hide " + str(last_character.split("*", 1)[0]) + "\n"
                 dialog_string += "    " + "show " + str(character.split("*", 1)[0]) + "\n"
-                dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
+                dialog_string += "    " + str(character.split("*", 1)[0]).replace(" ", "_").lower() + " \" " + dialog + " \" \n"
                 last_character = str(character.split("*", 1)[0])
             elif last_character == "":
                 dialog_string += "    " + "show " + str(character.split("*", 1)[0]) + "\n"
-                dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
+                dialog_string += "    " + str(character.split("*", 1)[0]).replace(" ", "_").lower() + " \" " + dialog + " \" \n"
                 last_character = str(character.split("*", 1)[0])
             else:
-                dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
+                dialog_string += "    " + str(character.split("*", 1)[0]).replace(" ", "_").lower() + " \" " + dialog + " \" \n"
         return dialog_string
 
     def convert(self):

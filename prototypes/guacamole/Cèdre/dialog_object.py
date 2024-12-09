@@ -133,6 +133,7 @@ class DialogObject:
     tkinter_window_button = None
     canvas = None
     tkinter_choices = None
+    choices = None
     model_controller = None
 
     def __init__(self):
@@ -141,6 +142,7 @@ class DialogObject:
         self.img = "placeholder"
         self.descendants = []
         self.tkinter_choices = []
+        self.choices = []
     def set_canvas(self,canvas):
         self.canvas = canvas
 
@@ -187,6 +189,8 @@ class DialogObject:
         self.tkinter_window_button = obj
     def add_tkinter_choice(self,choice):
         self.tkinter_choices.append(choice)
+    def add__choice(self,choice):
+        self.choices.append(choice)
     def get_character(self):
         return self.character
     def get_text(self):
@@ -345,6 +349,7 @@ class DialogObject:
     def destroy_ui_choices(self,canvas):
         for choice in self.tkinter_choices:
             canvas.delete(choice)
+        self.choices.clear()
 
     def destroy_self(self,canvas):
         """
@@ -413,7 +418,7 @@ class DialogObject:
 
     def gather_object_information(self):
         character_list = [self.get_character()]
-        dialog_dict = {((self.get_character()).replace(" ", "_")
+        dialog_dict = {((self.get_character())
                        +"*"+ str(randint(0,100))
                        +str(randint(0,100))).lower(): self.get_text()}
         dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
