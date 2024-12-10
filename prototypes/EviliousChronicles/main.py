@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter.messagebox import *
 import menu_ui
-from gui1 import Gui
+from gui import Gui
 import torch
 
 #if not torch.cuda.is_available():
@@ -26,7 +26,7 @@ window.title("Œstro-gen")
 if not torch.cuda.is_available():
     error_handler("CUDA not available, expect unhandled bugs")
 
-menu_ui.init(window)
+# menu_ui.init(window)
 text_module = Gui(window)
 
 #test = TestWindow(window)
