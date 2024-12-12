@@ -104,13 +104,13 @@ class ModelHandler:
             transformers = self.__gather_model_of_type(sdk.ModelTransformers)
             for model in transformers:
                 model_m = model()
-                model_m.device = self.return_processing_method()
+                model_m.device = self.__return_processing_method()
                 ModelsManagement.add_model(self.model_management, new_model=model_m)
         else:
             diffusers = self.__gather_model_of_type(sdk.ModelDiffusers)
             for model in diffusers:
                 model_m = model()
-                model_m.device = self.return_processing_method()
+                model_m.device = self.__return_processing_method()
                 ModelsManagement.add_model(self.model_management, new_model=model_m)
 
     def __gather_model_of_type(self,model_type : sdk):
@@ -139,13 +139,7 @@ class ModelHandler:
             self.processing = "CPU"
         self.__reload()
 
-    def get_processing_method(self):
-        """
-        Get which processing method the model handler is using (CPU or GPU)
-        """
-        return self.processing
-
-    def return_processing_method(self):
+    def __return_processing_method(self):
         if self.processing=="CPU":
             return sdk.Devices.CPU
         else:
@@ -153,11 +147,11 @@ class ModelHandler:
 
     def generate(self,user_prompt):
         if self.generation_type == GenerationType.TEXT:
-            self.generate_dialog(user_prompt)
+            self.__generate_dialog(user_prompt)
         else:
-            self.generate_image(user_prompt)
+            self.__generate_image(user_prompt)
 
-    def generate_image(self,user_prompt):
+    def __generate_image(self, user_prompt):
         """
         Generate an image with the user prompt, if the model allows it (The model must be a diffuser type).
         """
@@ -173,7 +167,7 @@ class ModelHandler:
         self.update_observers("image",img)
         # return img
 
-    def generate_dialog(self,prompt):
+    def __generate_dialog(self, prompt):
         """
         Generate a dialog with the user prompt, if the model allows it (The model must be a transformer type.)
         """
@@ -192,18 +186,15 @@ class ModelHandler:
         self.update_observers("output",output)
         #return output
 
-    def select_model(self,model_name):
+    def __select_model(self, model_name):
         """
         Select a model amidst the configured and selected generation type models.
         """
+        if self.available_models.get(model_name) is not None:
+            self.parameters["selected_model"] = self.available_models.get(model_name)
+            self.__load_model()
 
-        for name in self.available_models.keys():
-            if name == model_name:
-                self.parameters["selected_model"] = self.available_models.get(model_name)
-                self.load_model()
-                break
-
-    def load_model(self):
+    def __load_model(self):
         """
         Load the model by creating a pipeline first, then loading it in the model management for future uses.
         """
@@ -225,7 +216,7 @@ class ModelHandler:
             self.update_observers("current_model",self.get_current_model())
             self.is_active = False
 
-    def get_models_name(self):
+    def __get_models_name(self):
         name_liste = []
         for name in self.available_models.keys():
             name_liste.append(name)
@@ -246,7 +237,7 @@ class ModelHandler:
         """
 
         # self.parameters = new_parameters
-        self.select_model(new_parameters["selected_model"]) # update properly the model
+        self.__select_model(new_parameters["selected_model"]) # update properly the model
         # put back manually some parameters not yet handled by the text module (boolean)
         self.parameters["do_sample"] = True
         self.parameters["early_stopping"] = True
@@ -259,9 +250,6 @@ class ModelHandler:
 
         # update model
         self.update_observers("current_model",self.get_current_model())
-
-    def get_generation_type(self):
-        return self.generation_type
     def set_generation_type(self,new_type):
         self.generation_type = new_type
         self.__reload()
@@ -277,26 +265,21 @@ class ModelHandler:
         self.__gather_downloaded_models()
         # Once a model is loaded, it can't be loaded twice or removed
         self.available_models = self.__get_loaded_model()
-        self.sort_model_by_type()
+        self.__sort_model_by_type()
         self.update_reload()
 
     def update_reload(self):
-        data = {"processing_type":self.get_processing_method(),
+        data = {"processing_type":self.processing,
                 "current_model":self.get_current_model(),
-                "model_list":self.get_models_name(),
+                "model_list":self.__get_models_name(),
                 "parameters":self.parameters}
         self.update_observers("reload",data)
 
     # Get rid of unused model according to the current generation type
-    def sort_model_by_type(self):
+    def __sort_model_by_type(self):
         """
         Sorts models according to the generation type (Only for the UI).
         """
-
         for name in self.available_models.copy().keys(): # So you can pop the unused models without an error
             if not issubclass(self.available_models.get(name).__class__,CONST_VALID_MODELS_TYPE[self.generation_type.value]):
                 self.available_models.pop(name)
-        # self.update_observers()
-
-    def get_parameters(self):
-        return self.parameters
