@@ -115,14 +115,6 @@ class SceneEditWindow(Observer):
         if self.image_is_ai:
             file_name = self.user_input_character_global.get()
             if not self.image is None:
-                # img = None
-                # if self.image.__class__ is Image.__class__: # Need to convert first
-                #     img = ImageTk.PhotoImage(self.image)
-                #     img = ImageTk.getimage(img)  # get the actual image
-                # elif self.image.__class__ is PhotoImage.__class__:
-                #     img = ImageTk.getimage(self.image)
-                # else:
-                #     return 0 # something is wrong
                 img = ImageTk.getimage(self.image)
                 img.save(self.base_path + file_name + ".png", "PNG")
                 showinfo("Saved", "Image saved at : " + self.base_path)
@@ -132,9 +124,7 @@ class SceneEditWindow(Observer):
 
     def discard_image(self):
         if self.image_is_ai:
-            self.image = Image.open("resources/images/angry.png")
-            self.image = self.image.resize((500, 500))
-            self.image = ImageTk.PhotoImage(self.image)
+            self.reload_image_path()
             self.reload_image()
             self.image_is_ai = False
 
@@ -142,7 +132,6 @@ class SceneEditWindow(Observer):
         """
         Receive update from subject.
         """
-
         # Determine the type of update given
         match data_type:
             case "output":
