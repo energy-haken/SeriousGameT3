@@ -102,16 +102,21 @@ class ModelHandler:
         # Add models to the manager according to the chosen generation type
         if self.generation_type == GenerationType.TEXT:
             transformers = self.__gather_model_of_type(sdk.ModelTransformers)
-            for model in transformers:
-                model_m = model()
-                model_m.device = self.__return_processing_method()
-                ModelsManagement.add_model(self.model_management, new_model=model_m)
+            self.__instantiate_models(transformers)
         else:
             diffusers = self.__gather_model_of_type(sdk.ModelDiffusers)
-            for model in diffusers:
-                model_m = model()
-                model_m.device = self.__return_processing_method()
-                ModelsManagement.add_model(self.model_management, new_model=model_m)
+            self.__instantiate_models(diffusers)
+
+    def __instantiate_models(self,array):
+        """
+        Instantiate all models in an array before putting it inside the ModelsManagement
+
+        array : sdk.Model array
+        """
+        for model in array:
+            model_m = model()
+            model_m.device = self.__return_processing_method()
+            ModelsManagement.add_model(self.model_management, new_model=model_m)
 
     def __gather_model_of_type(self,model_type : sdk):
         """
