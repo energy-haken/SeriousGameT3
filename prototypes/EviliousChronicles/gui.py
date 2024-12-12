@@ -38,8 +38,8 @@ class Gui:
             frameProject = Frame(frameParametersZone, width=366, height=54, bg="#383535")
             frameProject.place(x=25, y=150)
 
-            textProject = Label(frameProject , text="Project : " ,background="#383535" , foreground="white" , font=("Khmer", 25))
-            textProject.place(x=1 , y=5)
+            labelProject = Label(frameProject , text="Project : " ,background="#383535" , foreground="white" , font=("Khmer", 25))
+            labelProject.place(x=1 , y=5)
 
             ## Frame pour le bouton pour changer de mode d'utilisation (entre le CPU et le GPU)
             frameProcessingMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
@@ -64,14 +64,64 @@ class Gui:
             frameListModel.place(x=25, y=450)
 
             listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="black" )
-            
             listModel.place(x=0, y=0)
             
 
             ## Paremtres du model
 
-            frameParameterModel = Frame(frameParametersZone , width=311 , height=354 , background="#383535")
+            frameParameterModel = Frame(frameParametersZone , width=311 , height=400 , background="#383535")
             frameParameterModel.place(x=50 , y=550) 
 
+            labelParameters = Label(frameParameterModel , text="PARAMETERS" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+            labelParameters.place(x=40 , y=5)
 
+            labelMaxLength = Label(frameParameterModel , text="Max length" , background="#383535" , foreground="white" , font=("Khmer" , 20))
+            labelMaxLength.place(x=5 , y=55)
+
+            textMaxLenth = Entry(frameParameterModel, width=10)
+            textMaxLenth.place(x=240 , y=70)
+
+
+
+            labelReturnedSequence = Label(frameParameterModel , text="Number of returned \n sequences" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+            labelReturnedSequence.place(x=5 , y=110)
+
+            textReturnedSequence = Entry(frameParameterModel, width=10)
+            textReturnedSequence.place(x=240 , y=150)
+
+
+
+            labelRepetionPenalty = Label(frameParameterModel , text="Repetition penalty" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+            labelRepetionPenalty.place(x=5 , y=190)
+
+            textRepetionPenalty = Entry(frameParameterModel, width=10)
+            textRepetionPenalty.place(x=240 , y=200)
+
+
+
+            labelTemperature = Label(frameParameterModel , text="Temperature" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+            labelTemperature.place(x=5 , y=240)
+
+            textTemperature = Entry(frameParameterModel, width=10)
+            textTemperature.place(x=240 , y=250)
+
+
+
+            labelTopK = Label(frameParameterModel , text="Top K" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+            labelTopK.place(x=5 , y=285)
+
+            textTopK = Entry(frameParameterModel, width=10)
+            textTopK.place(x=240 , y=295)
+
+
+            labelNumberOfBeam = Label(frameParameterModel , text="Number of Beam" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+            labelNumberOfBeam.place(x=5 , y=330)
+
+            textNumberOfBeam = Entry(frameParameterModel, width=10)
+            textNumberOfBeam.place(x=240 , y=340)
+            
+
+
+
+           
             

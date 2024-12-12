@@ -20,6 +20,7 @@ def error_handler(message):
 window = Tk()
 window.iconbitmap("resources/images/icon.ico")
 window.title("Œstro-gen")
+window.attributes("-fullscreen" , True) 
 
 # if hasattr(torch._C, "_cuda_getDeviceCount"): # test if torch is compiled with cuda to avoid further errors
 
