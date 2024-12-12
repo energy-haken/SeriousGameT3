@@ -80,7 +80,10 @@ class ModelHandler:
 
     def update_observers(self,data_type,data):
         for obs in self.__observers:
-            obs.update(self,data_type,data)
+            if obs is not None:
+                obs.update(self,data_type,data)
+            else:
+                print("ERROR in MODEL_HANDLER: null observer")
 
     def __get_loaded_model(self):
         """
@@ -96,36 +99,31 @@ class ModelHandler:
 
         It also sorts models according to the generation type (Diffusers/Transformers).
         """
-        ### check for downloaded models
-        diffusers = []
-        transformers = []
-        # Gather diffusers (for image gen)
-        for model in sdk.ModelDiffusers.__subclasses__():
-            if model not in CONST_BASE_MODELS:
-                diffusers.append(model)
-        # Gather transformers (for text gen)
-        for model in sdk.ModelTransformers.__subclasses__():
-            if model not in CONST_BASE_MODELS: # Get rid of unwanted model from the original sdk
-                transformers.append(model)
-
         # Add models to the manager according to the chosen generation type
         if self.generation_type == GenerationType.TEXT:
+            transformers = self.__gather_model_of_type(sdk.ModelTransformers)
             for model in transformers:
                 model_m = model()
                 model_m.device = self.return_processing_method()
                 ModelsManagement.add_model(self.model_management, new_model=model_m)
         else:
+            diffusers = self.__gather_model_of_type(sdk.ModelDiffusers)
             for model in diffusers:
                 model_m = model()
                 model_m.device = self.return_processing_method()
                 ModelsManagement.add_model(self.model_management, new_model=model_m)
-        # Original way to get all models
-        # for name, downloaded_model in inspect.getmembers(sdk):
-        #     if inspect.isclass(downloaded_model) and downloaded_model not in CONST_BASE_MODELS:
-        #         new_model = downloaded_model()
-        #         if self.generation_type == GenerationType.TEXT and issubclass(downloaded_model, sdk.ModelTransformers):
-        #             ModelsManagement.add_model(self.model_management, new_model= new_model)
-        #             print(new_model.model_name)
+
+    def __gather_model_of_type(self,model_type : sdk):
+        """
+        Gather configured models from the EMF installation from its class (sdk.Model).
+
+        model_type : sdk.Model
+        """
+        array = []
+        for model in model_type.__subclasses__():
+            if model not in CONST_BASE_MODELS: # Get rid of unwanted model from the original sdk
+                array.append(model)
+        return array
 
     def change_processing_method(self):
         """

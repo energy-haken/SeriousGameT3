@@ -90,7 +90,7 @@ class SceneEditWindow(Observer):
             self.text_module_window = TextModule(Toplevel(self.window), self.model_controller)
 
     def update_output(self,data):
-        self.descendant.set_text(data[0]['generated_text'])
+        # self.descendant.set_text(data[0]['generated_text'])
         self.user_input_dialog_global.delete(0, END) #deletes the current value
         self.user_input_dialog_global.insert(0, data[0]['generated_text'])
 
