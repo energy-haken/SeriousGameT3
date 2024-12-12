@@ -32,3 +32,5 @@ class ModelController:
         self.model_handler.add_observer(observer)
     def remove_observer(self,observer):
         self.model_handler.remove_observer(observer)
+    def flush_observers(self):
+        self.model_handler.flush_observers()

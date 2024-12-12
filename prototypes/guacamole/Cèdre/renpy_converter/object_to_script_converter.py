@@ -72,7 +72,7 @@ class ObjToScriptConverter:
 
     def convert(self):
         converted_string = self.instantiate_characters()
-        converted_string += "label start:\n    scene bg room\n"
+        converted_string += "label start:\n    scene bg ak\n"
         converted_string += self.generate_dialogs()
         converted_string += "    " + "return\n"
         return converted_string

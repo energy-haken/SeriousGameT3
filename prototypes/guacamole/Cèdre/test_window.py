@@ -95,6 +95,7 @@ class TestWindow:
 
     # close the window properly
     def quit_window(self):
+        self.model_controller.flush_observers() # just in case
         quit()
         # self.model_controller.remove_observer(self)
         # self.window.destroy()

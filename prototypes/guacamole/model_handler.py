@@ -75,6 +75,9 @@ class ModelHandler:
     def remove_observer(self,observer: Observer):
         if observer in self.__observers:
             self.__observers.remove(observer)
+    def flush_observers(self):
+        self.__observers.clear()
+
     def update_observers(self,data_type,data):
         for obs in self.__observers:
             obs.update(self,data_type,data)
