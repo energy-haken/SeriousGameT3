@@ -92,7 +92,7 @@ Les étapes du projet tuteuré T2 sont les suivantes :
 Justifications :
 
 ## Prototype
-- Installation
+- Installation (probablement à retirer sauf si on propose un client connecté à un serveur)
   - [ ] Le prototype s'installe sans effort.
   - [ ] Le prototype s'installe en suivant une procédure.
   - [x] Le prototype ne s'installe pas.
@@ -105,9 +105,9 @@ Justifications :
   - [ ] Le prototype est rarement instable
   - [x] Le prototype est instable
 - Affordabilité
-  - [ ] Toutes les instructions de jeu sont inclues dans le prototype au cours d'une partie normale.
-  - [ ] Les instructions de jeu sont sous forme d'un manuel ou d'un tutoriel à part.
-  - [x] Les instructions de jeu ne sont pas données.
+  - [ ] Toutes les instructions d'utilisation sont inclues dans le prototype.
+  - [ ] Les instructions d'utilisation sont sous forme d'un manuel ou d'un tutoriel à part.
+  - [x] Les instructions d'utilisation ne sont pas données.
 - Transmission du concept
   - [ ] J'ai appris quelque chose en jouant.
   - [ ] J'ai eu de l'intérêt en jouant, mais sans rien apprendre.
@@ -117,20 +117,26 @@ Résumer en une phrase ce que vous avez éventuellement appris :
 
 Autres justifications :
 
+## Documentation
+- Plénitude de la documentation
+  - [ ] La documentation couvre l'ensemble des fonctionnalités du logiciel.
+  - [ ] La documentation couvre une partie des fonctionnalités du logiciel.
+  - [x] La documentation couvre peu voir aucune des fonctionnalités du logiciel.
+
 ## Présentation README.md
 
 - Présentation du projet
-  - [ ] Cette partie est informative et succincte (1 phrase).
-  - [ ] Cette partie est informative.
-  - [ ] Cette partie n'est pas informative.
+  - [ ] Cette exemple est informatif et succinct (1 phrase).
+  - [ ] Cette exemple est informatif.
+  - [ ] Cette exemple n'est pas informatif.
 - Captures d'écran
   - [ ] Des captures d'écran soignées sont données.
   - [ ] Une capture d'écran est donnée.
   - [ ] Aucune capture d'écran n'est donnée.
 - Procédures d'installation et d'exécution
-  - [ ] Cette partie est informative et succincte (1 phrase).
-  - [ ] Cette partie est informative.
-  - [ ] Cette partie n'est pas informative.
+  - [ ] Elles inclus les dépendances et le logiciel lui-même.
+  - [ ] Elles inclus le logiciel.
+  - [x] Aucune procédures n'est incluse.
 
 ## Cahier des charges 
 
