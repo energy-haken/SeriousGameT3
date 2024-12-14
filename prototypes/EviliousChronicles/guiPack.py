@@ -26,7 +26,7 @@ class Gui:
             
             ## Frame a gauche de l'ecran avec les differents parametres du model
             frameParametersZone = Frame(canvas, width=410, height=1000, bg="#1D1B1B")
-            frameParametersZone.place(x=30, y=24)
+            frameParametersZone.pack()
             
             #self.image = Image.open("Images/LogoApp.png")
             #self.image = self.photo.resize((500,500))
@@ -36,109 +36,109 @@ class Gui:
             
             ## Frame pour la case [Project : nomProjet]
             frameProject = Frame(frameParametersZone, width=366, height=54, bg="#383535")
-            frameProject.place(x=25, y=150)
+            frameProject.pack()
 
             labelProject = Label(frameProject , text="Project : " ,background="#383535" , foreground="white" , font=("Khmer", 25))
-            labelProject.place(x=1 , y=5)
+            labelProject.pack()
 
             ## Frame pour le bouton pour changer de mode d'utilisation (entre le CPU et le GPU)
             frameProcessingMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
-            frameProcessingMode.place(x=25, y=250)
+            frameProcessingMode.pack()
 
             button_processing_type = Button(frameProcessingMode, background="#383535" , fg="white" ,text="Processing-Mode : CPU",  font=("Khmer", 24) , command=lambda: self.change_processing_type())
             button_processing_type.pack()
 
-            button_processing_type.place(x=0 , y=0)
+           
 
              ## Frame pour le bouton pour changer de mode d'utilisation (entre image et le text)
             frameGenerationMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
-            frameGenerationMode.place(x=25, y=350)
+            frameGenerationMode.pack()
 
             button_generationMode = Button(frameGenerationMode, background="#383535" , fg="white" ,text="Generation-Mode : Text",  font=("Khmer", 25) , command=lambda: self.change_processing_type())
             button_generationMode.pack()
 
-            button_generationMode.place(x=0 , y=0)
+            
 
             ## Liste des models
             frameListModel = Frame(frameParametersZone , background="#383535" , width=366 , height=53)
-            frameListModel.place(x=25, y=450)
+            frameListModel.pack()
 
             listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="black" )
-            listModel.place(x=0, y=0)
+            listModel.pack()
             
 
             ## Paremtres du model
 
             frameParameterModel = Frame(frameParametersZone , width=311 , height=400 , background="#383535")
-            frameParameterModel.place(x=50 , y=550) 
+            frameParameterModel.pack()
 
             labelParameters = Label(frameParameterModel , text="PARAMETERS" , background="#383535" , foreground="white" , font=("Khmer" , 25))
-            labelParameters.place(x=40 , y=5)
+            labelParameters.pack()
 
             labelMaxLength = Label(frameParameterModel , text="Max length" , background="#383535" , foreground="white" , font=("Khmer" , 20))
-            labelMaxLength.place(x=5 , y=55)
+            labelMaxLength.pack()
 
             textMaxLenth = Entry(frameParameterModel, width=10)
-            textMaxLenth.place(x=240 , y=70)
+            textMaxLenth.pack()
 
 
 
             labelReturnedSequence = Label(frameParameterModel , text="Number of returned \n sequences" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
-            labelReturnedSequence.place(x=5 , y=110)
+            labelReturnedSequence.pack()
 
             textReturnedSequence = Entry(frameParameterModel, width=10)
-            textReturnedSequence.place(x=240 , y=150)
+            textReturnedSequence.pack()
 
 
 
             labelRepetionPenalty = Label(frameParameterModel , text="Repetition penalty" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
-            labelRepetionPenalty.place(x=5 , y=190)
+            labelRepetionPenalty.pack()
 
             textRepetionPenalty = Entry(frameParameterModel, width=10)
-            textRepetionPenalty.place(x=240 , y=200)
+            textRepetionPenalty.pack()
 
 
 
             labelTemperature = Label(frameParameterModel , text="Temperature" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
-            labelTemperature.place(x=5 , y=240)
+            labelTemperature.pack()
 
             textTemperature = Entry(frameParameterModel, width=10)
-            textTemperature.place(x=240 , y=250)
+            textTemperature.pack()
 
 
 
             labelTopK = Label(frameParameterModel , text="Top K" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
-            labelTopK.place(x=5 , y=285)
+            labelTopK.pack()
 
             textTopK = Entry(frameParameterModel, width=10)
-            textTopK.place(x=240 , y=295)
+            textTopK.pack()
 
 
             labelNumberOfBeam = Label(frameParameterModel , text="Number of Beam" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
-            labelNumberOfBeam.place(x=5 , y=330)
+            labelNumberOfBeam.pack()
 
             textNumberOfBeam = Entry(frameParameterModel, width=10)
-            textNumberOfBeam.place(x=240 , y=340)
+            textNumberOfBeam.pack()
             
 
             ## Frame Contexto
 
             frameContexte = Frame(canvas, width=400 , height=200 , background="#383535")
-            frameContexte.place(x=500 , y=24)
+            frameContexte.pack()
 
             frameInput = Frame(canvas, width=400 , height=200 , background="#383535")
-            frameInput.place(x=1000 , y=24)
+            frameInput.pack()
 
 
             ## Frame Milieu pour le output
 
             frameOutput = Frame(canvas , width=900 , height=700 , background="#383535")
-            frameOutput.place(x=500, y=300)
+            frameOutput.pack()
 
             ## Frame Droite pour l'historique
 
             frameHistory = Frame(canvas ,  width=410, height=1000, bg="#1D1B1B")
-            frameHistory.place(x=1470 , y=24)
+            frameHistory.pack()
 
 
            
