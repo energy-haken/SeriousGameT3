@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter.messagebox import *
 import menu_ui
 from gui import Gui
-import torch
+#from guiPack import Gui
+
 
 #if not torch.cuda.is_available():
 
@@ -20,11 +21,11 @@ def error_handler(message):
 window = Tk()
 window.iconbitmap("resources/images/icon.ico")
 window.title("Œstro-gen")
+window.attributes("-fullscreen" , True) 
 
 # if hasattr(torch._C, "_cuda_getDeviceCount"): # test if torch is compiled with cuda to avoid further errors
 
-if not torch.cuda.is_available():
-    error_handler("CUDA not available, expect unhandled bugs")
+
 
 # menu_ui.init(window)
 text_module = Gui(window)

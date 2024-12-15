@@ -258,17 +258,18 @@ class TextModule(Observer):
         # return self.model_handler.get_parameters()[param]
         return self.parameters[param]
 
-    def file_writer(self, message) :
+    def file_writer(self, message):
         file_writer = HomeMadeFileWriter()
         file_writer.set_mode("w")
         file_writer.set_file("testGuaca.rpy")
-        
+
         if 'error' in message[0]:
             error_handler(message[0]['error'])
-            
         else:
-            file_writer.write(message[0]['generated_text'])
-            
+            character1 = "e"
+            character2 = "a"
+            output = message[0]['generated_text']
+            file_writer.write_character_and_output(character1, character2, output)
 
     def update(self,subject,data_type,data) -> None:
         """
