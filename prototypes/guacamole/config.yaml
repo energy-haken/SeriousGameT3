@@ -46,33 +46,6 @@ models:
       isdownloaded: true
       version: ""
       accesstoken: ""
-    - name: Qwen/Qwen2.5-7B-Instruct
-      path: models/Qwen/Qwen2.5-7B-Instruct/model
-      module: transformers
-      class: Qwen2ForCausalLM
-      options: {}
-      tokenizers:
-        - path: models/Qwen/Qwen2.5-7B-Instruct/AutoTokenizer
-          class: AutoTokenizer
-          options: {}
-      pipelinetag: text-generation
-      source: hugging_face
-      addtobinaryfile: true
-      isdownloaded: true
-      version: ""
-      accesstoken: ""
-    - name: digiplay/DucHaiten-Real3D-NSFW-V1
-      path: models/digiplay/DucHaiten-Real3D-NSFW-V1
-      module: diffusers
-      class: StableDiffusionPipeline
-      options: {}
-      tokenizers: []
-      pipelinetag: text-to-image
-      source: hugging_face
-      addtobinaryfile: true
-      isdownloaded: true
-      version: ""
-      accesstoken: ""
 name: Œstro-gen
 sdk-tag: v1.1.3
 update-suggested: true
