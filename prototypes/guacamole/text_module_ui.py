@@ -30,8 +30,9 @@ class TextModule(Observer):
     processing_type_button = None
     image_cache = None # stored image if the user want to save it
     window = None
+    parent = None
 
-    def __init__(self, window, model_controller):
+    def __init__(self, window, model_controller,parent):
         self.prompt = "I like trains"
         self.output = "I hate trains"
         self.output_label_global = None
@@ -41,6 +42,7 @@ class TextModule(Observer):
         self.model_controller = model_controller
         self.model_controller.add_observer(self)
         self.window = window
+        self.parent = parent
 
         ### Draw the frame for the user input & output
         input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20)
@@ -171,6 +173,7 @@ class TextModule(Observer):
         print("KILLING CHILD")
         self.model_controller.remove_observer(self)
         self.window.destroy()
+        self.parent.clear_text_module_window()
 
     def change_processing_type(self):
         self.model_controller.change_processing_method()

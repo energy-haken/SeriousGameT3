@@ -77,6 +77,8 @@ class SceneEditWindow(Observer):
         self.text_module_window = None
         self.model_controller.remove_observer(self)
         self.window.destroy()
+    def clear_text_module_window(self):
+        self.text_module_window = None
 
     def update_fields(self):
         self.descendant.set_character(str(self.user_input_character_global.get()))
@@ -87,7 +89,7 @@ class SceneEditWindow(Observer):
 
     def launch_ia(self):
         if not self.text_module_window:
-            self.text_module_window = TextModule(Toplevel(self.window), self.model_controller)
+            self.text_module_window = TextModule(Toplevel(self.window), self.model_controller,self)
 
     def update_output(self,data):
         # self.descendant.set_text(data[0]['generated_text'])
