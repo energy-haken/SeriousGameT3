@@ -186,6 +186,7 @@ class ModelHandler:
                 repetition_penalty=self.parameters["repetition_penalty"], temperature=self.parameters["temperature"],
                 top_k=self.parameters["top_k"], early_stopping=self.parameters["early_stopping"],
                 num_beams=self.parameters["num_beams"],truncation=self.parameters["truncation"])
+            output[0]['generated_text'] = output[0]['generated_text'].replace(prompt, "") # get rid of the original prompt
         else:
             output.append({"error":"Select a model first, then presse apply"})
         self.update_observers("output",output)
