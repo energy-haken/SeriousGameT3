@@ -419,10 +419,8 @@ class DialogObject:
     def gather_object_information(self):
         character_list = [self.get_character()]
         dialog_dict = {((self.get_character())
-                       +"*"+ str(randint(0,100))
-                       +str(randint(0,100))).lower(): self.get_text()}
+                       +"*"+ str(self)).lower(): self.get_text()}
         dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
-
         for descendant in self.descendants:
             temp_dict_info = descendant.gather_object_information() # get information from downstream
             # append the information to the characters list
