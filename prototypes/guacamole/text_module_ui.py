@@ -1,12 +1,8 @@
 from pathlib import Path
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo
-
 from PIL import ImageTk
-from sympy.core.random import random
-
 from generation_type import GenerationType
-from model_handler import ModelHandler
 from observer import Observer
 
 

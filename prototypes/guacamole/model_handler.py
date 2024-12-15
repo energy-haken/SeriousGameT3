@@ -1,5 +1,3 @@
-import importlib
-import inspect
 import sdk
 from generation_type import GenerationType
 from observer import Observer
@@ -182,10 +180,14 @@ class ModelHandler:
             output = self.model_management.generate_prompt(prompt = prompt,
                 model_name=self.parameters["selected_model"].model_name,
                 max_length=self.parameters["max_length"],
-                num_return_sequences=self.parameters["num_return_sequences"], do_sample=self.parameters["do_sample"],
-                repetition_penalty=self.parameters["repetition_penalty"], temperature=self.parameters["temperature"],
-                top_k=self.parameters["top_k"], early_stopping=self.parameters["early_stopping"],
-                num_beams=self.parameters["num_beams"],truncation=self.parameters["truncation"])
+                num_return_sequences=self.parameters["num_return_sequences"],
+                do_sample=self.parameters["do_sample"],
+                repetition_penalty=self.parameters["repetition_penalty"],
+                temperature=self.parameters["temperature"],
+                top_k=self.parameters["top_k"],
+                early_stopping=self.parameters["early_stopping"],
+                num_beams=self.parameters["num_beams"],
+                truncation=self.parameters["truncation"])
             output[0]['generated_text'] = output[0]['generated_text'].replace(prompt, "") # get rid of the original prompt
         else:
             output.append({"error":"Select a model first, then presse apply"})
@@ -199,7 +201,6 @@ class ModelHandler:
         if self.available_models.get(model_name) is not None:
             self.parameters["selected_model"] = self.available_models.get(model_name)
             self.__load_model()
-
     def __load_model(self):
         """
         Load the model by creating a pipeline first, then loading it in the model management for future uses.
