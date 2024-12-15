@@ -84,15 +84,19 @@ Les étapes du projet tuteuré T2 sont les suivantes :
   - [ ] La granularité des commits est pertinente et les commits sont clairement et systématique renseignés.
   - [ ] La granularité des commits n'est pas pertinente ou les commits ne sont pas clairement et systématiquement renseignés.
   - [x] La granularité des commits n'est pas pertinente et les commits ne sont pas clairement et systématiquement renseignés.
-- Droits d'accès
+- Droits d'accès (1)
   - [ ] Julien Gossa est owner du dépôt GIT et ce dépôt est accessible à tous.
   - [ ] Julien Gossa est owner du dépôt GIT.
   - [x] Julien Gossa n'est pas owner du dépôt GIT.
+- Droits d'accès (2)
+  - [ ] La visibilité du dépôt est Public et n'importe qui peut y accéder.
+  - [ ] La visibilité du dépôt est Internal et uniquement les personnes avec le lien du dépôt peuvent y accéder.
+  - [ ] La visibilité du dépôt est Private et vous devez être ajouté manuellement par l'équipe pour y accéder.
 
 Justifications :
 
 ## Prototype
-- Installation (probablement à retirer sauf si on propose un client connecté à un serveur)
+- Installation
   - [ ] Le prototype s'installe sans effort.
   - [ ] Le prototype s'installe en suivant une procédure.
   - [x] Le prototype ne s'installe pas.
@@ -112,7 +116,10 @@ Justifications :
   - [ ] J'ai appris quelque chose en jouant.
   - [ ] J'ai eu de l'intérêt en jouant, mais sans rien apprendre.
   - [x] Je n'ai pas eu d'intérêt en jouant.
-
+- Compréhension de l'objectif pédagogique
+  - [ ] J'ai compris l'objectif pédagogique décrit dans le CdC en jouant au prototype.
+  - [ ] Jouer au prototype ne m'a pas permis de retrouver l'objecttif pédagogique comme dans le CdC.
+  - [x] J'ai dû demander aux étudiants de l'équipe pour comprendre l'objectif pédagogique.
 Résumer en une phrase ce que vous avez éventuellement appris :
 
 Autres justifications :
@@ -140,7 +147,7 @@ Autres justifications :
 
 ## Cahier des charges 
 
-Pour un exemple de ce qui est attenu, voir https://gitlab.unistra.fr/T234/t4-exemple
+Pour un exemple de ce qui est attendu, voir https://gitlab.unistra.fr/T234/t4-exemple
 
 - Objectifs pédagogiques
   - [ ] Cette partie est informative et correspond au style de l'exemple.
