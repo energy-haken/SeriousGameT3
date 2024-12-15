@@ -1,5 +1,6 @@
 from importlib.metadata import Deprecated
 from tkinter import *
+from uuid import uuid4
 
 from sympy.core.random import randint
 
@@ -419,7 +420,7 @@ class DialogObject:
     def gather_object_information(self):
         character_list = [self.get_character()]
         dialog_dict = {((self.get_character())
-                       +"*"+ str(self)).lower(): self.get_text()}
+                       +"*"+ str(uuid4())).lower(): self.get_text()} # create a unique id for the dialog
         dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
         for descendant in self.descendants:
             temp_dict_info = descendant.gather_object_information() # get information from downstream
