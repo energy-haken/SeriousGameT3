@@ -1,8 +1,6 @@
-from importlib.metadata import Deprecated
 from tkinter import *
 from uuid import uuid4
 
-from sympy.core.random import randint
 
 from scene_edit_window import SceneEditWindow
 

@@ -3,6 +3,8 @@ from tkinter import *
 from tkinter.messagebox import showerror, showinfo
 
 from PIL import ImageTk, Image
+
+# from Cèdre.dialog_object import DialogObject
 from observer import Observer
 from text_module_ui import TextModule
 
@@ -90,6 +92,9 @@ class SceneEditWindow(Observer):
     def launch_ia(self):
         if not self.text_module_window:
             self.text_module_window = TextModule(Toplevel(self.window), self.model_controller,self)
+            if self.descendant.get_parent():
+                character_parent = self.descendant.get_parent()
+                self.text_module_window.set_context(character_parent.get_character()+":"+character_parent.get_text())
 
     def update_output(self,data):
         # self.descendant.set_text(data[0]['generated_text'])

@@ -14,7 +14,8 @@ class TextModule(Observer):
     prompt = None
     output = None
     output_label_global = None
-    prompt_label_global = None
+    context_entry = None
+    context_label_global = None
     user_input_global = None
     model_controller = None
     model_label = None
@@ -33,6 +34,7 @@ class TextModule(Observer):
         self.output = "I hate trains"
         self.output_label_global = None
         self.prompt_label_global = None
+        self.context_entry = None
         self.user_input_global = None
         self.parameters = {}
         self.model_controller = model_controller
@@ -62,10 +64,16 @@ class TextModule(Observer):
         user_input = Entry(input_frame, textvariable=value, width=30)
         user_input.pack()
 
+        value2 = StringVar()
+        value2.set("Write your context")
+        context_input = Entry(input_frame, textvariable=value2, width=30)
+        context_input.pack()
+
         # init labels
         self.output_label_global = output_label
         self.prompt_label_global = prompt_label
         self.user_input_global = user_input
+        self.context_entry = context_input
 
         image_label = Label(input_frame)
         image_label.pack()
@@ -139,11 +147,7 @@ class TextModule(Observer):
         # Model UI
         self.model_label = Label(frame_models, text="Model name will be here")
         self.model_label.pack()
-
         list_models = Listbox(frame_models)
-
-
-
         self.parameters_entry_list = {"selected_model":list_models,
                                       "temperature":p_i_temperature,
                                       "num_beams":p_i_num_beams,
@@ -173,9 +177,7 @@ class TextModule(Observer):
 
     def change_processing_type(self):
         self.model_controller.change_processing_method()
-    def obs_update_processing_type(self,processing_type):
-        if self.processing_type_button is not None:
-            self.processing_type_button.config(text="CURRENTLY : " +processing_type+" MODE")
+
     def stop(self):
         self.unload_model()
         self.image_label.config(image="") # clear the image
@@ -190,12 +192,6 @@ class TextModule(Observer):
             self.generation_type = GenerationType.TEXT
         self.gen_type_label.config(text=self.generation_type.name)
         #self.update_models_list()
-
-    def obs_update_models_list(self, model_list):
-        if self.parameters_entry_list is not None:
-            self.parameters_entry_list["selected_model"].delete(0,END)
-            for model in model_list:
-                self.parameters_entry_list["selected_model"].insert(1, model)
 
     def generate(self):
         self.update_prompt()
@@ -227,7 +223,6 @@ class TextModule(Observer):
     def unload_model(self):
         self.model_controller.turn_off_model()
 
-
     def update_output(self,message):
         if 'error' in message[0]:
             error_handler(message[0]['error'])
@@ -235,7 +230,7 @@ class TextModule(Observer):
             self.output_label_global.config(text=message[0]['generated_text'])
 
     def update_prompt(self):
-        self.prompt = self.user_input_global.get()
+        self.prompt = self.context_entry.get() +"\n"+ self.user_input_global.get()
         self.prompt_label_global.config(text=self.prompt)
 
     def update_parameters(self):
@@ -253,6 +248,20 @@ class TextModule(Observer):
 
         # Update the parameters of the model_handler with the updated parameters
         self.model_controller.update_parameters(self.parameters)
+
+    def get_specific_param(self,param):
+        # return self.model_handler.get_parameters()[param]
+        return self.parameters[param]
+
+    def set_context(self,new_context):
+        self.context_entry.delete(0, END)
+        self.context_entry.insert(0, new_context)
+        print(new_context)
+
+    def obs_update_processing_type(self,processing_type):
+        if self.processing_type_button is not None:
+            self.processing_type_button.config(text="CURRENTLY : " +processing_type+" MODE")
+
     def obs_update_parameters(self,data):
         self.parameters = data
 
@@ -260,9 +269,11 @@ class TextModule(Observer):
         if self.model_label is not None:
             self.model_label.config(text=current_model)
 
-    def get_specific_param(self,param):
-        # return self.model_handler.get_parameters()[param]
-        return self.parameters[param]
+    def obs_update_models_list(self, model_list):
+        if self.parameters_entry_list is not None:
+            self.parameters_entry_list["selected_model"].delete(0,END)
+            for model in model_list:
+                self.parameters_entry_list["selected_model"].insert(1, model)
 
     def update(self,subject,data_type,data) -> None:
         """
