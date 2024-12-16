@@ -1,19 +1,33 @@
+
+import os
 from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
+import pathlib
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo
 from PIL import ImageTk
 from tkinter import ttk
-
+import torch
 from generation_type import GenerationType
 from model_handler import ModelHandler
 from observer import Observer
 
-def error_handler(message):
-    showerror("Error", message)
+def error_handler(root , message):
+    #showerror("Error", message)
+    ## frame error
 
+    frameError = Frame(root , width=400 , height=60 , bg="red")
+                
+    frameError.place(x=0 , y=0)
+    frameError.lift()
+
+    labelError = Label(frameError , text=message , background="red" , foreground="white" , font=("Khmer" , 15))
+                
+    labelError.place(x=10 , y=5)
+
+    root.after(5000, frameError.place_forget)
 
 class Gui(Observer):
     image = None
@@ -31,8 +45,12 @@ class Gui(Observer):
     gen_type_label = None
     processing_type_button = None
     image_cache = None # stored image if the user want to save it
+    fond = None
 
     def __init__(self,window):
+            
+           
+
             self.prompt = "I like trains"
             self.output = "I hate trains"
             self.output_label_global = None
@@ -53,7 +71,9 @@ class Gui(Observer):
 
             canvas.pack(fill=BOTH, expand=True)
 
-            
+            self.fond = canvas
+                
+
             ## Frame a gauche de l'ecran avec les differents parametres du model
             frameParametersZone = Frame(canvas, width=410, height=1000, bg="#1D1B1B")
             frameParametersZone.place(x=30, y=24)
@@ -68,8 +88,20 @@ class Gui(Observer):
             frameProject = Frame(frameParametersZone, width=366, height=54, bg="#383535")
             frameProject.place(x=25, y=150)
 
-            labelProject = Label(frameProject , text="Project : " ,background="#383535" , foreground="white" , font=("Khmer", 25))
+            
+
+            pathFolder = pathlib.Path(__file__).parent ## Recuperation du chemin du fichier
+            pathFolder = os.path.basename(pathFolder).split('/')[-1] ## Recuperation du nom du dossier
+            valueProject = StringVar()
+            valueProject.set(pathFolder)
+
+            firstProjectBase = "Project : " 
+            firstProjectBase += str(pathFolder) ## Ajout du nom du dossier
+
+
+            labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
             labelProject.place(x=1 , y=5)
+    
 
             ## Frame pour le bouton pour changer de mode d'utilisation (entre le CPU et le GPU)
             frameProcessingMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
@@ -98,6 +130,9 @@ class Gui(Observer):
 
             listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="black" , values=initial_data )
             listModel.place(x=0, y=0)
+
+            button_apply_parameters = Button(frameParametersZone, text="Apply Parameters & model", command=lambda : self.update_parameters())
+            button_apply_parameters.place(x=25, y=500)
             
 
             ## Paremtres du model
@@ -179,8 +214,35 @@ class Gui(Observer):
             frameContexte = Frame(canvas, width=400 , height=200 , background="#383535")
             frameContexte.place(x=500 , y=24)
 
+            
+
+            labelContexte = Label(frameContexte , text="Context" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+            labelContexte.place(x=150 , y=5)
+
+            textContexte = Entry(frameContexte , width=25 , font=("Khmer" , 20))
+            textContexte.place(x=5 , y=50)
+
+            listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , 20))
+            listContexte.place(x=5 , y=100)
+
+            listContexte["values"] = ["Context 1" , "Context 2" , "Context 3"]
+
+            ## frame Prompt
+
             frameInput = Frame(canvas, width=400 , height=200 , background="#383535")
             frameInput.place(x=1000 , y=24)
+
+            value = StringVar()
+            value.set("Write your prompt here")
+
+            labelInput = Label(frameInput , text="Prompt" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+            labelInput.place(x=150 , y=5)
+
+            textInput = Entry(frameInput ,textvariable=value ,  width=25 , font=("Khmer" , 20))
+            textInput.place(x=5 , y=50)
+
+            self.user_input_global = textInput
+            
 
 
             ## Frame Milieu pour le output
@@ -188,14 +250,34 @@ class Gui(Observer):
             frameOutput = Frame(canvas , width=900 , height=700 , background="#383535")
             frameOutput.place(x=500, y=300)
 
+            labelPrompt = Label(frameOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+            labelPrompt.place(x=5 , y=5)
+
+            self.prompt_label_global = labelPrompt
+
+            labelOutput = Label(frameOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+            labelOutput.place(x=400 , y=5)
+
+            self.output_label_global = labelOutput
+
             ## Frame Droite pour l'historique
 
             frameHistory = Frame(canvas ,  width=410, height=1000, bg="#1D1B1B")
             frameHistory.place(x=1470 , y=24)
 
+            buttonGenerate = Button(canvas , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 25) , command=lambda: self.generate())
+            buttonGenerate.place(x=1000 , y=250)
+
+            
+
+            
+
+            if not torch.cuda.is_available():
+                errorValue = error_handler(canvas , "CUDA not available, expect unhandled bugs")
+
+                
+
             self.model_handler.update_reload() 
-
-
            
     def change_processing_type(self):
         self.model_handler.change_processing_method()
@@ -240,11 +322,11 @@ class Gui(Observer):
                 img.save(base_path + file_name + str(nb) + ".png", "PNG")
                 showinfo("Saved", "Image saved at : "+base_path)
         else:
-            error_handler("No image to save")
+            error_handler(self.fond ,"No image to save")
 
     def update_image(self,img):
         if img[0]=="error":
-            error_handler("Select a model first, then presse apply")
+            error_handler(self.fond , "Select a model first, then presse apply")
         else:
             tkimg = ImageTk.PhotoImage(img[0])
             self.image_label.config(image=tkimg)
@@ -257,7 +339,7 @@ class Gui(Observer):
 
     def update_output(self,message):
         if 'error' in message[0]:
-            error_handler(message[0]['error'])
+            error_handler(self.fond , message[0]['error'])
         else:
             self.output_label_global.config(text=message[0]['generated_text'])
 
@@ -269,8 +351,9 @@ class Gui(Observer):
         for index in self.parameters_entry_list.keys():
             if index == "selected_model":
                 selected_model = "nothing"
-                for i in self.parameters_entry_list.get(index).curselection():  # search the selected model
-                    selected_model = self.parameters_entry_list.get(index).get(i)
+                for i in self.parameters_entry_list.get(index).get():  # search the selected model
+                    selected_model = self.parameters_entry_list.get(index).get()
+                    
                 if selected_model != "nothing":
                     self.parameters.update({"selected_model": selected_model})
                 else:  # in case there's no selected model
