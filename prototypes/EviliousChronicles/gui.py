@@ -5,6 +5,7 @@ from pathlib import Path
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 import pathlib
+import re
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo
 from PIL import ImageTk
@@ -29,12 +30,24 @@ def error_handler(root , message):
 
     root.after(5000, frameError.place_forget)
 
+def change_validate(root , message):
+    frameValidate = Frame(root , width=400 , height=60 , bg="green")
+    frameValidate.place(x=0 , y=0)
+    frameValidate.lift()
+
+    labelValidate = Label(frameValidate , text=message , background="green" , foreground="white" , font=("Khmer" , 15))
+    labelValidate.place(x=10 , y=5)
+
+    root.after(5000, frameValidate.place_forget)
+
+
 class Gui(Observer):
     image = None
     prompt = None
     output = None
     output_label_global = None
     prompt_label_global = None
+    button_generate = None
     user_input_global = None
     model_handler = None
     model_label = None
@@ -59,6 +72,7 @@ class Gui(Observer):
             self.parameters = {}
             self.model_handler = ModelHandler()
             self.model_handler.add_observer(self)
+            self.button_generate = None
            
 
             canvas = Canvas(window,width=1920, height=1080,highlightthickness=0)
@@ -78,10 +92,9 @@ class Gui(Observer):
             frameParametersZone = Frame(canvas, width=410, height=1000, bg="#1D1B1B")
             frameParametersZone.place(x=30, y=24)
             
-            #self.image = Image.open("Images/LogoApp.png")
-            #self.image = self.photo.resize((500,500))
-            #self.image = ImageTk.PhotoImage(self.image)
-            #canvas.create_image(10, 10, image=self.image,anchor=NW)
+            self.image = ImageTk.PhotoImage(file="images\LogoApp.png")
+            image_label = Label(frameParametersZone, image=self.image , background="#1D1B1B" , height=199 , width=432)
+            image_label.place(x=-30, y=-30)
 
             
             ## Frame pour la case [Project : nomProjet]
@@ -111,16 +124,17 @@ class Gui(Observer):
             button_processing_type.pack()
             self.processing_type_button = button_processing_type
 
-            button_processing_type.place(x=0 , y=0)
+           
 
              ## Frame pour le bouton pour changer de mode d'utilisation (entre image et le text)
             frameGenerationMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
             frameGenerationMode.place(x=25, y=350)
 
-            button_generationMode = Button(frameGenerationMode, background="#383535" , fg="white" ,text="Generation-Mode : Text",  font=("Khmer", 25) , command=lambda: self.update_gen_type())
-            button_generationMode.pack()
+            button_generationMode = Button(frameGenerationMode, background="#383535" , fg="white" ,text="Generation-Mode : Text",  font=("Khmer", 22) , command=lambda: self.update_gen_type())
+            button_generationMode.pack(fill=BOTH)
+            self.gen_type_label = button_generationMode
 
-            button_generationMode.place(x=0 , y=0)
+            #button_generationMode.place(x=0 , y=0)
 
             ## Liste des models
             frameListModel = Frame(frameParametersZone , background="#383535" , width=366 , height=53)
@@ -256,7 +270,7 @@ class Gui(Observer):
             self.prompt_label_global = labelPrompt
 
             labelOutput = Label(frameOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25))
-            labelOutput.place(x=400 , y=5)
+            labelOutput.place(x=5 , y=5)
 
             self.output_label_global = labelOutput
 
@@ -265,12 +279,14 @@ class Gui(Observer):
             frameHistory = Frame(canvas ,  width=410, height=1000, bg="#1D1B1B")
             frameHistory.place(x=1470 , y=24)
 
-            buttonGenerate = Button(canvas , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 25) , command=lambda: self.generate())
-            buttonGenerate.place(x=1000 , y=250)
-
+            buttonGenerate = Button(canvas , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
+            buttonGenerate.place(x=1000 , y=1010)
+        
+            self.button_generate = buttonGenerate
             
 
-            
+            if(textInput.focus()):
+                buttonGenerate.configure(text="test")
 
             if not torch.cuda.is_available():
                 errorValue = error_handler(canvas , "CUDA not available, expect unhandled bugs")
@@ -296,7 +312,7 @@ class Gui(Observer):
         else:
             self.model_handler.set_generation_type(GenerationType.TEXT)
             self.generation_type = GenerationType.TEXT
-        self.gen_type_label.config(text=self.generation_type.name)
+        self.gen_type_label.config(text="Generation-Mode : " + self.generation_type.name)
         #self.update_models_list()
 
     def obs_update_models_list(self, model_list):
@@ -309,6 +325,8 @@ class Gui(Observer):
     def generate(self):
         self.update_prompt()
         self.model_handler.generate(self.prompt)
+        self.button_generate.configure(text="Regenerate") # change the button text to regenerate
+        
 
     def save_image(self):
         base_path = "resources/images/"
@@ -350,18 +368,20 @@ class Gui(Observer):
     def update_parameters(self):
         for index in self.parameters_entry_list.keys():
             if index == "selected_model":
-                selected_model = "nothing"
-                for i in self.parameters_entry_list.get(index).get():  # search the selected model
-                    selected_model = self.parameters_entry_list.get(index).get()
-                    
-                if selected_model != "nothing":
+                selected_model = self.parameters_entry_list.get(index).get()
+                if selected_model:
                     self.parameters.update({"selected_model": selected_model})
-                else:  # in case there's no selected model
+                    change_validate(self.fond, "Model " + selected_model + " selected")
+                else:
                     self.parameters.update({"selected_model": self.get_specific_param("selected_model")})
             else:
-                self.parameters.update({index:float(self.parameters_entry_list.get(index).get())}) # float so the sdk don't break
+                try:
+                    value = float(self.parameters_entry_list.get(index).get())
+                    self.parameters.update({index: value})
+                except ValueError:
+                    error_handler(self.fond, f"Parameter {index} is not a valid number")
+                    return
 
-        # Update the parameters of the model_handler with the updated parameters
         self.model_handler.update_parameters(self.parameters)
     def obs_update_parameters(self,data):
         self.parameters = data
