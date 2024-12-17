@@ -64,6 +64,8 @@ class TextModule(Observer):
         user_input = Entry(input_frame, textvariable=value, width=30)
         user_input.pack()
 
+
+
         value2 = StringVar()
         value2.set("Write your context")
         context_input = Entry(input_frame, textvariable=value2, width=30)
@@ -163,7 +165,26 @@ class TextModule(Observer):
         button_update_gen_type = Button(frame_models,
                                         text="Change generation type", command=lambda : self.update_gen_type())
         button_update_gen_type.pack()
+
         self.model_controller.update_reload() # force update
+
+        # Characters handlers (So the user doesn't input forbidden characters)
+        # See doc : https://docs.python.org/3.8/library/stdtypes.html#str.isalpha
+        def is_num(e):
+            if not e.char.isnumeric():
+                error_handler("NO >:( ")
+        def is_char(e):
+            test_char = e.char
+            if not test_char.isalnum() and not test_char.isspace():
+                error_handler("NO >:( ")
+        #self.context_entry
+        self.user_input_global.bind("<KeyPress>",is_char)
+        # p_i_max_length
+        p_i_temperature.bind("<KeyPress>",is_num)
+        p_i_num_beams.bind("<KeyPress>",is_num)
+        p_i_top_k.bind("<KeyPress>",is_num)
+        p_i_repetition_penalty.bind("<KeyPress>",is_num)
+        p_i_num_return_sequences.bind("<KeyPress>",is_num)
 
         # close the window properly
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
