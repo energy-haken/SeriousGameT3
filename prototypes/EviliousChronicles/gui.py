@@ -309,10 +309,12 @@ class Gui(Observer):
         if self.generation_type == GenerationType.TEXT:
             self.model_handler.set_generation_type(GenerationType.IMAGE)
             self.generation_type = GenerationType.IMAGE
+            self.gen_type_label.config(text="Generation-Mode : Image  ")
         else:
             self.model_handler.set_generation_type(GenerationType.TEXT)
             self.generation_type = GenerationType.TEXT
-        self.gen_type_label.config(text="Generation-Mode : " + self.generation_type.name)
+            self.gen_type_label.config(text="Generation-Mode : Text     ")
+        
         #self.update_models_list()
 
     def obs_update_models_list(self, model_list):
