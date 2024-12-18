@@ -390,7 +390,7 @@ class DialogObject:
             current_label = parent_label
             current_label.add_to_dialogs_dict(dialog_dict)
 
-        dialog_tree_info = {"characters": character_list, "labels": labels_list}
+
 
         menu = None
         if self.get_choices() or len(self.get_choices()) != 0:  # there's a menu
@@ -407,6 +407,7 @@ class DialogObject:
             new_menu_label.set_menu(menu)
             new_menu_label.set_type("menu")
             labels_list.append(new_menu_label)
+        dialog_tree_info = {"characters": character_list, "labels": labels_list}
         i = 0 # for the choices
         for descendant in self.descendants:
             if not menu:
@@ -424,7 +425,7 @@ class DialogObject:
                 new_choice_label.set_name(current_choice.get_jump())
                 new_choice_label.set_type("label")
                 new_choice_label.set_background("room")
-                labels_list.append(new_choice_label)
+                dialog_tree_info["labels"].append(new_choice_label)
                 temp_dict_info = descendant.gather_object_information(new_choice_label)  # get information from downstream
                 dialog_tree_info["characters"].extend(temp_dict_info["characters"])
                 temp_list = dialog_tree_info["labels"]
