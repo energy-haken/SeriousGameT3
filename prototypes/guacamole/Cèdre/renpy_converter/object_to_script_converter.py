@@ -40,7 +40,7 @@ class ObjToScriptConverter:
     def generate_choice(self,choice):
         choice_text = "        \"" + choice.get_title() + "\":\n"
         choice_text += "            \"" + choice.get_text() + "\"\n"
-        choice_text += "            \"" + choice.get_jump() + "\"\n"
+        choice_text += "            jump " + choice.get_jump() + "\n"
         return choice_text
 
     # character.split("*", 1)[0] allow to get rid of the dialog identifier ie : my_character*12
@@ -66,6 +66,9 @@ class ObjToScriptConverter:
         converted_string = self.instantiate_characters()
         for label in self.label_list:
             if label.get_type() == "label": # A mere label
+                converted_string += "label "+label.get_name()+":\n    scene "+label.get_background()+"\n"
+                converted_string += self.generate_dialogs(label.get_dialogs_dict())
+            elif label.get_type() == "label-end":
                 converted_string += "label "+label.get_name()+":\n    scene "+label.get_background()+"\n"
                 converted_string += self.generate_dialogs(label.get_dialogs_dict())
                 converted_string += "    " + "return\n"
