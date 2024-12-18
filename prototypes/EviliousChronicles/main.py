@@ -18,6 +18,7 @@ def error_handler(message):
     showerror("Error", message)
 
 window = Tk()
+window.state('zoomed')
 window.iconbitmap("resources/images/icon.ico")
 window.title("Œstro-gen")
 

@@ -59,6 +59,7 @@ class Gui(Observer):
     processing_type_button = None
     image_cache = None # stored image if the user want to save it
     fond = None
+    context = None
 
     def __init__(self,window):
             
@@ -73,23 +74,21 @@ class Gui(Observer):
             self.model_handler = ModelHandler()
             self.model_handler.add_observer(self)
             self.button_generate = None
+            self.context = None
            
 
-            canvas = Canvas(window,width=1920, height=1080,highlightthickness=0)
-            ##window.configure(background="#0D0B0B")
-            ## window.geometry("1920x1080")
+           
+            
 
-            canvas.configure(background="#0D0B0B")
+            window.configure(background="#0D0B0B")
             
             
 
-            canvas.pack(fill=BOTH, expand=True)
-
-            self.fond = canvas
+            self.fond = window
                 
 
             ## Frame a gauche de l'ecran avec les differents parametres du model
-            frameParametersZone = Frame(canvas, width=410, height=1000, bg="#1D1B1B")
+            frameParametersZone = Frame(window, width=410, height=1000, bg="#1D1B1B")
             frameParametersZone.place(x=30, y=24)
             
             self.image = ImageTk.PhotoImage(file="images\LogoApp.png")
@@ -225,7 +224,7 @@ class Gui(Observer):
 
             ## Frame Contexto
 
-            frameContexte = Frame(canvas, width=400 , height=200 , background="#383535")
+            frameContexte = Frame(window, width=400 , height=200 , background="#383535")
             frameContexte.place(x=500 , y=24)
 
             
@@ -239,11 +238,16 @@ class Gui(Observer):
             listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , 20))
             listContexte.place(x=5 , y=100)
 
-            listContexte["values"] = ["Context 1" , "Context 2" , "Context 3"]
+            listContexte["values"] = ["Context Perso" , "Context 2" , "Context 3"]
+
+            if(listContexte.get() == "Context Perso" or listContexte.get() == ""):
+                self.context = listContexte.get()
+            else:
+                self.context = textContexte.get()
 
             ## frame Prompt
 
-            frameInput = Frame(canvas, width=400 , height=200 , background="#383535")
+            frameInput = Frame(window, width=400 , height=200 , background="#383535")
             frameInput.place(x=1000 , y=24)
 
             value = StringVar()
@@ -261,25 +265,25 @@ class Gui(Observer):
 
             ## Frame Milieu pour le output
 
-            frameOutput = Frame(canvas , width=900 , height=700 , background="#383535")
-            frameOutput.place(x=500, y=300)
+            canvaOutput = Canvas(window , width=900 , height=700 , background="#383535")
+            canvaOutput.place(x=500, y=300)
 
-            labelPrompt = Label(frameOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+            labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
             labelPrompt.place(x=5 , y=5)
 
             self.prompt_label_global = labelPrompt
 
-            labelOutput = Label(frameOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25))
-            labelOutput.place(x=5 , y=5)
+            labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25 ) , justify="left")
+            labelOutput.place(x=400 , y=100)
 
             self.output_label_global = labelOutput
 
             ## Frame Droite pour l'historique
 
-            frameHistory = Frame(canvas ,  width=410, height=1000, bg="#1D1B1B")
+            frameHistory = Frame(window ,  width=410, height=1000, bg="#1D1B1B")
             frameHistory.place(x=1470 , y=24)
 
-            buttonGenerate = Button(canvas , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
+            buttonGenerate = Button(window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
             buttonGenerate.place(x=1000 , y=1010)
         
             self.button_generate = buttonGenerate
@@ -289,7 +293,7 @@ class Gui(Observer):
                 buttonGenerate.configure(text="test")
 
             if not torch.cuda.is_available():
-                errorValue = error_handler(canvas , "CUDA not available, expect unhandled bugs")
+                error_handler(window , "CUDA not available, expect unhandled bugs")
 
                 
 
@@ -361,6 +365,8 @@ class Gui(Observer):
         if 'error' in message[0]:
             error_handler(self.fond , message[0]['error'])
         else:
+            self.output_label_global.place_forget()
+            self.output_label_global.place(x=75, y=100)
             self.output_label_global.config(text=message[0]['generated_text'])
 
     def update_prompt(self):
