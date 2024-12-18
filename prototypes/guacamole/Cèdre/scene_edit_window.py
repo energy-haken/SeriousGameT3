@@ -4,7 +4,6 @@ from tkinter.messagebox import showerror, showinfo
 
 from PIL import ImageTk, Image
 
-# from Cèdre.dialog_object import DialogObject
 from model_observer import ModelObserver
 from text_module_ui import TextModule
 
