@@ -52,21 +52,6 @@ def build_ui_part(descendant,index_x,index_y, canvas):
                                fill="black", font=('Helvetica 15 bold'))
     descendant.set_tkinter_label(label)
 
-    # Adding the buttons
-
-
-    # btn = Button(canvas, text='KILL', width=5,
-    #              height=1, bd='1', command=lambda: descendant.destroy_self(canvas))
-    # btn.place(x=40 + offset_x * index_x, y=50 + offset_y * index_y)
-    # descendant.set_tkinter_kill_button(btn)
-    #
-    # btn_add = Button(canvas, text='Add', width=5,
-    #                  height=1, bd='1', command=lambda: descendant.add_descendant_gui(canvas))
-    # btn_add.place(x=0 + offset_x * index_x, y=50 + offset_y * index_y)
-    # descendant.set_tkinter_add_button(btn_add)
-
-    # "BUTTON" (Home-made button made on the canvas, it's in fact just shapes)
-
     btn_kill = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="red", width=2)
     canvas.move(btn_kill, 10 + offset_x * index_x, 50 + offset_y * index_y)
     btn_window = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="grey", width=2)
@@ -287,36 +272,6 @@ class DialogObject:
             index += 1
         return index
 
-    ########## POSTPONED FOR THE RELEASE OF HALF LIFE THREE
-    # def check_x_y_placement_offset(self):
-    #     y_offset = 0
-    #     index_x = self.get_index_x_level()
-    #     index_y = self.get_index_y_level()
-    #
-    #     obj = self.get_parent()
-    #     while obj.get_parent() is not None: # go to the mainline
-    #         obj = obj.get_parent()
-    #
-    #     total_y_offset = obj.explore(index_x,index_y)
-    #     return y_offset
-    #
-    # def explore(self,index_x_limit,index_y_limit):
-    #     """
-    #     Explore each timeline according to the limits and return the y offset of the object
-    #     STILL WIP AND NON-FUNCTIONAL
-    #     """
-    #
-    #     index_y = 0
-    #     obj = self
-    #
-    #     for i in range(index_x_limit): # shit code, going to do something that explore the lines next time
-    #         obj_x = obj
-    #         for y in range(index_y_limit):  # shit code, going to do something that explore the lines next time
-    #             if obj_x.get_descendants() and len(obj_x.get_descendants())>=y:
-    #                 obj_y = obj_x.get_descendants()[y]
-    #         obj_x = obj.get_descendants()[i]
-    #     return index_y
-
     def add_descendant_gui(self,canvas):
         """
         Create a new descendant on the called object before adding it to the canvas
@@ -380,11 +335,6 @@ class DialogObject:
         canvas.delete(self.get_tkinter_add_button())
         canvas.delete(self.get_tkinter_window_button())
         self.destroy_ui_choices(canvas)
-        # Destroy buttons
-        # if self.get_tkinter_kill_button():
-        #     self.get_tkinter_kill_button().destroy()
-        # if self.get_tkinter_add_button():
-        #     self.get_tkinter_add_button().destroy()
 
     def destroy_tree(self,canvas):
         """
