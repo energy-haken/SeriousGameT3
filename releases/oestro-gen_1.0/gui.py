@@ -1,9 +1,5 @@
-
 import os
 from pathlib import Path
-
-# from tkinter import *
-# Explicit imports to satisfy Flake8
 import pathlib
 import re
 from tkinter import *
@@ -11,10 +7,13 @@ from tkinter.messagebox import showerror, showinfo
 from PIL import ImageTk
 from tkinter import ttk
 import torch
-from generation_type import GenerationType
+from dialog_object import DialogObject
 from model_handler import ModelHandler
-from observer import Observer
+from generation_type import GenerationType
+from model_observer import ModelObserver
 from idlelib.tooltip import Hovertip 
+from file_writer import HomeMadeFileWriter
+from renpy_converter.object_to_script_converter import ObjToScriptConverter
 
 def error_handler(root , message):
     #showerror("Error", message)
@@ -42,7 +41,7 @@ def change_validate(root , message):
     root.after(5000, frameValidate.place_forget)
 
 
-class Gui(Observer):
+class Gui(ModelObserver):
     image = None
     prompt = None
     output = None
@@ -59,10 +58,11 @@ class Gui(Observer):
     gen_type_label = None
     processing_type_button = None
     image_cache = None # stored image if the user want to save it
-    fond = None
     context = None
+    window = None
+    canva = None
 
-    def __init__(self,window):
+    def __init__(self,window ,model_controller):
             
            
 
@@ -73,24 +73,21 @@ class Gui(Observer):
             self.user_input_global = None
             self.parameters = {}
             self.model_handler = ModelHandler()
+            self.model_controller = model_controller
+            self.model_controller.add_observer(self)
             self.model_handler.add_observer(self)
             self.button_generate = None
             self.context = None
-           
+            self.window = window
+            
+              
 
-           
-            
-
-            window.configure(background="#0D0B0B")
-            
-            
-           
-           
-            self.fond = window
-                
+        
+            self.window.configure(background="#0D0B0B")
+         
 
             ## Frame a gauche de l'ecran avec les differents parametres du model
-            frameParametersZone = Frame(window, width=410, height=1000, bg="#1D1B1B")
+            frameParametersZone = Frame(self.window, width=410, height=1000, bg="#1D1B1B")
             frameParametersZone.place(x=30, y=24)
             
             self.image = ImageTk.PhotoImage(file="images\LogoApp.png")
@@ -259,7 +256,7 @@ class Gui(Observer):
 
             ## Frame Contexto
 
-            frameContexte = Frame(window, width=400 , height=200 , background="#383535")
+            frameContexte = Frame(self.window, width=400 , height=200 , background="#383535")
             frameContexte.place(x=500 , y=24)
 
             
@@ -282,7 +279,7 @@ class Gui(Observer):
 
             ## frame Prompt
 
-            frameInput = Frame(window, width=400 , height=200 , background="#383535")
+            frameInput = Frame(self.window, width=400 , height=200 , background="#383535")
             frameInput.place(x=1000 , y=24)
 
             value = StringVar()
@@ -300,11 +297,11 @@ class Gui(Observer):
 
             ## Frame Milieu pour le output
 
-            canvaOutput = Canvas(window , width=900 , height=700 , background="#383535")
+            canvaOutput = Canvas(self.window , width=900 , height=700 , background="#383535")
             canvaOutput.place(x=500, y=300)
-
+            self.canva = canvaOutput
             labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
-            labelPrompt.place(x=5 , y=5)
+            #labelPrompt.place(x=5 , y=5)
 
             self.prompt_label_global = labelPrompt
 
@@ -315,25 +312,59 @@ class Gui(Observer):
 
             ## Frame Droite pour l'historique
 
-            frameHistory = Frame(window ,  width=410, height=1000, bg="#1D1B1B")
+            frameHistory = Frame(self.window ,  width=410, height=1000, bg="#1D1B1B")
             frameHistory.place(x=1470 , y=24)
 
-            buttonGenerate = Button(window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
+            buttonGenerate = Button(self.window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
             buttonGenerate.place(x=1000 , y=1010)
         
             self.button_generate = buttonGenerate
             
 
-            if(textInput.focus()):
-                buttonGenerate.configure(text="test")
-
             if not torch.cuda.is_available():
-                error_handler(window , "CUDA not available, expect unhandled bugs")
+                error_handler(self.window , "CUDA not available, expect unhandled bugs")
 
-                
+            hbar = Scrollbar(window, orient=HORIZONTAL)
+            hbar.pack(side=BOTTOM, fill=X)
+            hbar.config(command=canvaOutput.xview)
+            vbar = Scrollbar(window, orient=VERTICAL)
+            vbar.pack(side=RIGHT, fill=Y)
+            vbar.config(command=canvaOutput.yview)
+            canvaOutput.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
 
-            self.model_handler.update_reload() 
-           
+            first_obj = DialogObject()
+            first_obj.set_character("Willy Wonka")
+            first_obj.set_img("Willy Beans")
+            first_obj.set_text("I hate cappuccino")
+            first_obj.set_model_controller(self.model_controller)
+
+            first_obj.build_tree(self.canva)
+
+            self.model_controller.set_current_window(window)
+
+            nb_obj = 10
+            self.canva.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
+            
+
+            button_send = Button(self.window, text="Generate as file", command=lambda : generate_text(first_obj))
+            button_send.pack()
+            button_gen_ai = Button(self.window, text="Generate the tree with ai", command=lambda : self.generate_tree_with_ai())
+            button_gen_ai.pack()
+            # close the window properly
+            self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
+
+            self.model_controller.update_reload()
+            
+    def quit_window(self):
+        self.model_controller.flush_observers() # just in case
+        quit()
+        # self.model_controller.remove_observer(self)
+        # self.window.destroy()
+
+
+    def generate_tree_with_ai(self):
+        self.canva.delete("all") # clean up the canvas before generating anything with ai
+        x = 0
     def change_processing_type(self):
         self.model_handler.change_processing_method()
     def obs_update_processing_type(self,processing_type):
@@ -346,11 +377,11 @@ class Gui(Observer):
 
     def update_gen_type(self):
         if self.generation_type == GenerationType.TEXT:
-            self.model_handler.set_generation_type(GenerationType.IMAGE)
+            self.model_controller.set_generation_type(GenerationType.IMAGE)
             self.generation_type = GenerationType.IMAGE
             self.gen_type_label.config(text="Generation-Mode : Image  ")
         else:
-            self.model_handler.set_generation_type(GenerationType.TEXT)
+            self.model_controller.set_generation_type(GenerationType.TEXT)
             self.generation_type = GenerationType.TEXT
             self.gen_type_label.config(text="Generation-Mode : Text     ")
         
@@ -393,7 +424,7 @@ class Gui(Observer):
             self.image_cache = tkimg
 
     def unload_model(self):
-        self.model_handler.turn_off_model()
+        self.model_controller.turn_off_model()
 
 
     def update_output(self,message):
@@ -467,3 +498,19 @@ class Gui(Observer):
         pass
 
 
+def generate_text(origin):
+    # Init fileWriter
+    file_writer = HomeMadeFileWriter()
+    file_writer.set_mode("w")
+    file_writer.set_file("script_test.rpy")
+
+    # Gather information on tree
+    tree_information = origin.get_tree_information()
+
+    # Init ObjConverter
+    obj_converter = ObjToScriptConverter()
+    obj_converter.set_dialogs_list(tree_information["dialogs"])
+    obj_converter.set_characters_list(tree_information["characters"])
+
+    # Convert and write to file
+    file_writer.write(obj_converter.convert())
