@@ -16,6 +16,3 @@ class Menu:
         return self.title
     def get_choice_list(self):
         return self.choice_list
-
-    def generate_menu(self):
-        return ""

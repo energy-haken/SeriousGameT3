@@ -29,19 +29,18 @@ class ObjToScriptConverter:
 
     #TODO : class menu and choice
     def generate_menu(self,menu):
-        menu_text = "    menu:\n"
-        menu_text += "    " + menu.get_first_dialog()
+        menu_text = "menu:\n"
+        menu_text += "    " +"\""+ menu.get_title()+"\"\n"
 
-        for choice in menu.get_choices():
+        for choice in menu.get_choice_list():
             menu_text += self.generate_choice(choice)
 
         return menu_text
     # uses : "    " instead of "\t" because RenPy doesn't accept tab! What a chicanery!
     def generate_choice(self,choice):
-        choice_text = "    " + choice.get_choice_text()
-        choice_text += "    " + choice.get_choice_dialog()
-        choice_text += "    " + choice.get_choice_jump()
-
+        choice_text = "\"" + choice.get_title() + "\":\n"
+        choice_text += "    \"" + choice.get_text() + "\"\n"
+        choice_text += "    \"" + choice.get_jump() + "\"\n"
         return choice_text
 
     # character.split("*", 1)[0] allow to get rid of the dialog identifier ie : my_character*12
