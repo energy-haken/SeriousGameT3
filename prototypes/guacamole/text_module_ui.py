@@ -236,7 +236,7 @@ class TextModule(ModelObserver):
             current_widget.insert(0,new_text)
 
         # Bindings of the listeners
-        # used <KeyPress> / <KeyRelease> would fix the last character not being erased properly, but it also introduces more bugs
+        # used <KeyPress> / <KeyRelease> fix the last character not being erased properly, but it also introduces more bugs
         self.user_input_global.bind("<KeyRelease>",test_is_alpha)
         p_i_max_length.bind("<KeyRelease>",test_is_num)
         p_i_temperature.bind("<KeyRelease>",test_is_float)

@@ -26,13 +26,6 @@ class ObjToScriptConverter:
         for character in self.list_characters:
             character_instantiation += self.instantiate_character(character)
         return character_instantiation
-    # def remove_spaces(self):
-    #     for i in range(len(self.list_characters)):
-    #         character = self.list_characters[i]
-    #         self.list_characters.remove(character)
-    #         character = character.replace(" ", "_")
-    #         self.list_characters.append(character)
-
 
     #TODO : class menu and choice
     def generate_menu(self,menu):
