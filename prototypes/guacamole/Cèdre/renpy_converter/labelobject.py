@@ -1,7 +1,7 @@
 
 
 
-class Label:
+class Dialog_Label:
 
     name = None
     background = None
@@ -11,17 +11,21 @@ class Label:
     def __init__(self):
         self.name = ""
         self.background = ""
-        self.get_dialogs_dict = {}
+        self.label_dialog_object = {}
         self.label_type = "label"
 
     def set_name(self,name):
         self.name = name
+    def set_background(self,background):
+        self.background = background
+    def set_dialogs_object(self, d_object):
+        self.label_dialog_object = d_object
     def get_name(self):
         return self.name
     def get_background(self):
         return self.background
     def get_dialogs_object(self):
-        return self.dialogs_dict
+        return self.label_dialog_object
 
 
 
