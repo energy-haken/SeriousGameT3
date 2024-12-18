@@ -15,6 +15,7 @@ from generation_type import GenerationType
 from model_handler import ModelHandler
 from observer import Observer
 from idlelib.tooltip import Hovertip 
+from idlelib.tooltip import Hovertip 
 
 def error_handler(root , message):
     #showerror("Error", message)
@@ -85,6 +86,7 @@ class Gui(Observer):
             
             
            
+           
             self.fond = window
                 
 
@@ -109,12 +111,33 @@ class Gui(Observer):
             files = os.listdir(pathFolder) ## Recuperation de la liste des fichiers dans le dossier ressources
            # print(files)
 
+            pathFolder = pathlib.Path.joinpath( pathFolder , "resources/renpy_project") ## Ajout du chemin du dossier ressources
+
+            files = os.listdir(pathFolder) ## Recuperation de la liste des fichiers dans le dossier ressources
+           # print(files)
+
             valueProject = StringVar()
             valueProject.set(pathFolder)
 
             firstProjectBase = "Project : " 
             firstProjectBase += str(pathFolder) ## Ajout du nom du dossier
 
+            style = ttk.Style()
+
+            style.theme_create('combostyle', parent='alt',
+                         settings = {'TCombobox':
+                                     {'configure':
+                                      {'selectbackground': 'blue',
+                                       'fieldbackground': '#383535',
+                                       'background': 'white'
+                                       }}}
+                         )
+            style.theme_use('combostyle')
+            comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=files , state="readonly")
+            comboProject.place(x=0 , y=0)
+            
+            ##labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
+            ##labelProject.place(x=1 , y=5)
             style = ttk.Style()
 
             style.theme_create('combostyle', parent='alt',
@@ -159,6 +182,7 @@ class Gui(Observer):
 
             initial_data = ["Plan A", "Plan B"]
 
+            listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=initial_data , state="readonly")
             listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="black" , values=initial_data , state="readonly")
             listModel.place(x=0, y=0)
 
@@ -177,6 +201,7 @@ class Gui(Observer):
             labelMaxLength = Label(frameParameterModel , text="Max length" , background="#383535" , foreground="white" , font=("Khmer" , 20))
             labelMaxLength.place(x=5 , y=55)
             tipMaxLentg = Hovertip(labelMaxLength,'taille de la réponse en caractère')
+            tipMaxLentg = Hovertip(labelMaxLength,'taille de la réponse en caractère')
 
             value1 = StringVar()
             value1.set(self.get_specific_param("max_length"))
@@ -188,6 +213,7 @@ class Gui(Observer):
             labelReturnedSequence = Label(frameParameterModel , text="Number of returned \n sequences" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
             labelReturnedSequence.place(x=5 , y=110)
             tipReturnedSequence = Hovertip(labelReturnedSequence,' self explicit')
+            tipReturnedSequence = Hovertip(labelReturnedSequence,' self explicit')
 
             value2 = StringVar()
             value2.set(self.get_specific_param("num_return_sequences"))
@@ -198,6 +224,7 @@ class Gui(Observer):
 
             labelRepetionPenalty = Label(frameParameterModel , text="Repetition penalty" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
             labelRepetionPenalty.place(x=5 , y=190)
+            tipRepetionPenalty = Hovertip(labelRepetionPenalty,'pénalité lorsque le model se répète \n (favorise un vocabulaire plus diversifié )')
             tipRepetionPenalty = Hovertip(labelRepetionPenalty,'pénalité lorsque le model se répète \n (favorise un vocabulaire plus diversifié )')
 
             value3 = StringVar()
@@ -211,6 +238,8 @@ class Gui(Observer):
             labelTemperature.place(x=5 , y=240)
             tipTemperature = Hovertip(labelTemperature,' affecte le caractère aléatoire du model \n (plus c\'est petit, plus c\'est prévisible, plus c\'est grand, plus c\'est imprévisible)')
             
+            tipTemperature = Hovertip(labelTemperature,' affecte le caractère aléatoire du model \n (plus c\'est petit, plus c\'est prévisible, plus c\'est grand, plus c\'est imprévisible)')
+            
 
             value4 = StringVar()
             value4.set(self.get_specific_param("temperature"))
@@ -222,6 +251,7 @@ class Gui(Observer):
             labelTopK = Label(frameParameterModel , text="Top K" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
             labelTopK.place(x=5 , y=285)
             tipTopK = Hovertip(labelTopK,'nombre de mots à considérer pour la génération')
+            tipTopK = Hovertip(labelTopK,'nombre de mots à considérer pour la génération')
             
             value5 = StringVar()
             value5.set(self.get_specific_param("top_k"))
@@ -231,6 +261,7 @@ class Gui(Observer):
 
             labelNumberOfBeam = Label(frameParameterModel , text="Number of Beam" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
             labelNumberOfBeam.place(x=5 , y=330)
+            tipNumberOfBeam = Hovertip(labelNumberOfBeam,'nombre de beam pour la génération')
             tipNumberOfBeam = Hovertip(labelNumberOfBeam,'nombre de beam pour la génération')
 
             value6 = StringVar()
@@ -260,10 +291,11 @@ class Gui(Observer):
             textContexte = Entry(frameContexte , width=25 , font=("Khmer" , 20))
             textContexte.place(x=5 , y=50)
 
-            listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , 20))
+            listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , 20) , foreground="white")
             listContexte.place(x=5 , y=100)
 
             listContexte["values"] = ["Context Perso" , "Context 2" , "Context 3"]
+            listContexte.configure(state="readonly")    
             listContexte.configure(state="readonly")
             if(listContexte.get() == "Context Perso" or listContexte.get() == ""):
                 self.context = listContexte.get()

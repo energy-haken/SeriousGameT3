@@ -1,9 +1,9 @@
 from tkinter import *
 from tkinter.messagebox import *
 
-from dialog_object import DialogObject
+
 from test_window import TestWindow
-import torch
+
 
 
 def placeHolder():
