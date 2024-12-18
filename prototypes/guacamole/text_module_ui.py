@@ -3,25 +3,22 @@ from tkinter import *
 from tkinter.messagebox import showerror, showinfo
 
 from PIL import ImageTk
-from sympy.core.random import random
-
 from generation_type import GenerationType
-from model_handler import ModelHandler
-from observer import Observer
-from Cèdre.file_writer import HomeMadeFileWriter
+from model_observer import ModelObserver
 
 
 def error_handler(message):
     showerror("Error", message)
 
-class TextModule(Observer):
+class TextModule(ModelObserver):
 
     prompt = None
     output = None
     output_label_global = None
-    prompt_label_global = None
+    context_entry = None
+    context_label_global = None
     user_input_global = None
-    model_handler = None
+    model_controller = None
     model_label = None
     parameters = None
     parameters_entry_list = None
@@ -30,30 +27,33 @@ class TextModule(Observer):
     gen_type_label = None
     processing_type_button = None
     image_cache = None # stored image if the user want to save it
+    window = None
+    parent = None
 
-
-    def __init__(self,window):
+    def __init__(self, window, model_controller,parent):
         self.prompt = "I like trains"
         self.output = "I hate trains"
         self.output_label_global = None
         self.prompt_label_global = None
+        self.context_entry = None
         self.user_input_global = None
         self.parameters = {}
-        self.model_handler = ModelHandler()
-        self.model_handler.add_observer(self)
-
+        self.model_controller = model_controller
+        self.model_controller.add_observer(self)
+        self.window = window
+        self.parent = parent
 
         ### Draw the frame for the user input & output
-        input_frame = LabelFrame(window, text="Text Zone", padx=20, pady=20)
+        input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20)
         input_frame.pack(fill="both", expand=0, side=TOP)
 
-        prompt_frame = LabelFrame(window, text="Prompt", padx=20, pady=20)
+        prompt_frame = LabelFrame(self.window, text="Prompt", padx=20, pady=20)
         prompt_frame.pack(fill="both", expand=1, side=LEFT)
 
         prompt_label = Label(prompt_frame, text="The prompt will be here")
         prompt_label.pack()
 
-        output_frame = LabelFrame(window, text="Results", padx=20, pady=20)
+        output_frame = LabelFrame(self.window, text="Results", padx=20, pady=20)
         output_frame.pack(fill="both", expand=1, side=RIGHT)
 
         output_label = Label(output_frame, text="The dialog will be here")
@@ -65,10 +65,18 @@ class TextModule(Observer):
         user_input = Entry(input_frame, textvariable=value, width=30)
         user_input.pack()
 
+
+
+        value2 = StringVar()
+        value2.set("Write your context")
+        context_input = Entry(input_frame, textvariable=value2, width=30)
+        context_input.pack()
+
         # init labels
         self.output_label_global = output_label
         self.prompt_label_global = prompt_label
         self.user_input_global = user_input
+        self.context_entry = context_input
 
         image_label = Label(input_frame)
         image_label.pack()
@@ -142,11 +150,7 @@ class TextModule(Observer):
         # Model UI
         self.model_label = Label(frame_models, text="Model name will be here")
         self.model_label.pack()
-
         list_models = Listbox(frame_models)
-
-
-
         self.parameters_entry_list = {"selected_model":list_models,
                                       "temperature":p_i_temperature,
                                       "num_beams":p_i_num_beams,
@@ -163,13 +167,96 @@ class TextModule(Observer):
                                         text="Change generation type", command=lambda : self.update_gen_type())
         button_update_gen_type.pack()
 
-        self.model_handler.update_reload() # force update
+        self.model_controller.update_reload() # force update
+
+        # Characters handlers (So the user doesn't input forbidden characters)
+        # See doc : https://docs.python.org/3.8/library/stdtypes.html#str.isalpha
+        # Local listeners to check the user's inputs
+        def test_is_num(e):
+            test_char = e.char
+            if not is_num(test_char):
+                # error_handler("NO >:( ")
+                delete_last_character(e.widget,is_num)
+
+        def test_is_float(e):
+            test_char = e.char
+            if not is_float(test_char):
+                if not test_char == '.': # for float
+                    # error_handler("NO >:( ")
+                    delete_last_character(e.widget,is_float)
+            float_delete_dots(e.widget)
+
+        def test_is_alpha(e):
+            test_char = e.char
+            if not is_alpha(test_char):
+                # error_handler("NO >:( ")
+                delete_last_character(e.widget,is_alpha)
+
+        def is_num(char):
+            if not char.isnumeric() and not char == '\b':
+                return False
+            else:
+                return True
+
+        def is_float(char):
+            if not char.isnumeric() and not char == '\b':
+                return False
+            else:
+                return True
+
+        def is_alpha(char):
+            if not char.isalnum() and not char.isspace() and not char == '\b': # \b is backspace
+                return False
+            else:
+                return True
+
+        def float_delete_dots(widget):
+            i = 0
+            nb_dots = 0
+            new_text = widget.get()
+            for char in widget.get():
+                if char == '.':
+                    nb_dots += 1
+                if nb_dots>1:
+                    temp_list = list(new_text) # need to convert to list, because string are immutable in python
+                    temp_list[i] = " " # can't delete since it's a foreach, so we replace
+                    new_text = ''.join(temp_list) # convert back to string
+                i += 1
+            new_text = new_text.replace(" ", "") # get rid of the white space previously generated
+            widget.delete(0, END)
+            widget.insert(0, new_text)
+
+        def delete_last_character(widget,test):
+            current_widget = widget
+            new_text = current_widget.get()
+            for char in current_widget.get():
+                if not test(char):
+                    new_text = new_text.replace(char,'')
+            current_widget.delete(0,END)
+            current_widget.insert(0,new_text)
+
+        # Bindings of the listeners
+        # used <KeyPress> / <KeyRelease> fix the last character not being erased properly, but it also introduces more bugs
+        self.user_input_global.bind("<KeyRelease>",test_is_alpha)
+        p_i_max_length.bind("<KeyRelease>",test_is_num)
+        p_i_temperature.bind("<KeyRelease>",test_is_float)
+        p_i_num_beams.bind("<KeyRelease>",test_is_num)
+        p_i_top_k.bind("<KeyRelease>",test_is_num)
+        p_i_repetition_penalty.bind("<KeyRelease>",test_is_float)
+        p_i_num_return_sequences.bind("<KeyRelease>",test_is_num)
+        # close the window properly
+        self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
+
+    # close the window properly
+    def quit_window(self):
+        print("KILLING CHILD")
+        self.model_controller.remove_observer(self)
+        self.window.destroy()
+        self.parent.clear_text_module_window()
 
     def change_processing_type(self):
-        self.model_handler.change_processing_method()
-    def obs_update_processing_type(self,processing_type):
-        if self.processing_type_button is not None:
-            self.processing_type_button.config(text="CURRENTLY : " +processing_type+" MODE")
+        self.model_controller.change_processing_method()
+
     def stop(self):
         self.unload_model()
         self.image_label.config(image="") # clear the image
@@ -177,23 +264,17 @@ class TextModule(Observer):
 
     def update_gen_type(self):
         if self.generation_type == GenerationType.TEXT:
-            self.model_handler.set_generation_type(GenerationType.IMAGE)
+            self.model_controller.set_generation_type(GenerationType.IMAGE)
             self.generation_type = GenerationType.IMAGE
         else:
-            self.model_handler.set_generation_type(GenerationType.TEXT)
+            self.model_controller.set_generation_type(GenerationType.TEXT)
             self.generation_type = GenerationType.TEXT
         self.gen_type_label.config(text=self.generation_type.name)
         #self.update_models_list()
 
-    def obs_update_models_list(self, model_list):
-        if self.parameters_entry_list is not None:
-            self.parameters_entry_list["selected_model"].delete(0,END)
-            for model in model_list:
-                self.parameters_entry_list["selected_model"].insert(1, model)
-
     def generate(self):
         self.update_prompt()
-        self.model_handler.generate(self.prompt)
+        self.model_controller.generate(self.prompt)
 
     def save_image(self):
         base_path = "resources/images/"
@@ -219,8 +300,7 @@ class TextModule(Observer):
             self.image_cache = tkimg
 
     def unload_model(self):
-        self.model_handler.turn_off_model()
-
+        self.model_controller.turn_off_model()
 
     def update_output(self,message):
         if 'error' in message[0]:
@@ -229,7 +309,7 @@ class TextModule(Observer):
             self.output_label_global.config(text=message[0]['generated_text'])
 
     def update_prompt(self):
-        self.prompt = self.user_input_global.get()
+        self.prompt = self.context_entry.get() +"\n"+ self.user_input_global.get()
         self.prompt_label_global.config(text=self.prompt)
 
     def update_parameters(self):
@@ -246,7 +326,21 @@ class TextModule(Observer):
                 self.parameters.update({index:float(self.parameters_entry_list.get(index).get())}) # float so the sdk don't break
 
         # Update the parameters of the model_handler with the updated parameters
-        self.model_handler.update_parameters(self.parameters)
+        self.model_controller.update_parameters(self.parameters)
+
+    def get_specific_param(self,param):
+        # return self.model_handler.get_parameters()[param]
+        return self.parameters[param]
+
+    def set_context(self,new_context):
+        self.context_entry.delete(0, END)
+        self.context_entry.insert(0, new_context)
+        print(new_context)
+
+    def obs_update_processing_type(self,processing_type):
+        if self.processing_type_button is not None:
+            self.processing_type_button.config(text="CURRENTLY : " +processing_type+" MODE")
+
     def obs_update_parameters(self,data):
         self.parameters = data
 
@@ -254,22 +348,11 @@ class TextModule(Observer):
         if self.model_label is not None:
             self.model_label.config(text=current_model)
 
-    def get_specific_param(self,param):
-        # return self.model_handler.get_parameters()[param]
-        return self.parameters[param]
-
-    def file_writer(self, message):
-        file_writer = HomeMadeFileWriter()
-        file_writer.set_mode("w")
-        file_writer.set_file("testGuaca.rpy")
-
-        if 'error' in message[0]:
-            error_handler(message[0]['error'])
-        else:
-            character1 = "e"
-            character2 = "a"
-            output = message[0]['generated_text']
-            file_writer.write_character_and_output(character1, character2, output)
+    def obs_update_models_list(self, model_list):
+        if self.parameters_entry_list is not None:
+            self.parameters_entry_list["selected_model"].delete(0,END)
+            for model in model_list:
+                self.parameters_entry_list["selected_model"].insert(1, model)
 
     def update(self,subject,data_type,data) -> None:
         """
@@ -280,7 +363,6 @@ class TextModule(Observer):
         match data_type:
             case "output":
                 self.update_output(data)
-                self.file_writer(data)
             case "model_list":
                 self.obs_update_models_list(data)
             # case "gen_type": # Since it's a button exclusive command, shouldn't be used with observer-type update

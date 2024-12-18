@@ -18,13 +18,13 @@ def error_handler(message):
     showerror("Error", message)
 
 window = Tk()
+window.state('zoomed')
 window.iconbitmap("resources/images/icon.ico")
 window.title("Œstro-gen")
 
 # if hasattr(torch._C, "_cuda_getDeviceCount"): # test if torch is compiled with cuda to avoid further errors
 
-if not torch.cuda.is_available():
-    error_handler("CUDA not available, expect unhandled bugs")
+
 
 # menu_ui.init(window)
 text_module = Gui(window)

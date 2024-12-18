@@ -1,8 +1,8 @@
 from tkinter import *
 
-from Cèdre.dialog_object import DialogObject
-from Cèdre.file_writer import HomeMadeFileWriter
-from Cèdre.renpy_converter.object_to_script_converter import ObjToScriptConverter
+from dialog_object import DialogObject
+from file_writer import HomeMadeFileWriter
+from renpy_converter.object_to_script_converter import ObjToScriptConverter
 
 
 # https://www.askpython.com/python-modules/tkinter/tkinter-create-oval

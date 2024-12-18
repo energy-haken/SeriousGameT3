@@ -26,7 +26,7 @@ class Gui:
             
             ## Frame a gauche de l'ecran avec les differents parametres du model
             frameParametersZone = Frame(canvas, width=410, height=1000, bg="#1D1B1B")
-            frameParametersZone.pack()
+            frameParametersZone.pack(side=LEFT)
             
             #self.image = Image.open("Images/LogoApp.png")
             #self.image = self.photo.resize((500,500))

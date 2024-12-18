@@ -12,6 +12,7 @@ from observer import Observer
 
 def error_handler(message):
     showerror("Error", message)
+    
 
 class TextModule(Observer):
 
