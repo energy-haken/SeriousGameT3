@@ -65,10 +65,10 @@ class ObjToScriptConverter:
     def convert(self):
         converted_string = self.instantiate_characters()
         for label in self.label_list:
-            if label.get_name() == "label": # A mere label
+            if label.get_type() == "label": # A mere label
                 converted_string += "label "+label.get_name()+":\n    scene "+label.get_background()+"\n"
-                converted_string += self.generate_dialogs(label.get_dialogs_object)
+                converted_string += self.generate_dialogs(label.get_dialogs_dict())
                 converted_string += "    " + "return\n"
             else: # A menu with choices
-                converted_string += self.generate_menu(label.get_dialogs_object())
+                converted_string += self.generate_menu(label.get_menu())
         return converted_string

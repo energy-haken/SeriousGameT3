@@ -1,7 +1,9 @@
 from tkinter import *
 from uuid import uuid4
 
-
+from Cèdre.renpy_converter.choice import Choice
+from Cèdre.renpy_converter.dialogmenu import DialogMenu
+from Cèdre.renpy_converter.labelobject import LabelObject
 from scene_edit_window import SceneEditWindow
 
 
@@ -133,6 +135,7 @@ class DialogObject:
     canvas = None
     tkinter_choices = None
     choices = None
+    menu_name = None
     model_controller = None
 
     def __init__(self):
@@ -186,10 +189,14 @@ class DialogObject:
         self.tkinter_add_button = obj
     def set_tkinter_window_button(self,obj):
         self.tkinter_window_button = obj
+    def set_menu_name(self,name):
+        self.menu_name = name
     def add_tkinter_choice(self,choice):
         self.tkinter_choices.append(choice)
-    def add__choice(self,choice):
+    def add_choice(self, choice):
         self.choices.append(choice)
+    def get_choices(self):
+        return self.choices
     def get_character(self):
         return self.character
     def get_text(self):
@@ -415,18 +422,64 @@ class DialogObject:
         # print("### Mainline : " + str(self.get_mainline_length()))
         canvas.configure(scrollregion=(0, 0, 120 * self.get_mainline_length(), 2000))
 
-    def gather_object_information(self):
+    def gather_object_information(self,parent_label):
         character_list = [self.get_character()]
+        # dialog_dict = {((self.get_character())
+        #                +"*"+ str(uuid4())).lower(): self.get_text()} # create a unique id for the dialog
+        labels_list = []
+        current_label = LabelObject()
         dialog_dict = {((self.get_character())
                        +"*"+ str(uuid4())).lower(): self.get_text()} # create a unique id for the dialog
-        dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
+        if not parent_label:
+            current_label.set_name("start")
+            current_label.set_background("room")
+            current_label.set_dialogs_dict(dialog_dict)
+            labels_list.append(current_label)
+        else:
+            current_label = parent_label
+            current_label.add_to_dialogs_dict(dialog_dict)
+
+        dialog_tree_info = {"characters": character_list, "labels": labels_list}
+
+        menu = None
+        if self.get_choices() or len(self.get_choices()) != 0:  # there's a menu
+            menu = DialogMenu()
+            menu.set_tile(self.menu_name)
+            # menu.set_choices()
+            for choice in self.choices:
+                new_choice = Choice()
+                new_choice.set_title(choice)
+                new_choice.set_text("SLETTO!")
+                new_choice.set_jump("jump_to_"+str(uuid4()))
+            # self.choices
+            new_menu_label = LabelObject()
+            new_menu_label.set_menu(menu)
+            new_menu_label.set_type("menu")
+            labels_list.append(new_menu_label)
+        i = 0 # for the choices
         for descendant in self.descendants:
-            temp_dict_info = descendant.gather_object_information() # get information from downstream
-            # append the information to the characters list
-            dialog_tree_info["characters"].extend(temp_dict_info["characters"])
-            # append the information to the dialogs dictionary
-            dialog_tree_info["dialogs"].update(temp_dict_info["dialogs"])
+            if not menu:
+                temp_dict_info = descendant.gather_object_information(current_label) # get information from downstream
+                # append the information to the characters list
+                dialog_tree_info["characters"].extend(temp_dict_info["characters"])
+                temp_list = dialog_tree_info["labels"]
+                for label in temp_dict_info["labels"]:
+                    temp_list.append(label)
+                temp_list = list(dict.fromkeys(temp_list)) # remove duplicates
+                dialog_tree_info["labels"] = temp_list
+            else:
+                new_choice_label = LabelObject
+                choices_list = menu.get_choice_list()
+                new_choice_label.set_name(choices_list[i].get_jump())
+                labels_list.append(new_choice_label)
+                temp_dict_info = descendant.gather_object_information(new_choice_label)  # get information from downstream
+                dialog_tree_info["characters"].extend(temp_dict_info["characters"])
+                temp_list = dialog_tree_info["labels"]
+                for label in temp_dict_info["labels"]:
+                    temp_list.append(label)
+                temp_list = list(dict.fromkeys(temp_list)) # remove duplicates
+                dialog_tree_info["labels"] = temp_list
         return dialog_tree_info
 
     def get_tree_information(self):
-        return self.get_origin_object().gather_object_information()
+        return self.get_origin_object().gather_object_information(None)
