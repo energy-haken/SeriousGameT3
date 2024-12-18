@@ -126,7 +126,7 @@ class Gui(Observer):
                                        }}}
                          )
             style.theme_use('combostyle')
-            comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="black" , values=files , state="readonly")
+            comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=files , state="readonly")
             comboProject.place(x=0 , y=0)
             
             ##labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
@@ -159,7 +159,7 @@ class Gui(Observer):
 
             initial_data = ["Plan A", "Plan B"]
 
-            listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="black" , values=initial_data , state="readonly")
+            listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=initial_data , state="readonly")
             listModel.place(x=0, y=0)
 
             button_apply_parameters = Button(frameParametersZone, text="Apply Parameters & model", command=lambda : self.update_parameters())
@@ -260,7 +260,7 @@ class Gui(Observer):
             textContexte = Entry(frameContexte , width=25 , font=("Khmer" , 20))
             textContexte.place(x=5 , y=50)
 
-            listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , 20))
+            listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , 20) , foreground="white")
             listContexte.place(x=5 , y=100)
 
             listContexte["values"] = ["Context Perso" , "Context 2" , "Context 3"]
