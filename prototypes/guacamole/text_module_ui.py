@@ -1,15 +1,16 @@
 from pathlib import Path
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo
+
 from PIL import ImageTk
 from generation_type import GenerationType
-from observer import Observer
+from model_observer import ModelObserver
 
 
 def error_handler(message):
     showerror("Error", message)
 
-class TextModule(Observer):
+class TextModule(ModelObserver):
 
     prompt = None
     output = None
@@ -170,22 +171,64 @@ class TextModule(Observer):
 
         # Characters handlers (So the user doesn't input forbidden characters)
         # See doc : https://docs.python.org/3.8/library/stdtypes.html#str.isalpha
-        def is_num(e):
-            if not e.char.isnumeric():
-                error_handler("NO >:( ")
-        def is_char(e):
+        # Local listeners to check the user's inputs
+        def test_is_num(e):
             test_char = e.char
-            if not test_char.isalnum() and not test_char.isspace():
-                error_handler("NO >:( ")
-        #self.context_entry
-        self.user_input_global.bind("<KeyPress>",is_char)
-        # p_i_max_length
-        p_i_temperature.bind("<KeyPress>",is_num)
-        p_i_num_beams.bind("<KeyPress>",is_num)
-        p_i_top_k.bind("<KeyPress>",is_num)
-        p_i_repetition_penalty.bind("<KeyPress>",is_num)
-        p_i_num_return_sequences.bind("<KeyPress>",is_num)
+            if not is_num(test_char):
+                # error_handler("NO >:( ")
+                delete_last_character(e.widget,is_num)
+        def test_is_float(e):
+            test_char = e.char
+            if not is_float(test_char):
+                if not test_char == '.': # for float
+                    # error_handler("NO >:( ")
+                    delete_last_character(e.widget,is_float)
+        def test_is_alpha(e):
+            test_char = e.char
+            if not is_alpha(test_char):
+                # error_handler("NO >:( ")
+                delete_last_character(e.widget,is_alpha)
+        def is_num(char):
+            if not char.isnumeric() and not char == '\b':
+                return False
+            else:
+                return True
+        def is_float(char):
+            if not char.isnumeric() and not char == '\b':
+                return False
+            else:
+                return True
+        def is_alpha(char):
+            if not char.isalnum() and not char.isspace() and not char == '\b': # \b is backspace
+                return False
+            else:
+                return True
+        def delete_last_character(widget,test):
+            current_widget = widget
+            #re.sub('[!@#$]', '', line)
+            new_text = current_widget.get()
+            for char in current_widget.get():
+                # print("CHAR IS : "+char+" AND ITS : "+str(not test(char)))
+                if not test(char):
+                    new_text = new_text.replace(char,'')
+                    print(new_text)
+            print(current_widget.get())
+            current_widget.delete(0,END)
+            current_widget.insert(0,new_text)
+            print(current_widget.get())
+            # temp_text = re.sub('[!@#$]', '', current_widget.get())
 
+            # current_widget.delete(len(current_widget.get()) - 1)
+
+        # Bindings of the listeners
+        # used <KeyPress> / <KeyRelease> would fix the last character not being erased properly, but it also introduces more bugs
+        self.user_input_global.bind("<KeyRelease>",test_is_alpha)
+        p_i_max_length.bind("<KeyRelease>",test_is_num)
+        p_i_temperature.bind("<KeyRelease>",test_is_float)
+        p_i_num_beams.bind("<KeyRelease>",test_is_num)
+        p_i_top_k.bind("<KeyRelease>",test_is_num)
+        p_i_repetition_penalty.bind("<KeyRelease>",test_is_float)
+        p_i_num_return_sequences.bind("<KeyRelease>",test_is_num)
         # close the window properly
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
 

@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 
 
-class Observer(ABC):
+class ModelObserver(ABC):
     """
     The Observer interface declares the update method, used by subjects.
     """

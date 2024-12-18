@@ -1,6 +1,6 @@
 import sdk
 from generation_type import GenerationType
-from observer import Observer
+from model_observer import ModelObserver
 from sdk import ModelsManagement
 
 # Basic models we don't want in our model list
@@ -65,12 +65,12 @@ class ModelHandler:
                            "height":512,
                            "width":512}
         self.is_active = False
-    def add_observer(self,observer: Observer):
+    def add_observer(self, observer: ModelObserver):
         self.__observers.append(observer)
         self.update_observers("parameters",self.parameters)
         #self.update_reload()
 
-    def remove_observer(self,observer: Observer):
+    def remove_observer(self, observer: ModelObserver):
         if observer in self.__observers:
             self.__observers.remove(observer)
     def flush_observers(self):

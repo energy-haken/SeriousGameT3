@@ -5,14 +5,14 @@ from tkinter.messagebox import showerror, showinfo
 from PIL import ImageTk, Image
 
 # from Cèdre.dialog_object import DialogObject
-from observer import Observer
+from model_observer import ModelObserver
 from text_module_ui import TextModule
 
 
 def error_handler(message):
     showerror("Error", message)
 
-class SceneEditWindow(Observer):
+class SceneEditWindow(ModelObserver):
 
     image = None    # needed otherwise Python fucking garbage collector snatch the picture
     image_object = None
