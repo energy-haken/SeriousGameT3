@@ -33,6 +33,7 @@ class SceneEditWindow(ModelObserver):
         self.window = window
         self.model_controller = descendant.get_model_controller()
         self.choice_entries = []
+        self.model_controller.ask_can_generate()
         if self.model_controller.get_current_project():
             self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
         else:
@@ -99,6 +100,7 @@ class SceneEditWindow(ModelObserver):
     # close the window properly
     def quit_window(self):
         self.model_controller.remove_observer(self)
+        self.model_controller.ask_can_generate()
         self.window.destroy()
 
     def update_fields(self):

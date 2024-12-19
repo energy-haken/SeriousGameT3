@@ -7,6 +7,8 @@ from tkinter.messagebox import showerror, showinfo
 from PIL import ImageTk
 from tkinter import ttk
 import torch
+from sympy.strategies.core import switch
+
 from dialog_object import DialogObject
 from generation_type import GenerationType
 from model_observer import ModelObserver
@@ -44,7 +46,7 @@ class Gui(ModelObserver):
     image = None
     prompt = None
     output = None
-    output_label_global = None
+    # output_label_global = None
     prompt_label_global = None
     button_generate = None
     user_input_global = None
@@ -71,7 +73,7 @@ class Gui(ModelObserver):
 
         self.prompt = "I like trains"
         self.output = "I hate trains"
-        self.output_label_global = None
+        # self.output_label_global = None
         self.prompt_label_global = None
         self.user_input_global = None
         self.parameters = {}
@@ -80,12 +82,12 @@ class Gui(ModelObserver):
         self.button_generate = None
         self.context = None
         self.window = window
-        width = window.winfo_screenwidth()
-        height = window.winfo_screenheight()
-        self.resize_ratio = (width*height)/(1920*1080) # Get the user screen ratio compared to Nathan's screen ratio
-
-        self.resize_ratio += (1 - self.resize_ratio*1.5) * 0.1  # Make a little bit bigger so it looks better
-    
+        # width = window.winfo_screenwidth()
+        # height = window.winfo_screenheight()
+        # self.resize_ratio = (width*height)/(1920*1080) # Get the user screen ratio compared to Nathan's screen ratio
+        #
+        # self.resize_ratio += (1 - self.resize_ratio*1.5) * 0.1  # Make a little bit bigger so it looks better
+        #
         self.window.configure(background="#0D0B0B")
         self.window.state('zoomed') #Full screen zoomed
         # self.window.attributes("-fullscreen", True) # Full screen (it looks terrible)
@@ -325,10 +327,10 @@ class Gui(ModelObserver):
 
         self.prompt_label_global = labelPrompt
 
-        labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25 ) , justify="left")
-        labelOutput.place(x=400 , y=100)
+        # labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25 ) , justify="left")
+        # labelOutput.place(x=400 , y=100)
 
-        self.output_label_global = labelOutput
+        # self.output_label_global = labelOutput
 
         
 
@@ -365,8 +367,9 @@ class Gui(ModelObserver):
         self.canva.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
         
 
-        button_send = Button(self.window, text="Generate as file", command=lambda : self.generate_text())
-        button_send.pack()
+        button_generate_script = Button(self.window, text="Generate as file", command=lambda : self.generate_text())
+        button_generate_script.pack()
+
         button_gen_ai = Button(self.window, text="Generate the tree with ai", command=lambda : self.generate_tree_with_ai())
         button_gen_ai.pack()
         # close the window properly
@@ -444,6 +447,7 @@ class Gui(ModelObserver):
             current_widget.delete(0,END)
             current_widget.insert(0,new_text)
 
+        # bindings
         textContexte.bind("<KeyRelease>", test_is_alpha)
         self.user_input_global.bind("<KeyRelease>", test_is_alpha)
         textTemperature.bind("<KeyRelease>", test_is_float)
@@ -452,7 +456,7 @@ class Gui(ModelObserver):
         textNumberOfBeam.bind("<KeyRelease>", test_is_num)
         textRepetionPenalty.bind("<KeyRelease>", test_is_float)
         textReturnedSequence.bind("<KeyRelease>", test_is_num)
-
+        self.switch()  # disable generation initially, since no scene_edit_window is open yet
 
     def update_project_name(self,event):
         if self.combobox_project:
@@ -460,7 +464,7 @@ class Gui(ModelObserver):
                 self.combobox_project.update()
                 self.project_name = self.combobox_project.get()
                 self.model_controller.set_current_project(self.project_name)
-                print("Project name : " + self.project_name)
+                # print("Project name : " + self.project_name)
             else:
                 error_handler(self.window,"No project name")
 
@@ -472,9 +476,9 @@ class Gui(ModelObserver):
 
 
     def generate_tree_with_ai(self):
-        count = self.output_label_global.cget("text").count('\n')
-        dialogue = self.output_label_global.cget("text").split('\n')
-        print(dialogue)
+        count = self.output.count('\n')
+        dialogue = self.output.split('\n')
+        # print(dialogue)
         obj_p = self.first_obj
         for i in range(count):
             obj = DialogObject()
@@ -550,9 +554,10 @@ class Gui(ModelObserver):
         if 'error' in message[0]:
             error_handler(self.window , message[0]['error'])
         else:
-            self.output_label_global.place_forget()
-            self.output_label_global.place(x=75, y=100)
-            self.output_label_global.config(text=message[0]['generated_text'])
+            # self.output_label_global.place_forget()
+            # self.output_label_global.place(x=75, y=100)
+            self.output = message[0]['generated_text']
+            # self.output_label_global.config(text=message[0]['generated_text'])
 
     def update_prompt(self):
         self.prompt = self.user_input_global.get()
@@ -585,6 +590,30 @@ class Gui(ModelObserver):
 
     def get_specific_param(self,param):
         return self.parameters[param]
+    def switch(self):
+        if self.button_generate["state"] == "normal":
+            self.button_generate["state"] = "disabled"
+        else:
+            self.button_generate["state"] = "normal"
+
+    def generate_text(self):
+        base_path = "resources/renpy_project/"+self.project_name+"/game/" # TODO : With the project selection combobox
+        # Init fileWriter
+        file_writer = HomeMadeFileWriter()
+        file_writer.set_mode("w")
+        file_writer.set_file(base_path+"script.rpy")
+
+        # Gather information on tree
+        tree_information = self.first_obj.get_tree_information()
+
+        # Init ObjConverter
+        obj_converter = ObjToScriptConverter()
+        obj_converter.set_label_list(tree_information["labels"])
+        obj_converter.set_characters_list(tree_information["characters"])
+
+        # Convert and write to file
+        file_writer.write(obj_converter.convert())
+        change_validate(self.window,"Script generated at : "+base_path)
 
     def update(self,subject,data_type,data) -> None:
         """
@@ -612,26 +641,10 @@ class Gui(ModelObserver):
                 self.obs_update_current_model(data["current_model"])
                 self.obs_update_processing_type(data["processing_type"])
                 self.obs_update_parameters(data["parameters"])
+            case "can_generate":
+                self.switch()
             case _:
                 print("ERROR : COULDN'T READ SUBJECT DATA")
         pass
 
 
-    def generate_text(self):
-        base_path = "resources/renpy_project/"+self.project_name+"/game/" # TODO : With the project selection combobox
-        # Init fileWriter
-        file_writer = HomeMadeFileWriter()
-        file_writer.set_mode("w")
-        file_writer.set_file(base_path+"script.rpy")
-
-        # Gather information on tree
-        tree_information = self.first_obj.get_tree_information()
-
-        # Init ObjConverter
-        obj_converter = ObjToScriptConverter()
-        obj_converter.set_label_list(tree_information["labels"])
-        obj_converter.set_characters_list(tree_information["characters"])
-
-        # Convert and write to file
-        file_writer.write(obj_converter.convert())
-        change_validate(self.window,"Script generated at : "+base_path)

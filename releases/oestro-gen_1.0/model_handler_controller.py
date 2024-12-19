@@ -38,3 +38,5 @@ class ModelController:
         self.model_handler.remove_observer(observer)
     def flush_observers(self):
         self.model_handler.flush_observers()
+    def ask_can_generate(self):
+        self.model_handler.ask_can_generate()
