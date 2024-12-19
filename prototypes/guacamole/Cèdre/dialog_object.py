@@ -1,9 +1,9 @@
 from tkinter import *
 from uuid import uuid4
 
-from Cèdre.renpy_converter.choice import Choice
-from Cèdre.renpy_converter.dialogmenu import DialogMenu
-from Cèdre.renpy_converter.labelobject import LabelObject
+from renpy_converter.choice import Choice
+from renpy_converter.dialogmenu import DialogMenu
+from renpy_converter.labelobject import LabelObject
 from scene_edit_window import SceneEditWindow
 
 
