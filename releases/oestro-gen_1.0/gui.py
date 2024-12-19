@@ -321,7 +321,7 @@ class Gui(ModelObserver):
 
         canvaOutput = Canvas(self.window , width=900 , height=700 , background="#383535")
         canvaOutput.pack()
-        self.canva = canvaOutput
+        self.canvas = canvaOutput
         labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
         #labelPrompt.place(x=5 , y=5)
 
@@ -479,6 +479,7 @@ class Gui(ModelObserver):
         count = self.output.count('\n')
         dialogue = self.output.split('\n')
         # print(dialogue)
+        self.first_obj.destroy_self(self.canvas)
         obj_p = self.first_obj
         for i in range(count):
             obj = DialogObject()

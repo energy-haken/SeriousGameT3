@@ -333,13 +333,20 @@ class DialogObject:
         """
         Destroy all GUI objects from the object, without deleting it
         """
-        canvas.delete(self.get_tkinter_object())
-        canvas.delete(self.get_tkinter_label())
-        canvas.delete(self.get_tkinter_line())
-        canvas.delete(self.get_tkinter_kill_button())
-        canvas.delete(self.get_tkinter_add_button())
-        canvas.delete(self.get_tkinter_window_button())
-        self.destroy_ui_choices(canvas)
+        if canvas:
+            if self.get_tkinter_object():
+                canvas.delete(self.get_tkinter_object())
+            if self.get_tkinter_label():
+                canvas.delete(self.get_tkinter_label())
+            if self.get_tkinter_line():
+                canvas.delete(self.get_tkinter_line())
+            if self.get_tkinter_kill_button():
+                canvas.delete(self.get_tkinter_kill_button())
+            if self.get_tkinter_add_button():
+                canvas.delete(self.get_tkinter_add_button())
+            if self.get_tkinter_window_button():
+                canvas.delete(self.get_tkinter_window_button())
+            self.destroy_ui_choices(canvas)
 
     def destroy_tree(self,canvas):
         """
