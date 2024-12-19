@@ -282,10 +282,14 @@ class ModelHandler:
                 "parameters":self.parameters}
         self.update_observers("reload",data)
 
-    def ask_can_generate(self):
+    def switch_can_generate(self):
         nb_observer = len(self.__observers)
         self.update_observers("can_generate", nb_observer)
-
+    def ask_can_generate(self):
+        reply = True
+        if len(self.__observers)>2:
+            reply = False
+        self.update_observers("ask_can_generate", reply)
     # Get rid of unused model according to the current generation type
     def __sort_model_by_type(self):
         """

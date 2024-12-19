@@ -26,6 +26,7 @@ class SceneEditWindow(ModelObserver):
     # is_linked_to_model_handler = False
     menu_entry = None
     choice_entries = None
+    is_allowed_to_generate = False
 
     def __init__(self,window,descendant):
 
@@ -33,13 +34,14 @@ class SceneEditWindow(ModelObserver):
         self.window = window
         self.model_controller = descendant.get_model_controller()
         self.choice_entries = []
-        self.model_controller.ask_can_generate()
+
+
         if self.model_controller.get_current_project():
             self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
         else:
             self.base_path = "resources/images/"
         self.model_controller.add_observer(self)
-        print(self.base_path)
+        self.model_controller.ask_can_generate()
         input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20)
         input_frame.pack(fill="both", expand=0, side=TOP)
 
@@ -100,7 +102,7 @@ class SceneEditWindow(ModelObserver):
     # close the window properly
     def quit_window(self):
         self.model_controller.remove_observer(self)
-        self.model_controller.ask_can_generate()
+        self.model_controller.switch_can_generate()
         self.window.destroy()
 
     def update_fields(self):
@@ -171,6 +173,13 @@ class SceneEditWindow(ModelObserver):
             case "image":
                 self.update_image(data)
                 self.reload_image()
+            case "ask_can_generate":
+                if not self.is_allowed_to_generate:
+                    if not data: # not allowed to generate
+                        self.quit_window()
+                    else: # Allowed, and tell the GUI
+                        self.model_controller.switch_can_generate()
+                        self.is_allowed_to_generate = True
             case _: # We don't care about most updates, only about receiving the output data
                 print("ERROR : DISCARDED SUBJECT DATA")
         pass
