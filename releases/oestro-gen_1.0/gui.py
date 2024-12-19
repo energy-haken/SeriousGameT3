@@ -8,7 +8,6 @@ from PIL import ImageTk
 from tkinter import ttk
 import torch
 from dialog_object import DialogObject
-from model_handler import ModelHandler
 from generation_type import GenerationType
 from model_observer import ModelObserver
 from idlelib.tooltip import Hovertip 
@@ -49,7 +48,6 @@ class Gui(ModelObserver):
     prompt_label_global = None
     button_generate = None
     user_input_global = None
-    model_handler = None
     model_label = None
     parameters = None
     parameters_entry_list = None
@@ -63,7 +61,9 @@ class Gui(ModelObserver):
     canvas = None
     first_obj = None
     resize_ratio = 1.0
+    project_name = None
     combobox_project = None
+    model_controller = None
 
     def __init__(self,window ,model_controller):
             
@@ -75,10 +75,8 @@ class Gui(ModelObserver):
         self.prompt_label_global = None
         self.user_input_global = None
         self.parameters = {}
-        self.model_handler = ModelHandler()
         self.model_controller = model_controller
         self.model_controller.add_observer(self)
-        self.model_handler.add_observer(self)
         self.button_generate = None
         self.context = None
         self.window = window
@@ -131,8 +129,11 @@ class Gui(ModelObserver):
                                     }}}
                         )
         style.theme_use('combostyle')
-        comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=files , state="readonly")
+        comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=files , state="readonly", postcommand = self.update_project_name)
         comboProject.place(x=0 , y=0)
+
+
+
         self.combobox_project = comboProject
         ##labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
         ##labelProject.place(x=1 , y=5)
@@ -372,7 +373,10 @@ class Gui(ModelObserver):
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
 
         self.model_controller.update_reload()
-            
+    def update_project_name(self):
+        self.project_name = self.combobox_project.get()
+        self.model_controller.set_current_project(self.project_name)
+
     def quit_window(self):
         self.model_controller.flush_observers() # just in case
         quit()
@@ -395,7 +399,7 @@ class Gui(ModelObserver):
         obj_p.build_tree(self.canvas)
         
     def change_processing_type(self):
-        self.model_handler.change_processing_method()
+        self.model_controller.change_processing_method()
     def obs_update_processing_type(self,processing_type):
         if self.processing_type_button is not None:
             self.processing_type_button.config(text="Processing-Mode  :" +processing_type+"")
@@ -425,7 +429,7 @@ class Gui(ModelObserver):
                 
     def generate(self):
         self.update_prompt()
-        self.model_handler.generate(self.prompt)
+        self.model_controller.generate(self.prompt)
         self.button_generate.configure(text="Regenerate") # change the button text to regenerate
         
 
@@ -485,7 +489,7 @@ class Gui(ModelObserver):
                     error_handler(self.window, f"Parameter {index} is not a valid number")
                     return
 
-        self.model_handler.update_parameters(self.parameters)
+        self.model_controller.update_parameters(self.parameters)
     def obs_update_parameters(self,data):
         self.parameters = data
 
@@ -494,7 +498,6 @@ class Gui(ModelObserver):
             self.model_label.config(text=current_model)
 
     def get_specific_param(self,param):
-        # return self.model_handler.get_parameters()[param]
         return self.parameters[param]
 
     def update(self,subject,data_type,data) -> None:
@@ -528,7 +531,7 @@ class Gui(ModelObserver):
 
 
     def generate_text(self):
-        base_path = "resources/renpy_project/"+self.combobox_project.get()+"/game/" # TODO : With the project selection combobox
+        base_path = "resources/renpy_project/"+self.project_name+"/game/" # TODO : With the project selection combobox
         # Init fileWriter
         file_writer = HomeMadeFileWriter()
         file_writer.set_mode("w")

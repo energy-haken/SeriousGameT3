@@ -8,10 +8,14 @@ class ModelController:
     """
     model_handler = None
     current_window = None
+    current_project = None
 
     def __init__(self,model_handler):
         self.model_handler = model_handler
-
+    def set_current_project(self,current_project):
+        self.current_project = current_project
+    def get_current_project(self):
+        return self.current_project
     def set_current_window(self,window):
         self.current_window = window
     def get_current_window(self):

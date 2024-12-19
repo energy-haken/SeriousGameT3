@@ -33,6 +33,7 @@ class SceneEditWindow(ModelObserver):
         self.window = window
         self.model_controller = descendant.get_model_controller()
         self.choice_entries = []
+        self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
         input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20)
         input_frame.pack(fill="both", expand=0, side=TOP)
 
