@@ -84,12 +84,12 @@ class Gui(ModelObserver):
             width = window.winfo_screenwidth()
             height = window.winfo_screenheight()
             self.resize_ratio = (width*height)/(1920*1080) # Get the user screen ratio compared to Nathan's screen ratio
-            print(self.resize_ratio)
 
+            self.resize_ratio += (1 - self.resize_ratio*1.5) * 0.1  # Make a little bit bigger so it looks better
         
             self.window.configure(background="#0D0B0B")
-            self.window.geometry(str(width)+"x"+str(height))
-
+            self.window.state('zoomed') #Full screen zoomed
+            # self.window.attributes("-fullscreen", True) # Full screen (it looks terrible)
             ## Frame a gauche de l'ecran avec les differents parametres du model
             frameParametersZone = Frame(self.window, width=410*self.resize_ratio, height=1000*self.resize_ratio, bg="#1D1B1B")
             frameParametersZone.place(x=30, y=24)
