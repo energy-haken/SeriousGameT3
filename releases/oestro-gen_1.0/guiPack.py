@@ -360,7 +360,7 @@ class Gui(ModelObserver):
             self.canva.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
             
 
-            button_send = Button(self.window, text="Generate as file", command=lambda : generate_text(first_obj))
+            button_send = Button(self.window, text="Generate as file", command=lambda : generate_text())
             button_send.pack()
             button_gen_ai = Button(self.window, text="Generate the tree with ai", command=lambda : self.generate_tree_with_ai())
             button_gen_ai.pack()
@@ -369,6 +369,25 @@ class Gui(ModelObserver):
 
             self.model_controller.update_reload()
             
+            
+            def generate_text():
+            # Init fileWriter
+                file_writer = HomeMadeFileWriter()
+                file_writer.set_mode("w")
+                file_writer.set_file("script_test.rpy")
+
+            # Gather information on tree
+                tree_information = self.first_obj.get_tree_information()
+
+            # Init ObjConverter
+                obj_converter = ObjToScriptConverter()
+                obj_converter.set_dialogs_dict(tree_information["dialogs"])
+                obj_converter.set_characters_list(tree_information["characters"])
+
+            # Convert and write to file
+                file_writer.write(obj_converter.convert())
+                change_validate(self.window, "Script generated")
+
     def quit_window(self):
         self.model_controller.flush_observers() # just in case
         quit()
@@ -522,20 +541,3 @@ class Gui(ModelObserver):
                 print("ERROR : COULDN'T READ SUBJECT DATA")
         pass
 
-
-def generate_text(origin):
-    # Init fileWriter
-    file_writer = HomeMadeFileWriter()
-    file_writer.set_mode("w")
-    file_writer.set_file("script_test.rpy")
-
-    # Gather information on tree
-    tree_information = origin.get_tree_information()
-
-    # Init ObjConverter
-    obj_converter = ObjToScriptConverter()
-    obj_converter.set_dialogs_dict(tree_information["dialogs"])
-    obj_converter.set_characters_list(tree_information["characters"])
-
-    # Convert and write to file
-    file_writer.write(obj_converter.convert())
