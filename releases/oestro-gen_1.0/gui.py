@@ -67,300 +67,311 @@ class Gui(ModelObserver):
 
     def __init__(self,window ,model_controller):
             
-           
-
-            self.prompt = "I like trains"
-            self.output = "I hate trains"
-            self.output_label_global = None
-            self.prompt_label_global = None
-            self.user_input_global = None
-            self.parameters = {}
-            self.model_handler = ModelHandler()
-            self.model_controller = model_controller
-            self.model_controller.add_observer(self)
-            self.model_handler.add_observer(self)
-            self.button_generate = None
-            self.context = None
-            self.window = window
-            width = window.winfo_screenwidth()
-            height = window.winfo_screenheight()
-            self.resize_ratio = (width*height)/(1920*1080) # Get the user screen ratio compared to Nathan's screen ratio
-
-            self.resize_ratio += (1 - self.resize_ratio*1.5) * 0.1  # Make a little bit bigger so it looks better
-        
-            self.window.configure(background="#0D0B0B")
-            self.window.state('zoomed') #Full screen zoomed
-            # self.window.attributes("-fullscreen", True) # Full screen (it looks terrible)
-            ## Frame a gauche de l'ecran avec les differents parametres du model
-            frameParametersZone = Frame(self.window, width=410*self.resize_ratio, height=1000*self.resize_ratio, bg="#1D1B1B")
-            frameParametersZone.place(x=30, y=24)
-
-            self.image = ImageTk.PhotoImage(file="images\LogoApp.png")
-            image_label = Label(frameParametersZone, image=self.image , background="#1D1B1B" , height=199*self.resize_ratio , width=432*self.resize_ratio)
-            image_label.place(x=-30*self.resize_ratio, y=-30*self.resize_ratio)
-
-            
-            ## Frame pour la case [Project : nomProjet]
-            frameProject = Frame(frameParametersZone, width=366*self.resize_ratio, height=54*self.resize_ratio, bg="#383535")
-            frameProject.place(x=25*self.resize_ratio, y=150*self.resize_ratio)
-
             
 
-            pathFolder = pathlib.Path(__file__).parent ## Recuperation du chemin du fichier
-            pathFolder = pathlib.Path.joinpath( pathFolder , "resources/renpy_project") ## Ajout du chemin du dossier ressources
+        self.prompt = "I like trains"
+        self.output = "I hate trains"
+        self.output_label_global = None
+        self.prompt_label_global = None
+        self.user_input_global = None
+        self.parameters = {}
+        self.model_handler = ModelHandler()
+        self.model_controller = model_controller
+        self.model_controller.add_observer(self)
+        self.model_handler.add_observer(self)
+        self.button_generate = None
+        self.context = None
+        self.window = window
+        width = window.winfo_screenwidth()
+        height = window.winfo_screenheight()
+        self.resize_ratio = (width*height)/(1920*1080) # Get the user screen ratio compared to Nathan's screen ratio
 
-            files = os.listdir(pathFolder) ## Recuperation de la liste des fichiers dans le dossier ressources
-           # print(files)
-
-
-
-            valueProject = StringVar()
-            valueProject.set(pathFolder)
-
-            firstProjectBase = "Project : " 
-            firstProjectBase += str(pathFolder) ## Ajout du nom du dossier
-
-            style = ttk.Style()
-
-            style.theme_create('combostyle', parent='alt',
-                         settings = {'TCombobox':
-                                     {'configure':
-                                      {'selectbackground': 'blue',
-                                       'fieldbackground': '#383535',
-                                       'background': 'white'
-                                       }}}
-                         )
-            style.theme_use('combostyle')
-            comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , int(23*self.resize_ratio)) , foreground="white" , values=files , state="readonly")
-            comboProject.place(x=0 , y=0)
-            self.combobox_project = comboProject
-            ##labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
-            ##labelProject.place(x=1 , y=5)
-            style = ttk.Style()
-
-
+        self.resize_ratio += (1 - self.resize_ratio*1.5) * 0.1  # Make a little bit bigger so it looks better
     
-
-            ## Frame pour le bouton pour changer de mode d'utilisation (entre le CPU et le GPU)
-            frameProcessingMode = Frame(frameParametersZone, width=366*self.resize_ratio, height=54*self.resize_ratio, bg="#383535")
-            frameProcessingMode.place(x=25*self.resize_ratio, y=250*self.resize_ratio)
-
-            button_processing_type = Button(frameProcessingMode, background="#383535" , fg="white" ,text="Processing-Mode : CPU",  font=("Khmer", int(24*self.resize_ratio)) , command=lambda: self.change_processing_type())
-            button_processing_type.pack()
-            self.processing_type_button = button_processing_type
-
-           
-
-             ## Frame pour le bouton pour changer de mode d'utilisation (entre image et le text)
-            frameGenerationMode = Frame(frameParametersZone, width=366*self.resize_ratio, height=54*self.resize_ratio, bg="#383535")
-            frameGenerationMode.place(x=25*self.resize_ratio, y=350*self.resize_ratio)
-
-            button_generationMode = Button(frameGenerationMode, background="#383535" , fg="white" ,text="Generation-Mode : Text",  font=("Khmer", int(22*self.resize_ratio)) , command=lambda: self.update_gen_type())
-            button_generationMode.pack(fill=BOTH)
-            self.gen_type_label = button_generationMode
-
-            #button_generationMode.place(x=0 , y=0)
-
-            ## Liste des models
-            frameListModel = Frame(frameParametersZone , background="#383535" , width=366*self.resize_ratio , height=53*self.resize_ratio)
-            frameListModel.place(x=25*self.resize_ratio, y=450*self.resize_ratio)
-
-            initial_data = ["Plan A", "Plan B"]
-
-            listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , int(23*self.resize_ratio)) , foreground="white" , values=initial_data , state="readonly")
-            listModel.place(x=0, y=0)
-
-            button_apply_parameters = Button(frameParametersZone, text="Apply Parameters & model", command=lambda : self.update_parameters())
-            button_apply_parameters.place(x=25*self.resize_ratio, y=500*self.resize_ratio)
-            
-
-            ## Paremtres du model
-
-            frameParameterModel = Frame(frameParametersZone , width=311*self.resize_ratio , height=400*self.resize_ratio , background="#383535")
-            frameParameterModel.place(x=50*self.resize_ratio , y=550*self.resize_ratio)
-
-            labelParameters = Label(frameParameterModel , text="PARAMETERS" , background="#383535" , foreground="white" , font=("Khmer" , int(25*self.resize_ratio)))
-            labelParameters.place(x=40*self.resize_ratio , y=5*self.resize_ratio)
-
-            labelMaxLength = Label(frameParameterModel , text="Max length" , background="#383535" , foreground="white" , font=("Khmer" , int(20*self.resize_ratio)))
-            labelMaxLength.place(x=5*self.resize_ratio , y=55*self.resize_ratio)
-            tipMaxLentg = Hovertip(labelMaxLength,'taille de la réponse en caractère')
-
-            value1 = StringVar()
-            value1.set(self.get_specific_param("max_length"))
-            textMaxLenth = Entry(frameParameterModel, textvariable=value1 ,width=10)
-            textMaxLenth.place(x=240*self.resize_ratio , y=70*self.resize_ratio)
-
-
-
-            labelReturnedSequence = Label(frameParameterModel , text="Number of returned \n sequences" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , int(20*self.resize_ratio)))
-            labelReturnedSequence.place(x=5*self.resize_ratio , y=110*self.resize_ratio)
-            tipReturnedSequence = Hovertip(labelReturnedSequence,' self explicit')
-
-
-            value2 = StringVar()
-            value2.set(self.get_specific_param("num_return_sequences"))
-            textReturnedSequence = Entry(frameParameterModel,textvariable=value2 , width=10)
-            textReturnedSequence.place(x=240*self.resize_ratio , y=150*self.resize_ratio)
-
-
-
-            labelRepetionPenalty = Label(frameParameterModel , text="Repetition penalty" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , int(20*self.resize_ratio)))
-            labelRepetionPenalty.place(x=5*self.resize_ratio , y=190*self.resize_ratio)
-            tipRepetionPenalty = Hovertip(labelRepetionPenalty,'pénalité lorsque le model se répète \n (favorise un vocabulaire plus diversifié )')
-
-            value3 = StringVar()
-            value3.set(self.get_specific_param("repetition_penalty"))
-            textRepetionPenalty = Entry(frameParameterModel,textvariable=value3 , width=10)
-            textRepetionPenalty.place(x=240*self.resize_ratio , y=200*self.resize_ratio)
-
-
-
-            labelTemperature = Label(frameParameterModel , text="Temperature" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , int(20*self.resize_ratio)))
-            labelTemperature.place(x=5*self.resize_ratio , y=240*self.resize_ratio)
-            tipTemperature = Hovertip(labelTemperature,' affecte le caractère aléatoire du model \n (plus c\'est petit, plus c\'est prévisible, plus c\'est grand, plus c\'est imprévisible)')
-            
-            
-
-            value4 = StringVar()
-            value4.set(self.get_specific_param("temperature"))
-            textTemperature = Entry(frameParameterModel,textvariable=value4 , width=10)
-            textTemperature.place(x=240*self.resize_ratio , y=250*self.resize_ratio)
-
-
-
-            labelTopK = Label(frameParameterModel , text="Top K" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , int(20*self.resize_ratio)))
-            labelTopK.place(x=5*self.resize_ratio , y=285*self.resize_ratio)
-            tipTopK = Hovertip(labelTopK,'nombre de mots à considérer pour la génération')
-
-            
-            value5 = StringVar()
-            value5.set(self.get_specific_param("top_k"))
-            textTopK = Entry(frameParameterModel,textvariable=value5,  width=10)
-            textTopK.place(x=240*self.resize_ratio , y=295*self.resize_ratio)
-
-
-            labelNumberOfBeam = Label(frameParameterModel , text="Number of Beam" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , int(20*self.resize_ratio)))
-            labelNumberOfBeam.place(x=5*self.resize_ratio , y=330*self.resize_ratio)
-            tipNumberOfBeam = Hovertip(labelNumberOfBeam,'nombre de beam pour la génération')
-
-
-            value6 = StringVar()
-            value6.set(self.get_specific_param("num_beams"))
-            textNumberOfBeam = Entry(frameParameterModel, textvariable=value6 ,  width=10)
-            textNumberOfBeam.place(x=240*self.resize_ratio , y=340*self.resize_ratio)
-            
-
-            self.parameters_entry_list = {"selected_model":listModel,
-                                      "temperature":textTemperature,
-                                      "num_beams":textNumberOfBeam,
-                                      "repetition_penalty":textRepetionPenalty,
-                                      "num_return_sequences":textReturnedSequence,
-                                      "top_k":textTopK,
-                                      "max_length":textMaxLenth}            
-
-            ## Frame Contexto
-
-            frameContexte = Frame(self.window, width=400*self.resize_ratio , height=200*self.resize_ratio , background="#383535")
-            frameContexte.place(x=500*self.resize_ratio , y=24*self.resize_ratio)
-
-            
-
-            labelContexte = Label(frameContexte , text="Context" , background="#383535" , foreground="white" , font=("Khmer" , int(25*self.resize_ratio)))
-            labelContexte.place(x=150*self.resize_ratio , y=5*self.resize_ratio)
-
-            textContexte = Entry(frameContexte , width=25 , font=("Khmer" , int(20*self.resize_ratio)))
-            textContexte.place(x=5*self.resize_ratio , y=50*self.resize_ratio)
-
-            listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , int(20*self.resize_ratio)) , foreground="white")
-            listContexte.place(x=5*self.resize_ratio , y=100*self.resize_ratio)
-
-            listContexte["values"] = ["Context Perso" , "Context 2" , "Context 3"]
-            listContexte.configure(state="readonly")    
-            if(listContexte.get() == "Context Perso" or listContexte.get() == ""):
-                self.context = listContexte.get()
-            else:
-                self.context = textContexte.get()
-
-            ## frame Prompt
-
-            frameInput = Frame(self.window, width=400*self.resize_ratio , height=200*self.resize_ratio , background="#383535")
-            frameInput.place(x=1000*self.resize_ratio , y=24*self.resize_ratio)
-
-            value = StringVar()
-            value.set("Write your prompt here")
-
-            labelInput = Label(frameInput , text="Prompt" , background="#383535" , foreground="white" , font=("Khmer" , int(25*self.resize_ratio)))
-            labelInput.place(x=150*self.resize_ratio , y=5*self.resize_ratio)
-
-            textInput = Entry(frameInput ,textvariable=value ,  width=25 , font=("Khmer" , int(20*self.resize_ratio)))
-            textInput.place(x=5*self.resize_ratio , y=50*self.resize_ratio)
-
-            self.user_input_global = textInput
-            
-
-
-            ## Frame Milieu pour le output
-
-            canvaOutput = Canvas(self.window , width=900*self.resize_ratio , height=700*self.resize_ratio , background="#383535")
-            canvaOutput.place(x=500*self.resize_ratio, y=300*self.resize_ratio)
-            self.canvas = canvaOutput
-            labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , int(25*self.resize_ratio)))
-            #labelPrompt.place(x=5 , y=5)
-
-            self.prompt_label_global = labelPrompt
-
-            labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , int(25*self.resize_ratio) ) , justify="left")
-            labelOutput.place(x=400*self.resize_ratio , y=100*self.resize_ratio)
-
-            self.output_label_global = labelOutput
-
-            ## Frame Droite pour l'historique
-
-            frameHistory = Frame(self.window ,  width=410*self.resize_ratio, height=1000*self.resize_ratio, bg="#1D1B1B")
-            frameHistory.place(x=1470*self.resize_ratio , y=24*self.resize_ratio)
-
-            buttonGenerate = Button(self.window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , int(15*self.resize_ratio)) , command=lambda: self.generate())
-            buttonGenerate.place(x=1000*self.resize_ratio , y=1010*self.resize_ratio)
+        self.window.configure(background="#0D0B0B")
+        self.window.state('zoomed') #Full screen zoomed
+        # self.window.attributes("-fullscreen", True) # Full screen (it looks terrible)
+        ## Frame a gauche de l'ecran avec les differents parametres du model
+        frameParametersZone = Frame(self.window, width=410, height=1000, bg="#1D1B1B")
+        frameParametersZone.pack(side=LEFT, fill=X)
         
-            self.button_generate = buttonGenerate
-            
+        self.image = ImageTk.PhotoImage(file="images\LogoApp.png")
+        image_label = Label(frameParametersZone, image=self.image , background="#1D1B1B" , height=199 , width=432)
+        image_label.place(x=-30, y=-30)
 
-            if not torch.cuda.is_available():
-                error_handler(self.window , "CUDA not available, expect unhandled bugs")
+        
+        ## Frame pour la case [Project : nomProjet]
+        frameProject = Frame(frameParametersZone, width=366, height=54, bg="#383535")
+        frameProject.place(x=25, y=150)
 
-            hbar = Scrollbar(window, orient=HORIZONTAL)
-            hbar.pack(side=BOTTOM, fill=X)
-            hbar.config(command=canvaOutput.xview)
-            vbar = Scrollbar(window, orient=VERTICAL)
-            vbar.pack(side=RIGHT, fill=Y)
-            vbar.config(command=canvaOutput.yview)
-            canvaOutput.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
+        
 
-            first_obj = DialogObject()
-            first_obj.set_character("Willy Wonka")
-            first_obj.set_img("Willy Beans")
-            first_obj.set_text("I hate cappuccino")
-            first_obj.set_model_controller(self.model_controller)
+        pathFolder = pathlib.Path(__file__).parent ## Recuperation du chemin du fichier
+        pathFolder = pathlib.Path.joinpath( pathFolder , "resources/renpy_project") ## Ajout du chemin du dossier ressources
 
-            first_obj.build_tree(self.canvas)
-            self.first_obj = first_obj
-            self.model_controller.set_current_window(window)
+        files = os.listdir(pathFolder) ## Recuperation de la liste des fichiers dans le dossier ressources
+        # print(files)
 
-            
 
-            nb_obj = 10
-            self.canvas.configure(scrollregion=(0, 0, 120 * nb_obj, 2000))
-            
 
-            button_send = Button(self.window, text="Generate as file", command=lambda : self.generate_text(first_obj))
-            button_send.pack()
-            button_gen_ai = Button(self.window, text="Generate the tree with ai", command=lambda : self.generate_tree_with_ai())
-            button_gen_ai.pack()
-            # close the window properly
-            self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
+        valueProject = StringVar()
+        valueProject.set(pathFolder)
 
-            self.model_controller.update_reload()
+        firstProjectBase = "Project : " 
+        firstProjectBase += str(pathFolder) ## Ajout du nom du dossier
+
+        style = ttk.Style()
+
+        style.theme_create('combostyle', parent='alt',
+                        settings = {'TCombobox':
+                                    {'configure':
+                                    {'selectbackground': 'blue',
+                                    'fieldbackground': '#383535',
+                                    'background': 'white'
+                                    }}}
+                        )
+        style.theme_use('combostyle')
+        comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=files , state="readonly")
+        comboProject.place(x=0 , y=0)
+        self.combobox_project = comboProject
+        ##labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
+        ##labelProject.place(x=1 , y=5)
+        style = ttk.Style()
+
+
+
+
+        ## Frame pour le bouton pour changer de mode d'utilisation (entre le CPU et le GPU)
+        frameProcessingMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
+        frameProcessingMode.place(x=25, y=250)
+
+        button_processing_type = Button(frameProcessingMode, background="#383535" , fg="white" ,text="Processing-Mode : CPU",  font=("Khmer", 24) , command=lambda: self.change_processing_type())
+        button_processing_type.pack()
+        self.processing_type_button = button_processing_type
+
+        
+
+            ## Frame pour le bouton pour changer de mode d'utilisation (entre image et le text)
+        frameGenerationMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
+        frameGenerationMode.place(x=25, y=350)
+
+        button_generationMode = Button(frameGenerationMode, background="#383535" , fg="white" ,text="Generation-Mode : Text",  font=("Khmer", 22) , command=lambda: self.update_gen_type())
+        button_generationMode.pack(fill=BOTH)
+        self.gen_type_label = button_generationMode
+
+        #button_generationMode.place(x=0 , y=0)
+
+        ## Liste des models
+        frameListModel = Frame(frameParametersZone , background="#383535" , width=366 , height=53)
+        frameListModel.place(x=25, y=450)
+
+        initial_data = ["Plan A", "Plan B"]
+
+        listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=initial_data , state="readonly")
+        listModel.place(x=0, y=0)
+
+        button_apply_parameters = Button(frameParametersZone, text="Apply Parameters & model", command=lambda : self.update_parameters())
+        button_apply_parameters.place(x=25, y=500)
+        
+
+        ## Paremtres du model
+
+        frameParameterModel = Frame(frameParametersZone , width=311 , height=400 , background="#383535")
+        frameParameterModel.place(x=50 , y=550) 
+
+        labelParameters = Label(frameParameterModel , text="PARAMETERS" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+        labelParameters.place(x=40 , y=5)
+
+        labelMaxLength = Label(frameParameterModel , text="Max length" , background="#383535" , foreground="white" , font=("Khmer" , 20))
+        labelMaxLength.place(x=5 , y=55)
+        tipMaxLentg = Hovertip(labelMaxLength,'taille de la réponse en caractère')
+
+        value1 = StringVar()
+        value1.set(self.get_specific_param("max_length"))
+        textMaxLenth = Entry(frameParameterModel, textvariable=value1 ,width=10)
+        textMaxLenth.place(x=240 , y=70)
+
+
+
+        labelReturnedSequence = Label(frameParameterModel , text="Number of returned \n sequences" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+        labelReturnedSequence.place(x=5 , y=110)
+        tipReturnedSequence = Hovertip(labelReturnedSequence,' self explicit')
+
+
+        value2 = StringVar()
+        value2.set(self.get_specific_param("num_return_sequences"))
+        textReturnedSequence = Entry(frameParameterModel,textvariable=value2 , width=10)
+        textReturnedSequence.place(x=240 , y=150)
+
+
+
+        labelRepetionPenalty = Label(frameParameterModel , text="Repetition penalty" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+        labelRepetionPenalty.place(x=5 , y=190)
+        tipRepetionPenalty = Hovertip(labelRepetionPenalty,'pénalité lorsque le model se répète \n (favorise un vocabulaire plus diversifié )')
+
+        value3 = StringVar()
+        value3.set(self.get_specific_param("repetition_penalty"))
+        textRepetionPenalty = Entry(frameParameterModel,textvariable=value3 , width=10)
+        textRepetionPenalty.place(x=240 , y=200)
+
+
+
+        labelTemperature = Label(frameParameterModel , text="Temperature" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+        labelTemperature.place(x=5 , y=240)
+        tipTemperature = Hovertip(labelTemperature,' affecte le caractère aléatoire du model \n (plus c\'est petit, plus c\'est prévisible, plus c\'est grand, plus c\'est imprévisible)')
+        
+        
+
+        value4 = StringVar()
+        value4.set(self.get_specific_param("temperature"))
+        textTemperature = Entry(frameParameterModel,textvariable=value4 , width=10)
+        textTemperature.place(x=240 , y=250)
+
+
+
+        labelTopK = Label(frameParameterModel , text="Top K" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+        labelTopK.place(x=5 , y=285)
+        tipTopK = Hovertip(labelTopK,'nombre de mots à considérer pour la génération')
+
+        
+        value5 = StringVar()
+        value5.set(self.get_specific_param("top_k"))
+        textTopK = Entry(frameParameterModel,textvariable=value5,  width=10)
+        textTopK.place(x=240 , y=295)
+
+
+        labelNumberOfBeam = Label(frameParameterModel , text="Number of Beam" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
+        labelNumberOfBeam.place(x=5 , y=330)
+        tipNumberOfBeam = Hovertip(labelNumberOfBeam,'nombre de beam pour la génération')
+
+
+        value6 = StringVar()
+        value6.set(self.get_specific_param("num_beams"))
+        textNumberOfBeam = Entry(frameParameterModel, textvariable=value6 ,  width=10)
+        textNumberOfBeam.place(x=240 , y=340)
+        
+
+        self.parameters_entry_list = {"selected_model":listModel,
+                                    "temperature":textTemperature,
+                                    "num_beams":textNumberOfBeam,
+                                    "repetition_penalty":textRepetionPenalty,
+                                    "num_return_sequences":textReturnedSequence,
+                                    "top_k":textTopK,
+                                    "max_length":textMaxLenth}            
+
+        ## Frame Droite pour l'historique
+
+        frameHistory = Frame(self.window ,  width=410, height=1000, bg="#1D1B1B")
+        frameHistory.pack(side=RIGHT)
+
+        frameTest = Frame(frameHistory , width=366 , height=54 , bg="#383535")
+        frameTest.place(x=25 , y=150)  
+        ## frame contexto + prompt
+
+        frameConIn = Frame(self.window, width=1000 , height=200 , background="#0D0B0B")
+        frameConIn.pack(side=TOP , fill=X)
+
+
+        ## Frame Contexto
+
+        
+        frameContexte = Frame(frameConIn, width=400 , height=200 , background="#383535")
+        frameContexte.pack(side=LEFT)
+
+        
+
+        labelContexte = Label(frameContexte , text="Context" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+        labelContexte.place(x=150 , y=5)
+
+        textContexte = Entry(frameContexte , width=25 , font=("Khmer" , 20))
+        textContexte.place(x=5 , y=50)
+
+        listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , 20) , foreground="white")
+        listContexte.place(x=5 , y=100)
+
+        listContexte["values"] = ["Context Perso" , "Context 2" , "Context 3"]
+        listContexte.configure(state="readonly")    
+        if(listContexte.get() == "Context Perso" or listContexte.get() == ""):
+            self.context = listContexte.get()
+        else:
+            self.context = textContexte.get()
+
+        ## frame Prompt
+
+        frameInput = Frame(frameConIn, width=400 , height=200 , background="#383535")
+        frameInput.pack(side=RIGHT)
+
+        value = StringVar()
+        value.set("Write your prompt here")
+
+        labelInput = Label(frameInput , text="Prompt" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+        labelInput.place(x=150 , y=5)
+
+        textInput = Entry(frameInput ,textvariable=value ,  width=25 , font=("Khmer" , 20))
+        textInput.place(x=5 , y=50)
+
+        self.user_input_global = textInput
+        
+
+        
+        ## Frame Milieu pour le output
+
+        canvaOutput = Canvas(self.window , width=900 , height=700 , background="#383535")
+        canvaOutput.pack()
+        self.canva = canvaOutput
+        labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
+        #labelPrompt.place(x=5 , y=5)
+
+        self.prompt_label_global = labelPrompt
+
+        labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25 ) , justify="left")
+        labelOutput.place(x=400 , y=100)
+
+        self.output_label_global = labelOutput
+
+        
+
+        
+        
+
+        if not torch.cuda.is_available():
+            error_handler(self.window , "CUDA not available, expect unhandled bugs")
+
+        hbar = Scrollbar(self.window, orient=HORIZONTAL)
+        hbar.pack(side=BOTTOM, fill=X)
+        hbar.config(command=canvaOutput.xview)
+        vbar = Scrollbar(self.window, orient=VERTICAL)
+        vbar.pack(side=RIGHT, fill=Y)
+        vbar.config(command=canvaOutput.yview)
+        canvaOutput.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
+
+        first_obj = DialogObject()
+        first_obj.set_character("Willy Wonka")
+        first_obj.set_img("Willy Beans")
+        first_obj.set_text("I hate cappuccino")
+        first_obj.set_model_controller(self.model_controller)
+
+        first_obj.build_tree(self.canva)
+        self.first_obj = first_obj
+        self.model_controller.set_current_window(window)
+
+        buttonGenerate = Button(self.window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
+        buttonGenerate.pack(side=BOTTOM)
+    
+        self.button_generate = buttonGenerate
+
+        nb_obj = 10
+        self.canva.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
+        
+
+        button_send = Button(self.window, text="Generate as file", command=lambda : self.generate_text())
+        button_send.pack()
+        button_gen_ai = Button(self.window, text="Generate the tree with ai", command=lambda : self.generate_tree_with_ai())
+        button_gen_ai.pack()
+        # close the window properly
+        self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
+
+        self.model_controller.update_reload()
             
     def quit_window(self):
         self.model_controller.flush_observers() # just in case
@@ -377,7 +388,7 @@ class Gui(ModelObserver):
         for i in range(count):
             obj = DialogObject()
             obj.set_character("Character1")
-             
+                
             obj.set_text(dialogue[i])
             obj.set_parent(obj_p)
             obj_p = obj
@@ -406,10 +417,10 @@ class Gui(ModelObserver):
         #self.update_models_list()
 
     def obs_update_models_list(self, model_list):
-       
+        
         self.parameters_entry_list["selected_model"].configure(values=model_list)
         ##for model in model_list:
-          ##      print(model)
+            ##      print(model)
 
                 
     def generate(self):
@@ -516,7 +527,7 @@ class Gui(ModelObserver):
         pass
 
 
-    def generate_text(self,origin):
+    def generate_text(self):
         base_path = "resources/renpy_project/"+self.combobox_project.get()+"/game/" # TODO : With the project selection combobox
         # Init fileWriter
         file_writer = HomeMadeFileWriter()
@@ -524,7 +535,7 @@ class Gui(ModelObserver):
         file_writer.set_file(base_path+"script.rpy")
 
         # Gather information on tree
-        tree_information = origin.get_tree_information()
+        tree_information = self.first_obj.get_tree_information()
 
         # Init ObjConverter
         obj_converter = ObjToScriptConverter()
