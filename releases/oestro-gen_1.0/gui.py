@@ -230,7 +230,6 @@ class Gui(ModelObserver):
         textTemperature.place(x=240 , y=250)
 
 
-
         labelTopK = Label(frameParameterModel , text="Top K" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
         labelTopK.place(x=5 , y=285)
         tipTopK = Hovertip(labelTopK,'nombre de mots à considérer pour la génération')
@@ -374,6 +373,87 @@ class Gui(ModelObserver):
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
 
         self.model_controller.update_reload()
+
+        # Characters handlers (So the user doesn't input forbidden characters)
+        # See doc : https://docs.python.org/3.8/library/stdtypes.html#str.isalpha
+        # Local listeners to check the user's inputs
+        def test_is_num(e):
+            test_char = e.char
+            if not is_num(test_char):
+                # error_handler("NO >:( ")
+                delete_last_character(e.widget,is_num)
+
+        def test_is_float(e):
+            test_char = e.char
+            if not test_char == "\r":
+                if not is_float(test_char):
+                    if not test_char == '.': # for float
+                        # error_handler("NO >:( ")
+                        delete_last_character(e.widget,is_float)
+                float_delete_dots(e.widget)
+
+        def test_is_alpha(e):
+            test_char = e.char
+            if not is_alpha(test_char):
+                # error_handler("NO >:( ")
+                delete_last_character(e.widget,is_alpha)
+
+        def is_num(char):
+            if not char.isnumeric() and not char == '\b':
+                return False
+            else:
+                return True
+
+        def is_float(char):
+            try:
+                float(char)
+                return True
+            except ValueError:
+                return False
+
+
+        def is_alpha(char):
+            if (not char.isalnum() and not char.isspace() and not char == '\b'
+            and not char == '.'and not char == ','): # \b is backspace
+                return False
+            else:
+                return True
+
+        def float_delete_dots(widget):
+            i = 0
+            nb_dots = 0
+            new_text = widget.get()
+            for char in widget.get():
+                if char == '.':
+                    nb_dots += 1
+                if nb_dots>1:
+                    temp_list = list(new_text) # need to convert to list, because string are immutable in python
+                    temp_list[i] = " " # can't delete since it's a foreach, so we replace
+                    new_text = ''.join(temp_list) # convert back to string
+                i += 1
+            new_text = new_text.replace(" ", "") # get rid of the white space previously generated
+            widget.delete(0, END)
+            widget.insert(0, new_text)
+
+        def delete_last_character(widget,test):
+            current_widget = widget
+            new_text = current_widget.get()
+            for char in current_widget.get():
+                if not test(char):
+                    new_text = new_text.replace(char,'')
+            current_widget.delete(0,END)
+            current_widget.insert(0,new_text)
+
+        textContexte.bind("<KeyRelease>", test_is_alpha)
+        self.user_input_global.bind("<KeyRelease>", test_is_alpha)
+        textTemperature.bind("<KeyRelease>", test_is_float)
+        textTopK.bind("<KeyRelease>", test_is_num)
+        textMaxLenth.bind("<KeyRelease>", test_is_num)
+        textNumberOfBeam.bind("<KeyRelease>", test_is_num)
+        textRepetionPenalty.bind("<KeyRelease>", test_is_float)
+        textReturnedSequence.bind("<KeyRelease>", test_is_num)
+
+
     def update_project_name(self,event):
         if self.combobox_project:
             if self.combobox_project.get():
