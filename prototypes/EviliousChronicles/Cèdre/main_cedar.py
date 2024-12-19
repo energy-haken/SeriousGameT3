@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter.messagebox import *
 
-from Cèdre.dialog_object import DialogObject
-from Cèdre.test_window import TestWindow
+from dialog_object import DialogObject
+from test_window import TestWindow
 import torch
 
 

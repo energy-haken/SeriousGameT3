@@ -1,4 +1,3 @@
-
 class HomeMadeFileWriter:
 
     current_file = None
@@ -23,3 +22,21 @@ class HomeMadeFileWriter:
             f = open(self.current_file, self.mode)
             f.write(text)
             f.close()
+
+    def write_character_and_output(self, character1, character2, output):
+        if self.mode and self.current_file:
+            with open(self.current_file, self.mode) as f:
+                f.write(f"define {character1} = Character(\"{character1}\")\n")
+                f.write(f"define {character2} = Character(\"{character2}\")\n")
+                f.write("label start:\n")
+                output = output.replace('"', ' ')
+                lines = output.split('\n')
+                characters = [character1, character2]
+                
+                for i, line in enumerate(lines):
+                    current_character = characters[i % 2]
+                    other_character = characters[(i + 1) % 2]
+                    f.write(f"    show {current_character}\n")
+                    f.write(f"    {current_character} \"{line}\"\n")
+                    f.write(f"    hide {current_character}\n")
+                    ##f.write(f"    hide {other_character}\n")
