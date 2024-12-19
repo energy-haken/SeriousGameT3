@@ -354,7 +354,7 @@ class Gui(ModelObserver):
         first_obj.set_text("I hate cappuccino")
         first_obj.set_model_controller(self.model_controller)
 
-        first_obj.build_tree(self.canva)
+        first_obj.build_tree(self.canvas)
         self.first_obj = first_obj
         self.model_controller.set_current_window(window)
 
@@ -364,7 +364,7 @@ class Gui(ModelObserver):
         self.button_generate = buttonGenerate
 
         nb_obj = 10
-        self.canva.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
+        self.canvas.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
         
 
         button_generate_script = Button(self.window, text="Generate as file", command=lambda : self.generate_text())
