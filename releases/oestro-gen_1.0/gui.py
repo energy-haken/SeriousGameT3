@@ -60,7 +60,7 @@ class Gui(ModelObserver):
     image_cache = None # stored image if the user want to save it
     context = None
     window = None
-    canva = None
+    canvas = None
     first_obj = None
 
     def __init__(self,window ,model_controller):
@@ -85,7 +85,7 @@ class Gui(ModelObserver):
 
         
             self.window.configure(background="#0D0B0B")
-         
+            self.window.geometry("500x500")
 
             ## Frame a gauche de l'ecran avec les differents parametres du model
             frameParametersZone = Frame(self.window, width=410, height=1000, bg="#1D1B1B")
@@ -300,7 +300,7 @@ class Gui(ModelObserver):
 
             canvaOutput = Canvas(self.window , width=900 , height=700 , background="#383535")
             canvaOutput.place(x=500, y=300)
-            self.canva = canvaOutput
+            self.canvas = canvaOutput
             labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
             #labelPrompt.place(x=5 , y=5)
 
@@ -339,14 +339,14 @@ class Gui(ModelObserver):
             first_obj.set_text("I hate cappuccino")
             first_obj.set_model_controller(self.model_controller)
 
-            first_obj.build_tree(self.canva)
+            first_obj.build_tree(self.canvas)
             self.first_obj = first_obj
             self.model_controller.set_current_window(window)
 
             
 
             nb_obj = 10
-            self.canva.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
+            self.canvas.configure(scrollregion=(0, 0, 120 * nb_obj, 2000))
             
 
             button_send = Button(self.window, text="Generate as file", command=lambda : generate_text(first_obj))
@@ -377,7 +377,7 @@ class Gui(ModelObserver):
             obj.set_text(dialogue[i])
             obj.set_parent(obj_p)
             obj_p = obj
-        obj_p.build_tree(self.canva)
+        obj_p.build_tree(self.canvas)
         
     def change_processing_type(self):
         self.model_handler.change_processing_method()
@@ -513,17 +513,21 @@ class Gui(ModelObserver):
 
 
 def generate_text(origin):
+    base_path = "resources/renpy_project/Les Zamours/game/" # TODO : With the project selection combobox
     # Init fileWriter
     file_writer = HomeMadeFileWriter()
     file_writer.set_mode("w")
-    file_writer.set_file("script_test.rpy")
+    file_writer.set_file(base_path+"script.rpy")
 
     # Gather information on tree
     tree_information = origin.get_tree_information()
 
     # Init ObjConverter
+
+
+
     obj_converter = ObjToScriptConverter()
-    obj_converter.set_dialogs_list(tree_information["dialogs"])
+    obj_converter.set_label_list(tree_information["labels"])
     obj_converter.set_characters_list(tree_information["characters"])
 
     # Convert and write to file
