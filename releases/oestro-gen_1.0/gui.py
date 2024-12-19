@@ -63,6 +63,7 @@ class Gui(ModelObserver):
     canvas = None
     first_obj = None
     resize_ratio = 1.0
+    combobox_project = None
 
     def __init__(self,window ,model_controller):
             
@@ -132,7 +133,7 @@ class Gui(ModelObserver):
             style.theme_use('combostyle')
             comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , int(23*self.resize_ratio)) , foreground="white" , values=files , state="readonly")
             comboProject.place(x=0 , y=0)
-            
+            self.combobox_project = comboProject
             ##labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
             ##labelProject.place(x=1 , y=5)
             style = ttk.Style()
@@ -352,7 +353,7 @@ class Gui(ModelObserver):
             self.canvas.configure(scrollregion=(0, 0, 120 * nb_obj, 2000))
             
 
-            button_send = Button(self.window, text="Generate as file", command=lambda : generate_text(first_obj))
+            button_send = Button(self.window, text="Generate as file", command=lambda : self.generate_text(first_obj))
             button_send.pack()
             button_gen_ai = Button(self.window, text="Generate the tree with ai", command=lambda : self.generate_tree_with_ai())
             button_gen_ai.pack()
@@ -515,23 +516,21 @@ class Gui(ModelObserver):
         pass
 
 
-def generate_text(origin):
-    base_path = "resources/renpy_project/Les Zamours/game/" # TODO : With the project selection combobox
-    # Init fileWriter
-    file_writer = HomeMadeFileWriter()
-    file_writer.set_mode("w")
-    file_writer.set_file(base_path+"script.rpy")
+    def generate_text(self,origin):
+        base_path = "resources/renpy_project/"+self.combobox_project.get()+"/game/" # TODO : With the project selection combobox
+        # Init fileWriter
+        file_writer = HomeMadeFileWriter()
+        file_writer.set_mode("w")
+        file_writer.set_file(base_path+"script.rpy")
 
-    # Gather information on tree
-    tree_information = origin.get_tree_information()
+        # Gather information on tree
+        tree_information = origin.get_tree_information()
 
-    # Init ObjConverter
+        # Init ObjConverter
+        obj_converter = ObjToScriptConverter()
+        obj_converter.set_label_list(tree_information["labels"])
+        obj_converter.set_characters_list(tree_information["characters"])
 
-
-
-    obj_converter = ObjToScriptConverter()
-    obj_converter.set_label_list(tree_information["labels"])
-    obj_converter.set_characters_list(tree_information["characters"])
-
-    # Convert and write to file
-    file_writer.write(obj_converter.convert())
+        # Convert and write to file
+        file_writer.write(obj_converter.convert())
+        change_validate(self.window,"Script generated at : "+base_path)
