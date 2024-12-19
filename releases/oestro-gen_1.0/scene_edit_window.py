@@ -23,7 +23,7 @@ class SceneEditWindow(ModelObserver):
     base_path = "resources/renpy_project/Les Zamours/game/images/"
     image_is_ai = False
     window = None
-    is_linked_to_model_handler = False
+    # is_linked_to_model_handler = False
     menu_entry = None
     choice_entries = None
 
@@ -33,7 +33,12 @@ class SceneEditWindow(ModelObserver):
         self.window = window
         self.model_controller = descendant.get_model_controller()
         self.choice_entries = []
-        self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
+        if self.model_controller.get_current_project():
+            self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
+        else:
+            self.base_path = "resources/images/"
+        self.model_controller.add_observer(self)
+        print(self.base_path)
         input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20)
         input_frame.pack(fill="both", expand=0, side=TOP)
 
@@ -75,8 +80,8 @@ class SceneEditWindow(ModelObserver):
         button_send = Button(input_frame, text="Validate", command=lambda : self.update_fields())
         button_send.pack()
 
-        button_ia = Button(input_frame, text="Generate with ai", command=lambda : self.launch_ia())
-        button_ia.pack()
+        # button_ia = Button(input_frame, text="Generate with ai", command=lambda : self.launch_ia())
+        # button_ia.pack()
 
         button_save_image = Button(input_frame, text="Discard Generated Image", command=lambda : self.discard_image())
         button_save_image.pack()
@@ -109,10 +114,10 @@ class SceneEditWindow(ModelObserver):
         self.reload_image_path()
         self.reload_image()
 
-    def launch_ia(self):
-        if not self.is_linked_to_model_handler:
-            self.is_linked_to_model_handler = True
-            self.model_controller.add_observer(self)
+    # def launch_ia(self):
+    #     if not self.is_linked_to_model_handler:
+    #         self.is_linked_to_model_handler = True
+    #         self.model_controller.add_observer(self)
 
     def update_output(self,data):
         # self.descendant.set_text(data[0]['generated_text'])

@@ -95,6 +95,7 @@ class Gui(ModelObserver):
         
         self.image = ImageTk.PhotoImage(file="images\LogoApp.png")
         image_label = Label(frameParametersZone, image=self.image , background="#1D1B1B" , height=199 , width=432)
+        self.image_label = image_label
         image_label.place(x=-30, y=-30)
 
         
@@ -376,6 +377,7 @@ class Gui(ModelObserver):
     def update_project_name(self):
         self.project_name = self.combobox_project.get()
         self.model_controller.set_current_project(self.project_name)
+        print(self.project_name)
 
     def quit_window(self):
         self.model_controller.flush_observers() # just in case
