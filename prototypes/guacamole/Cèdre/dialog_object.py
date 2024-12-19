@@ -177,10 +177,14 @@ class DialogObject:
         self.tkinter_window_button = obj
     def set_menu_name(self,name):
         self.menu_name = name
+    def get_menu_name(self):
+        return self.menu_name
     def add_tkinter_choice(self,choice):
         self.tkinter_choices.append(choice)
     def add_choice(self, choice):
         self.choices.append(choice)
+    def set_choice(self,choices):
+        self.choices = choices
     def get_choices(self):
         return self.choices
     def get_character(self):
@@ -390,17 +394,15 @@ class DialogObject:
             current_label = parent_label
             current_label.add_to_dialogs_dict(dialog_dict)
 
-
-
         menu = None
         if self.get_choices() or len(self.get_choices()) != 0:  # there's a menu
             menu = DialogMenu()
-            menu.set_tile("Gambas") # self.menu_name
+            menu.set_tile(self.menu_name)
             # menu.set_choices()
             for choice in self.choices:
                 new_choice = Choice()
                 new_choice.set_title(choice)
-                new_choice.set_text("SLETTO!")
+                new_choice.set_text("You chose : "+choice)
                 new_choice.set_jump("jump_to_"+str(uuid4().int>>64))
                 menu.add_choice(new_choice)
             new_menu_label = LabelObject()
