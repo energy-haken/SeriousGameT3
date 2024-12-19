@@ -456,7 +456,7 @@ class Gui(ModelObserver):
         textNumberOfBeam.bind("<KeyRelease>", test_is_num)
         textRepetionPenalty.bind("<KeyRelease>", test_is_float)
         textReturnedSequence.bind("<KeyRelease>", test_is_num)
-        self.switch()  # disable generation initially, since no scene_edit_window is open yet
+        # self.switch()  # disable generation initially, since no scene_edit_window is open yet
 
     def update_project_name(self,event):
         if self.combobox_project:
@@ -643,7 +643,8 @@ class Gui(ModelObserver):
                 self.obs_update_processing_type(data["processing_type"])
                 self.obs_update_parameters(data["parameters"])
             case "can_generate":
-                self.switch()
+                x = 0
+                # self.switch()
             case _:
                 print("ERROR : COULDN'T READ SUBJECT DATA")
         pass
