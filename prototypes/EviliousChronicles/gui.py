@@ -1,11 +1,7 @@
 
 import os
 from pathlib import Path
-
-# from tkinter import *
-# Explicit imports to satisfy Flake8
 import pathlib
-import re
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo
 from PIL import ImageTk
@@ -59,7 +55,7 @@ class Gui(Observer):
     gen_type_label = None
     processing_type_button = None
     image_cache = None # stored image if the user want to save it
-    fond = None
+    window = None
     context = None
 
     def __init__(self,window):
@@ -76,21 +72,21 @@ class Gui(Observer):
             self.model_handler.add_observer(self)
             self.button_generate = None
             self.context = None
-           
+            
 
            
             
 
             window.configure(background="#0D0B0B")
-            
+            self.window = window
             
            
            
-            self.fond = window
+            
                 
 
             ## Frame a gauche de l'ecran avec les differents parametres du model
-            frameParametersZone = Frame(window, width=410, height=1000, bg="#1D1B1B")
+            frameParametersZone = Frame( self.window, width=410, height=1000, bg="#1D1B1B")
             frameParametersZone.place(x=30, y=24)
             
             self.image = ImageTk.PhotoImage(file="images\LogoApp.png")
@@ -259,7 +255,7 @@ class Gui(Observer):
 
             ## Frame Contexto
 
-            frameContexte = Frame(window, width=400 , height=200 , background="#383535")
+            frameContexte = Frame(self.window, width=400 , height=200 , background="#383535")
             frameContexte.place(x=500 , y=24)
 
             
@@ -282,7 +278,7 @@ class Gui(Observer):
 
             ## frame Prompt
 
-            frameInput = Frame(window, width=400 , height=200 , background="#383535")
+            frameInput = Frame( self.window, width=400 , height=200 , background="#383535")
             frameInput.place(x=1000 , y=24)
 
             value = StringVar()
@@ -300,7 +296,7 @@ class Gui(Observer):
 
             ## Frame Milieu pour le output
 
-            canvaOutput = Canvas(window , width=900 , height=700 , background="#383535")
+            canvaOutput = Canvas( self.window , width=900 , height=700 , background="#383535")
             canvaOutput.place(x=500, y=300)
 
             labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
@@ -315,10 +311,10 @@ class Gui(Observer):
 
             ## Frame Droite pour l'historique
 
-            frameHistory = Frame(window ,  width=410, height=1000, bg="#1D1B1B")
+            frameHistory = Frame( self.window ,  width=410, height=1000, bg="#1D1B1B")
             frameHistory.place(x=1470 , y=24)
 
-            buttonGenerate = Button(window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
+            buttonGenerate = Button( self.window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
             buttonGenerate.place(x=1000 , y=1010)
         
             self.button_generate = buttonGenerate
@@ -328,7 +324,7 @@ class Gui(Observer):
                 buttonGenerate.configure(text="test")
 
             if not torch.cuda.is_available():
-                error_handler(window , "CUDA not available, expect unhandled bugs")
+                error_handler( self.window , "CUDA not available, expect unhandled bugs")
 
                 
 
@@ -381,11 +377,11 @@ class Gui(Observer):
                 img.save(base_path + file_name + str(nb) + ".png", "PNG")
                 showinfo("Saved", "Image saved at : "+base_path)
         else:
-            error_handler(self.fond ,"No image to save")
+            error_handler(self.window ,"No image to save")
 
     def update_image(self,img):
         if img[0]=="error":
-            error_handler(self.fond , "Select a model first, then presse apply")
+            error_handler(self.window , "Select a model first, then presse apply")
         else:
             tkimg = ImageTk.PhotoImage(img[0])
             self.image_label.config(image=tkimg)
@@ -398,7 +394,7 @@ class Gui(Observer):
 
     def update_output(self,message):
         if 'error' in message[0]:
-            error_handler(self.fond , message[0]['error'])
+            error_handler(self.window , message[0]['error'])
         else:
             self.output_label_global.place_forget()
             self.output_label_global.place(x=75, y=100)
@@ -414,7 +410,7 @@ class Gui(Observer):
                 selected_model = self.parameters_entry_list.get(index).get()
                 if selected_model:
                     self.parameters.update({"selected_model": selected_model})
-                    change_validate(self.fond, "Model " + selected_model + " selected")
+                    change_validate(self.window, "Model " + selected_model + " selected")
                 else:
                     self.parameters.update({"selected_model": self.get_specific_param("selected_model")})
             else:
@@ -422,7 +418,7 @@ class Gui(Observer):
                     value = float(self.parameters_entry_list.get(index).get())
                     self.parameters.update({index: value})
                 except ValueError:
-                    error_handler(self.fond, f"Parameter {index} is not a valid number")
+                    error_handler(self.window, f"Parameter {index} is not a valid number")
                     return
 
         self.model_handler.update_parameters(self.parameters)

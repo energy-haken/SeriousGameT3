@@ -61,6 +61,7 @@ class Gui(ModelObserver):
     context = None
     window = None
     canva = None
+    first_obj = None
 
     def __init__(self,window ,model_controller):
             
@@ -339,8 +340,10 @@ class Gui(ModelObserver):
             first_obj.set_model_controller(self.model_controller)
 
             first_obj.build_tree(self.canva)
-
+            self.first_obj = first_obj
             self.model_controller.set_current_window(window)
+
+            
 
             nb_obj = 10
             self.canva.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
@@ -363,8 +366,19 @@ class Gui(ModelObserver):
 
 
     def generate_tree_with_ai(self):
-        self.canva.delete("all") # clean up the canvas before generating anything with ai
-        x = 0
+        count = self.output_label_global.cget("text").count('\n')
+        dialogue = self.output_label_global.cget("text").split('\n')
+        print(dialogue)
+        obj_p = self.first_obj
+        for i in range(count):
+            obj = DialogObject()
+            obj.set_character("Character1")
+             
+            obj.set_text(dialogue[i])
+            obj.set_parent(obj_p)
+            obj_p = obj
+        obj_p.build_tree(self.canva)
+        
     def change_processing_type(self):
         self.model_handler.change_processing_method()
     def obs_update_processing_type(self,processing_type):
@@ -412,11 +426,11 @@ class Gui(ModelObserver):
                 img.save(base_path + file_name + str(nb) + ".png", "PNG")
                 showinfo("Saved", "Image saved at : "+base_path)
         else:
-            error_handler(self.fond ,"No image to save")
+            error_handler(self.window ,"No image to save")
 
     def update_image(self,img):
         if img[0]=="error":
-            error_handler(self.fond , "Select a model first, then presse apply")
+            error_handler(self.window , "Select a model first, then presse apply")
         else:
             tkimg = ImageTk.PhotoImage(img[0])
             self.image_label.config(image=tkimg)
@@ -429,7 +443,7 @@ class Gui(ModelObserver):
 
     def update_output(self,message):
         if 'error' in message[0]:
-            error_handler(self.fond , message[0]['error'])
+            error_handler(self.window , message[0]['error'])
         else:
             self.output_label_global.place_forget()
             self.output_label_global.place(x=75, y=100)
@@ -445,7 +459,7 @@ class Gui(ModelObserver):
                 selected_model = self.parameters_entry_list.get(index).get()
                 if selected_model:
                     self.parameters.update({"selected_model": selected_model})
-                    change_validate(self.fond, "Model " + selected_model + " selected")
+                    change_validate(self.window, "Model " + selected_model + " selected")
                 else:
                     self.parameters.update({"selected_model": self.get_specific_param("selected_model")})
             else:
@@ -453,7 +467,7 @@ class Gui(ModelObserver):
                     value = float(self.parameters_entry_list.get(index).get())
                     self.parameters.update({index: value})
                 except ValueError:
-                    error_handler(self.fond, f"Parameter {index} is not a valid number")
+                    error_handler(self.window, f"Parameter {index} is not a valid number")
                     return
 
         self.model_handler.update_parameters(self.parameters)
