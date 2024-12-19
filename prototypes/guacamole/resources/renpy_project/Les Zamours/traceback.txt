@@ -1,24 +1,22 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
 While running game code:
-  File "game/script.rpy", line 10, in script
-    willy_wonka " I hate cappuccino "
-Exception: Sayer 'willy_wonka' is not defined.
+  File "game/script.rpy", line 14, in script
+    jump jump_to_5724624326752686056
+ScriptError: could not find label 'jump_to_5724624326752686056'.
 
 -- Full Traceback ------------------------------------------------------------
 
 Full traceback:
-  File "game/script.rpy", line 10, in script
-    willy_wonka " I hate cappuccino "
-  File "S:\zoneTest\renpy\renpy-8.3.2-sdk\renpy\ast.py", line 2573, in execute
-    Say.execute(self)
-  File "S:\zoneTest\renpy\renpy-8.3.2-sdk\renpy\ast.py", line 575, in execute
-    who = eval_who(self.who, self.who_fast)
-  File "S:\zoneTest\renpy\renpy-8.3.2-sdk\renpy\ast.py", line 464, in eval_who
-    raise Exception("Sayer '%s' is not defined." % who)
-Exception: Sayer 'willy_wonka' is not defined.
+  File "game/script.rpy", line 14, in script
+    jump jump_to_5724624326752686056
+  File "S:\zoneTest\renpy\renpy-8.3.2-sdk\renpy\ast.py", line 1699, in execute
+    rv = renpy.game.script.lookup(target)
+  File "S:\zoneTest\renpy\renpy-8.3.2-sdk\renpy\script.py", line 1103, in lookup
+    raise ScriptError("could not find label '%s'." % str(original))
+ScriptError: could not find label 'jump_to_5724624326752686056'.
 
-Windows-10-10.0.22621 AMD64
+Windows-10-10.0.22631 AMD64
 Ren'Py 8.3.2.24090902
 Les Zamours 1.0
-Fri Nov 29 10:32:39 2024
+Wed Dec 18 19:40:08 2024

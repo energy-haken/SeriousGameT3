@@ -23,16 +23,16 @@ class SceneEditWindow(ModelObserver):
     base_path = "resources/renpy_project/Les Zamours/game/images/"
     image_is_ai = False
     window = None
-    text_module_window = None
+    is_linked_to_model_handler = False
+    menu_entry = None
+    choice_entries = None
 
     def __init__(self,window,descendant):
 
         self.descendant = descendant
         self.window = window
         self.model_controller = descendant.get_model_controller()
-        self.model_controller.add_observer(self)
-        # input_frame = LabelFrame(window,width=300,height=300,text="You are an idiot", padx=20, pady=20)
-        # input_frame.pack(fill=BOTH, expand=True)
+        self.choice_entries = []
         input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20)
         input_frame.pack(fill="both", expand=0, side=TOP)
 
@@ -50,6 +50,26 @@ class SceneEditWindow(ModelObserver):
         dialog_input = Entry(input_frame, textvariable=dialog_str, width=30)
         dialog_input.pack()
         self.user_input_dialog_global = dialog_input
+
+        # Menu
+        if len(descendant.get_descendants())>1:
+            menu_frame = LabelFrame(self.window, text="Menu", padx=20, pady=20)
+            menu_frame.pack(fill="both", expand=0, side=TOP)
+            # Menu Name
+            menu_str_name = StringVar()
+            menu_str_name.set("Menu name here")
+            menu_name_input = Entry(menu_frame, textvariable=menu_str_name, width=30)
+            menu_name_input.pack()
+            self.menu_entry = menu_name_input
+            choices_frame = LabelFrame(menu_frame, text="Choices", padx=20, pady=20)
+            choices_frame.pack(fill="both", expand=0, side=TOP)
+
+            for choice in descendant.get_choices():
+                menu_str = StringVar()
+                menu_str.set(choice)
+                menu_input = Entry(choices_frame, textvariable=menu_str, width=30)
+                menu_input.pack()
+                self.choice_entries.append(menu_input)
 
         button_send = Button(input_frame, text="Validate", command=lambda : self.update_fields())
         button_send.pack()
@@ -72,28 +92,26 @@ class SceneEditWindow(ModelObserver):
 
     # close the window properly
     def quit_window(self):
-        print("KILLING DAD")
-        if self.text_module_window is not None: # close its child window properly
-            self.text_module_window.quit_window()
-        self.text_module_window = None
         self.model_controller.remove_observer(self)
         self.window.destroy()
-    def clear_text_module_window(self):
-        self.text_module_window = None
 
     def update_fields(self):
         self.descendant.set_character(str(self.user_input_character_global.get()))
         self.descendant.set_text(str(self.user_input_dialog_global.get()))
+        if self.menu_entry: # if there's a menu
+            self.descendant.set_menu_name(str(self.menu_entry.get()))
+            choices_list = []
+            for choice in self.choice_entries:
+                choices_list.append(str(choice.get()))
+            self.descendant.set_choice(choices_list)
         self.save_image()
         self.reload_image_path()
         self.reload_image()
 
     def launch_ia(self):
-        if not self.text_module_window:
-           
-            if self.descendant.get_parent():
-                character_parent = self.descendant.get_parent()
-                self.text_module_window.set_context(character_parent.get_character()+":"+character_parent.get_text())
+        if not self.is_linked_to_model_handler:
+            self.is_linked_to_model_handler = True
+            self.model_controller.add_observer(self)
 
     def update_output(self,data):
         # self.descendant.set_text(data[0]['generated_text'])
