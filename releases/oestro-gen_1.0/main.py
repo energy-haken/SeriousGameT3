@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter.messagebox import *
 from model_handler import ModelHandler
 from model_handler_controller import ModelController
-from gui import Gui
+#from gui import Gui
+from guiPack import Gui
 import torch
 
 #if not torch.cuda.is_available():

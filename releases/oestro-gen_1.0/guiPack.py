@@ -26,7 +26,7 @@ def error_handler(root , message):
 
     labelError = Label(frameError , text=message , background="red" , foreground="white" , font=("Khmer" , 15))
                 
-    labelError.place(x=10 , y=5)
+    labelError.pack(side=LEFT)
 
     root.after(5000, frameError.place_forget)
 
@@ -89,7 +89,7 @@ class Gui(ModelObserver):
 
             ## Frame a gauche de l'ecran avec les differents parametres du model
             frameParametersZone = Frame(self.window, width=410, height=1000, bg="#1D1B1B")
-            frameParametersZone.place(x=30, y=24)
+            frameParametersZone.pack(side=LEFT, fill=X)
             
             self.image = ImageTk.PhotoImage(file="images\LogoApp.png")
             image_label = Label(frameParametersZone, image=self.image , background="#1D1B1B" , height=199 , width=432)
@@ -255,10 +255,24 @@ class Gui(ModelObserver):
                                       "top_k":textTopK,
                                       "max_length":textMaxLenth}            
 
+            ## Frame Droite pour l'historique
+
+            frameHistory = Frame(self.window ,  width=410, height=1000, bg="#1D1B1B")
+            frameHistory.pack(side=RIGHT)
+
+            frameTest = Frame(frameHistory , width=366 , height=54 , bg="#383535")
+            frameTest.place(x=25 , y=150)  
+            ## frame contexto + prompt
+
+            frameConIn = Frame(self.window, width=1000 , height=200 , background="#0D0B0B")
+            frameConIn.pack(side=TOP , fill=X)
+
+
             ## Frame Contexto
 
-            frameContexte = Frame(self.window, width=400 , height=200 , background="#383535")
-            frameContexte.place(x=500 , y=24)
+            
+            frameContexte = Frame(frameConIn, width=400 , height=200 , background="#383535")
+            frameContexte.pack(side=LEFT)
 
             
 
@@ -280,8 +294,8 @@ class Gui(ModelObserver):
 
             ## frame Prompt
 
-            frameInput = Frame(self.window, width=400 , height=200 , background="#383535")
-            frameInput.place(x=1000 , y=24)
+            frameInput = Frame(frameConIn, width=400 , height=200 , background="#383535")
+            frameInput.pack(side=RIGHT)
 
             value = StringVar()
             value.set("Write your prompt here")
@@ -295,11 +309,11 @@ class Gui(ModelObserver):
             self.user_input_global = textInput
             
 
-
+            
             ## Frame Milieu pour le output
 
             canvaOutput = Canvas(self.window , width=900 , height=700 , background="#383535")
-            canvaOutput.place(x=500, y=300)
+            canvaOutput.pack()
             self.canva = canvaOutput
             labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
             #labelPrompt.place(x=5 , y=5)
@@ -311,24 +325,18 @@ class Gui(ModelObserver):
 
             self.output_label_global = labelOutput
 
-            ## Frame Droite pour l'historique
+            
 
-            frameHistory = Frame(self.window ,  width=410, height=1000, bg="#1D1B1B")
-            frameHistory.place(x=1470 , y=24)
-
-            buttonGenerate = Button(self.window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
-            buttonGenerate.place(x=1000 , y=1010)
-        
-            self.button_generate = buttonGenerate
+            
             
 
             if not torch.cuda.is_available():
                 error_handler(self.window , "CUDA not available, expect unhandled bugs")
 
-            hbar = Scrollbar(window, orient=HORIZONTAL)
+            hbar = Scrollbar(self.window, orient=HORIZONTAL)
             hbar.pack(side=BOTTOM, fill=X)
             hbar.config(command=canvaOutput.xview)
-            vbar = Scrollbar(window, orient=VERTICAL)
+            vbar = Scrollbar(self.window, orient=VERTICAL)
             vbar.pack(side=RIGHT, fill=Y)
             vbar.config(command=canvaOutput.yview)
             canvaOutput.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
@@ -343,7 +351,10 @@ class Gui(ModelObserver):
             self.first_obj = first_obj
             self.model_controller.set_current_window(window)
 
-            
+            buttonGenerate = Button(self.window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
+            buttonGenerate.pack(side=BOTTOM)
+        
+            self.button_generate = buttonGenerate
 
             nb_obj = 10
             self.canva.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
