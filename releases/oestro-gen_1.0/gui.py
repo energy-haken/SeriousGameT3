@@ -130,12 +130,12 @@ class Gui(ModelObserver):
                                     }}}
                         )
         style.theme_use('combostyle')
-        comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=files , state="readonly", postcommand = self.update_project_name)
+        comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=files , state="readonly")
+        comboProject.bind("<<ComboboxSelected>>", self.update_project_name)
         comboProject.place(x=0 , y=0)
-
-
-
+        # comboProject.bind('<>', self.update_project_name())
         self.combobox_project = comboProject
+
         ##labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
         ##labelProject.place(x=1 , y=5)
         style = ttk.Style()
@@ -374,10 +374,15 @@ class Gui(ModelObserver):
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
 
         self.model_controller.update_reload()
-    def update_project_name(self):
-        self.project_name = self.combobox_project.get()
-        self.model_controller.set_current_project(self.project_name)
-        print(self.project_name)
+    def update_project_name(self,event):
+        if self.combobox_project:
+            if self.combobox_project.get():
+                self.combobox_project.update()
+                self.project_name = self.combobox_project.get()
+                self.model_controller.set_current_project(self.project_name)
+                print("Project name : " + self.project_name)
+            else:
+                error_handler(self.window,"No project name")
 
     def quit_window(self):
         self.model_controller.flush_observers() # just in case
@@ -394,7 +399,6 @@ class Gui(ModelObserver):
         for i in range(count):
             obj = DialogObject()
             obj.set_character("Character1")
-                
             obj.set_text(dialogue[i])
             obj.set_parent(obj_p)
             obj_p = obj
@@ -405,10 +409,10 @@ class Gui(ModelObserver):
     def obs_update_processing_type(self,processing_type):
         if self.processing_type_button is not None:
             self.processing_type_button.config(text="Processing-Mode  :" +processing_type+"")
-    def stop(self):
-        self.unload_model()
-        self.image_label.config(image="") # clear the image
-        self.image_cache = None
+    # def stop(self):
+        # self.unload_model()
+        # self.image_label.config(image="") # clear the image
+        # self.image_cache = None
 
     def update_gen_type(self):
         if self.generation_type == GenerationType.TEXT:
@@ -449,14 +453,14 @@ class Gui(ModelObserver):
         else:
             error_handler(self.window ,"No image to save")
 
-    def update_image(self,img):
-        if img[0]=="error":
-            error_handler(self.window , "Select a model first, then presse apply")
-        else:
-            tkimg = ImageTk.PhotoImage(img[0])
-            self.image_label.config(image=tkimg)
-            self.image_label.image = tkimg
-            self.image_cache = tkimg
+    # def update_image(self,img):
+    #     if img[0]=="error":
+    #         error_handler(self.window , "Select a model first, then presse apply")
+    #     else:
+    #         tkimg = ImageTk.PhotoImage(img[0])
+    #         self.image_label.config(image=tkimg)
+    #         self.image_label.image = tkimg
+    #         self.image_cache = tkimg
 
     def unload_model(self):
         self.model_controller.turn_off_model()
@@ -518,7 +522,8 @@ class Gui(ModelObserver):
             case "current_model":
                 self.obs_update_current_model(data)
             case "image":
-                self.update_image(data)
+                # self.update_image(data) # No longer in use
+                x = 0
             case "parameters":
                 self.obs_update_parameters(data)
             case "reload":
