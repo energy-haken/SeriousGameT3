@@ -87,8 +87,10 @@ def build_ui_part(descendant,index_x,index_y, canvas):
     def click_window(event):
         # print('Got object click', event.x, event.y)
         # print(event.widget.find_closest(event.x, event.y))
-        scene_window = SceneEditWindow(Toplevel(descendant.get_model_controller().get_current_window()),descendant)
-
+        if descendant.get_model_controller().get_current_project():
+            scene_window = SceneEditWindow(Toplevel(descendant.get_model_controller().get_current_window()),descendant)
+        else:
+            descendant.get_model_controller().broadcast_message("No project selected","error")
 
     canvas.tag_bind(btn_kill, '<ButtonPress-1>', click_remove)
     canvas.tag_bind(btn_add, '<ButtonPress-1>', click_add)

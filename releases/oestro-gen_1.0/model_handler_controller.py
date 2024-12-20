@@ -42,3 +42,5 @@ class ModelController:
         self.model_handler.switch_can_generate()
     def ask_can_generate(self):
         self.model_handler.ask_can_generate()
+    def broadcast_message(self,message,message_type):
+        self.model_handler.broadcast_message(message,message_type)

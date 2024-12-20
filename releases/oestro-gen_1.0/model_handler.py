@@ -291,6 +291,10 @@ class ModelHandler:
             reply = False
         self.update_observers("ask_can_generate", reply)
     # Get rid of unused model according to the current generation type
+    def broadcast_message(self,message,message_type):
+        new_message = {"message":message,"type":message_type}
+        self.update_observers("broadcast",new_message)
+
     def __sort_model_by_type(self):
         """
         Sorts models according to the generation type (Only for the UI).
