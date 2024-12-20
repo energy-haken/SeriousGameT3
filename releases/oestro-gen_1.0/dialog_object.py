@@ -89,7 +89,8 @@ def build_ui_part(descendant,index_x,index_y, canvas):
         # print(event.widget.find_closest(event.x, event.y))
         if descendant.get_model_controller().get_current_project():
             try:
-                scene_window = SceneEditWindow(Toplevel(descendant.get_model_controller().get_current_window()),descendant)
+                scene_window = SceneEditWindow(Toplevel(),descendant)
+                #descendant.get_model_controller().get_current_window()
             except ValueError:
                 print("ERROR : Multiple scene_edit_window opened at the same time !")
         else:
