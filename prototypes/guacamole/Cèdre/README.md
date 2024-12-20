@@ -2,7 +2,7 @@
 
 ## Description
 
-Ce sous-prototype de Guacamole vous permettera de pouvoir généré et/ou modifier l'arbre de dialogue de votre Visual Novel (Renpy).
+Ce sous-prototype de Guacamole vous permettera de pouvoir générer et/ou modifier l'arbre de dialogue de votre Visual Novel (Renpy).
 
 ## Utilisation
 

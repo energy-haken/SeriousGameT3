@@ -1,4 +1,4 @@
-# Guacamole
+# Œstro-gen
 
 
 ## Installation
@@ -11,7 +11,7 @@ Lien vers le github :  [EMF : Easy Model Fusion](https://github.com/easy-model-f
 
 ### Mettre en place EMF-CLI
 
-Une fois EMF-CLI installé et le prototype téléchargé, effectuez la commande suivante dans le dossier du prototype :
+Une fois EMF-CLI installé et le prototype téléchargé, effectuez la commande suivante dans le dossier du logiciel :
 ```
 emf-cli install
 ```
@@ -36,5 +36,4 @@ emf-cli install
 #### 2. Ouvrir AppLauncher.bat
 Démarre l'application
 
-
-![Logo Guacamole](/prototypes/guacamole/images/guacamole.png) 
+![Logo Œstro-gen](/images/logo.png)
