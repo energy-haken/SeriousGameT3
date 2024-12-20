@@ -23,6 +23,7 @@ Il inclut :
 
 Fenêtre d'un dialogue
 ![Image d'illustration d'un dialogue](/images/dialog.png)
+![Image d'illustration d'un choix dans Ren'py](/images/renpyscreen.png)
 
 ## Installation
 Pour savoir comment installer le projet, suivez [ce lien](/releases/oestro-gen_1.0/README.md)!
