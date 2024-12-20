@@ -1,24 +1,34 @@
-define willy_wonka = Character("Willy Wonka")
-define bob = Character("Bob")
+define character0 = Character("Character0")
+define character1 = Character("Character1")
+define character2 = Character("Character2")
+define character3 = Character("Character3")
+define character4 = Character("Character4")
+define character5 = Character("Character5")
+define character6 = Character("Character6")
+define character7 = Character("Character7")
 label start:
     scene room
-    show willy wonka
-    willy_wonka " Does it Worek? " 
-    menu:
-        "Does it Worek?"
-        "Yes :D":
-            "You chose : Yes :D"
-            jump jump_to_3611109038596376885
-        "No >:(":
-            "You chose : No >:("
-            jump jump_to_8276925201764139426
-label jump_to_3611109038596376885:
-    scene room
-    show bob
-    bob " Hi, Yes it Worek! " 
-    return
-label jump_to_8276925201764139426:
-    scene room
-    show bob
-    bob " Sorry, it doesn't Worek. " 
+    show character0
+    character0 " . "  " 
+    hide character0
+    show character1
+    character1 "   i don't know what you're talking about.   " 
+    hide character1
+    show character2
+    character2 "   yes, you do.   " 
+    hide character2
+    show character3
+    character3 "   no, i don't.   " 
+    hide character3
+    show character4
+    character4 "   yes, you do.   " 
+    hide character4
+    show character5
+    character5 "   no, i don't.   " 
+    hide character5
+    show character6
+    character6 "   yes, you do.   " 
+    hide character6
+    show character7
+    character7 "   no, i don't.   " 
     return
