@@ -532,7 +532,7 @@ class Gui(ModelObserver):
                 
     def generate(self):
         self.update_prompt()
-        self.prompt = self.context + " \n " + self.prompt 
+        self.prompt = str(self.context) + " \n " + str(self.prompt)
         print(self.prompt)
         self.model_controller.generate(self.prompt)
         self.button_generate.configure(text="Regenerate") # change the button text to regenerate
