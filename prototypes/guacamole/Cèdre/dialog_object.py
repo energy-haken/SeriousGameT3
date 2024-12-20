@@ -1,7 +1,6 @@
-from importlib.metadata import Deprecated
 from tkinter import *
+from uuid import uuid4
 
-from sympy.core.random import randint
 
 from scene_edit_window import SceneEditWindow
 
@@ -100,7 +99,7 @@ def build_ui_part(descendant,index_x,index_y, canvas):
     def click_window(event):
         # print('Got object click', event.x, event.y)
         # print(event.widget.find_closest(event.x, event.y))
-        scene_window = SceneEditWindow(Toplevel(),descendant)
+        scene_window = SceneEditWindow(Toplevel(descendant.get_model_controller().get_current_window()),descendant)
 
 
     canvas.tag_bind(btn_kill, '<ButtonPress-1>', click_remove)
@@ -133,13 +132,16 @@ class DialogObject:
     tkinter_window_button = None
     canvas = None
     tkinter_choices = None
+    choices = None
+    model_controller = None
 
     def __init__(self):
-        self.character = "placeholder character"
+        self.character = "Bob"
         self.text = "placeholder text"
         self.img = "placeholder"
         self.descendants = []
         self.tkinter_choices = []
+        self.choices = []
     def set_canvas(self,canvas):
         self.canvas = canvas
 
@@ -156,7 +158,19 @@ class DialogObject:
     def set_parent(self,parent):
         self.parent = parent
         parent.add_descendant(self)
+        self.set_model_controller_from_parent() # add the model controller from the parent
         # print("My dad is : " + parent.get_character())
+
+    def set_model_controller(self, controller):
+        self.model_controller = controller
+
+    # add the model controller from the parent
+    def set_model_controller_from_parent(self):
+        if self.parent is not None:
+            self.set_model_controller(self.parent.get_model_controller())
+    def get_model_controller(self):
+        return self.model_controller
+
     def add_descendant(self,descendant):
         # print("added : " + descendant.get_character()+" to : "+self.character)
         self.descendants.append(descendant)
@@ -174,6 +188,8 @@ class DialogObject:
         self.tkinter_window_button = obj
     def add_tkinter_choice(self,choice):
         self.tkinter_choices.append(choice)
+    def add__choice(self,choice):
+        self.choices.append(choice)
     def get_character(self):
         return self.character
     def get_text(self):
@@ -300,9 +316,9 @@ class DialogObject:
         """
 
         obj = DialogObject()
-        obj.set_character(str(randint(0,10)))
+        # obj.set_character(str(randint(0,10)))
         obj.set_img("Beans")
-        obj.set_text("I hate " + "shitray[i % 5]")
+        obj.set_text("Hi, I'm "+obj.get_character())
         obj.set_parent(self)
         origin = obj.get_origin_object()
         self.build_tree(canvas)
@@ -332,6 +348,7 @@ class DialogObject:
     def destroy_ui_choices(self,canvas):
         for choice in self.tkinter_choices:
             canvas.delete(choice)
+        self.choices.clear()
 
     def destroy_self(self,canvas):
         """
@@ -400,11 +417,9 @@ class DialogObject:
 
     def gather_object_information(self):
         character_list = [self.get_character()]
-        dialog_dict = {((self.get_character()).replace(" ", "_")
-                       +"*"+ str(randint(0,100))
-                       +str(randint(0,100))).lower(): self.get_text()}
+        dialog_dict = {((self.get_character())
+                       +"*"+ str(uuid4())).lower(): self.get_text()} # create a unique id for the dialog
         dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
-
         for descendant in self.descendants:
             temp_dict_info = descendant.gather_object_information() # get information from downstream
             # append the information to the characters list

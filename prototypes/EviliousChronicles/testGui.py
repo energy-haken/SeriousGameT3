@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter.messagebox import *
 import menu_ui
-from gui import Gui
-#from guiPack import Gui
+#from gui import Gui
+from guiPack import Gui
 
 
 #if not torch.cuda.is_available():

@@ -1,8 +1,6 @@
-import importlib
-import inspect
 import sdk
 from generation_type import GenerationType
-from observer import Observer
+from model_observer import ModelObserver
 from sdk import ModelsManagement
 
 # Basic models we don't want in our model list
@@ -67,17 +65,23 @@ class ModelHandler:
                            "height":512,
                            "width":512}
         self.is_active = False
-    def add_observer(self,observer: Observer):
+    def add_observer(self, observer: ModelObserver):
         self.__observers.append(observer)
         self.update_observers("parameters",self.parameters)
         #self.update_reload()
 
+    def remove_observer(self, observer: ModelObserver):
+        if observer in self.__observers:
+            self.__observers.remove(observer)
+    def flush_observers(self):
+        self.__observers.clear()
 
-    def remove_observer(self,observer: Observer):
-        self.__observers.remove(observer)
     def update_observers(self,data_type,data):
         for obs in self.__observers:
-            obs.update(self,data_type,data)
+            if obs is not None:
+                obs.update(self,data_type,data)
+            else:
+                print("ERROR in MODEL_HANDLER: null observer")
 
     def __get_loaded_model(self):
         """
@@ -93,36 +97,36 @@ class ModelHandler:
 
         It also sorts models according to the generation type (Diffusers/Transformers).
         """
-        ### check for downloaded models
-        diffusers = []
-        transformers = []
-        # Gather diffusers (for image gen)
-        for model in sdk.ModelDiffusers.__subclasses__():
-            if model not in CONST_BASE_MODELS:
-                diffusers.append(model)
-        # Gather transformers (for text gen)
-        for model in sdk.ModelTransformers.__subclasses__():
-            if model not in CONST_BASE_MODELS: # Get rid of unwanted model from the original sdk
-                transformers.append(model)
-
         # Add models to the manager according to the chosen generation type
         if self.generation_type == GenerationType.TEXT:
-            for model in transformers:
-                model_m = model()
-                model_m.device = self.return_processing_method()
-                ModelsManagement.add_model(self.model_management, new_model=model_m)
+            transformers = self.__gather_model_of_type(sdk.ModelTransformers)
+            self.__instantiate_models(transformers)
         else:
-            for model in diffusers:
-                model_m = model()
-                model_m.device = self.return_processing_method()
-                ModelsManagement.add_model(self.model_management, new_model=model_m)
-        # Original way to get all models
-        # for name, downloaded_model in inspect.getmembers(sdk):
-        #     if inspect.isclass(downloaded_model) and downloaded_model not in CONST_BASE_MODELS:
-        #         new_model = downloaded_model()
-        #         if self.generation_type == GenerationType.TEXT and issubclass(downloaded_model, sdk.ModelTransformers):
-        #             ModelsManagement.add_model(self.model_management, new_model= new_model)
-        #             print(new_model.model_name)
+            diffusers = self.__gather_model_of_type(sdk.ModelDiffusers)
+            self.__instantiate_models(diffusers)
+
+    def __instantiate_models(self,array):
+        """
+        Instantiate all models in an array before putting it inside the ModelsManagement
+
+        array : sdk.Model array
+        """
+        for model in array:
+            model_m = model()
+            model_m.device = self.__return_processing_method()
+            ModelsManagement.add_model(self.model_management, new_model=model_m)
+
+    def __gather_model_of_type(self,model_type : sdk):
+        """
+        Gather configured models from the EMF installation from its class (sdk.Model).
+
+        model_type : sdk.Model
+        """
+        array = []
+        for model in model_type.__subclasses__():
+            if model not in CONST_BASE_MODELS: # Get rid of unwanted model from the original sdk
+                array.append(model)
+        return array
 
     def change_processing_method(self):
         """
@@ -138,13 +142,7 @@ class ModelHandler:
             self.processing = "CPU"
         self.__reload()
 
-    def get_processing_method(self):
-        """
-        Get which processing method the model handler is using (CPU or GPU)
-        """
-        return self.processing
-
-    def return_processing_method(self):
+    def __return_processing_method(self):
         if self.processing=="CPU":
             return sdk.Devices.CPU
         else:
@@ -152,11 +150,11 @@ class ModelHandler:
 
     def generate(self,user_prompt):
         if self.generation_type == GenerationType.TEXT:
-            self.generate_dialog(user_prompt)
+            self.__generate_dialog(user_prompt)
         else:
-            self.generate_image(user_prompt)
+            self.__generate_image(user_prompt)
 
-    def generate_image(self,user_prompt):
+    def __generate_image(self, user_prompt):
         """
         Generate an image with the user prompt, if the model allows it (The model must be a diffuser type).
         """
@@ -172,7 +170,7 @@ class ModelHandler:
         self.update_observers("image",img)
         # return img
 
-    def generate_dialog(self,prompt):
+    def __generate_dialog(self, prompt):
         """
         Generate a dialog with the user prompt, if the model allows it (The model must be a transformer type.)
         """
@@ -182,27 +180,28 @@ class ModelHandler:
             output = self.model_management.generate_prompt(prompt = prompt,
                 model_name=self.parameters["selected_model"].model_name,
                 max_length=self.parameters["max_length"],
-                num_return_sequences=self.parameters["num_return_sequences"], do_sample=self.parameters["do_sample"],
-                repetition_penalty=self.parameters["repetition_penalty"], temperature=self.parameters["temperature"],
-                top_k=self.parameters["top_k"], early_stopping=self.parameters["early_stopping"],
-                num_beams=self.parameters["num_beams"],truncation=self.parameters["truncation"])
+                num_return_sequences=self.parameters["num_return_sequences"],
+                do_sample=self.parameters["do_sample"],
+                repetition_penalty=self.parameters["repetition_penalty"],
+                temperature=self.parameters["temperature"],
+                top_k=self.parameters["top_k"],
+                early_stopping=self.parameters["early_stopping"],
+                num_beams=self.parameters["num_beams"],
+                truncation=self.parameters["truncation"])
+            output[0]['generated_text'] = output[0]['generated_text'].replace(prompt, "") # get rid of the original prompt
         else:
             output.append({"error":"Select a model first, then presse apply"})
         self.update_observers("output",output)
         #return output
 
-    def select_model(self,model_name):
+    def __select_model(self, model_name):
         """
         Select a model amidst the configured and selected generation type models.
         """
-
-        for name in self.available_models.keys():
-            if name == model_name:
-                self.parameters["selected_model"] = self.available_models.get(model_name)
-                self.load_model()
-                break
-
-    def load_model(self):
+        if self.available_models.get(model_name) is not None:
+            self.parameters["selected_model"] = self.available_models.get(model_name)
+            self.__load_model()
+    def __load_model(self):
         """
         Load the model by creating a pipeline first, then loading it in the model management for future uses.
         """
@@ -224,7 +223,7 @@ class ModelHandler:
             self.update_observers("current_model",self.get_current_model())
             self.is_active = False
 
-    def get_models_name(self):
+    def __get_models_name(self):
         name_liste = []
         for name in self.available_models.keys():
             name_liste.append(name)
@@ -245,7 +244,7 @@ class ModelHandler:
         """
 
         # self.parameters = new_parameters
-        self.select_model(new_parameters["selected_model"]) # update properly the model
+        self.__select_model(new_parameters["selected_model"]) # update properly the model
         # put back manually some parameters not yet handled by the text module (boolean)
         self.parameters["do_sample"] = True
         self.parameters["early_stopping"] = True
@@ -258,9 +257,6 @@ class ModelHandler:
 
         # update model
         self.update_observers("current_model",self.get_current_model())
-
-    def get_generation_type(self):
-        return self.generation_type
     def set_generation_type(self,new_type):
         self.generation_type = new_type
         self.__reload()
@@ -276,26 +272,21 @@ class ModelHandler:
         self.__gather_downloaded_models()
         # Once a model is loaded, it can't be loaded twice or removed
         self.available_models = self.__get_loaded_model()
-        self.sort_model_by_type()
+        self.__sort_model_by_type()
         self.update_reload()
 
     def update_reload(self):
-        data = {"processing_type":self.get_processing_method(),
+        data = {"processing_type":self.processing,
                 "current_model":self.get_current_model(),
-                "model_list":self.get_models_name(),
+                "model_list":self.__get_models_name(),
                 "parameters":self.parameters}
         self.update_observers("reload",data)
 
     # Get rid of unused model according to the current generation type
-    def sort_model_by_type(self):
+    def __sort_model_by_type(self):
         """
         Sorts models according to the generation type (Only for the UI).
         """
-
         for name in self.available_models.copy().keys(): # So you can pop the unused models without an error
             if not issubclass(self.available_models.get(name).__class__,CONST_VALID_MODELS_TYPE[self.generation_type.value]):
                 self.available_models.pop(name)
-        # self.update_observers()
-
-    def get_parameters(self):
-        return self.parameters

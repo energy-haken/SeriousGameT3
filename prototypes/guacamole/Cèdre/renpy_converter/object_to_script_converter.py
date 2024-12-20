@@ -26,13 +26,6 @@ class ObjToScriptConverter:
         for character in self.list_characters:
             character_instantiation += self.instantiate_character(character)
         return character_instantiation
-    # def remove_spaces(self):
-    #     for i in range(len(self.list_characters)):
-    #         character = self.list_characters[i]
-    #         self.list_characters.remove(character)
-    #         character = character.replace(" ", "_")
-    #         self.list_characters.append(character)
-
 
     #TODO : class menu and choice
     def generate_menu(self,menu):
@@ -60,19 +53,19 @@ class ObjToScriptConverter:
                     and not last_character.__eq__("")):
                 dialog_string += "    " + "hide " + str(last_character.split("*", 1)[0]) + "\n"
                 dialog_string += "    " + "show " + str(character.split("*", 1)[0]) + "\n"
-                dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
+                dialog_string += "    " + str(character.split("*", 1)[0]).replace(" ", "_").lower() + " \" " + dialog + " \" \n"
                 last_character = str(character.split("*", 1)[0])
             elif last_character == "":
                 dialog_string += "    " + "show " + str(character.split("*", 1)[0]) + "\n"
-                dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
+                dialog_string += "    " + str(character.split("*", 1)[0]).replace(" ", "_").lower() + " \" " + dialog + " \" \n"
                 last_character = str(character.split("*", 1)[0])
             else:
-                dialog_string += "    " + str(character.split("*", 1)[0]) + " \" " + dialog + " \" \n"
+                dialog_string += "    " + str(character.split("*", 1)[0]).replace(" ", "_").lower() + " \" " + dialog + " \" \n"
         return dialog_string
 
     def convert(self):
         converted_string = self.instantiate_characters()
-        converted_string += "label start:\n    scene bg room\n"
+        converted_string += "label start:\n    scene bg ak\n"
         converted_string += self.generate_dialogs()
         converted_string += "    " + "return\n"
         return converted_string
