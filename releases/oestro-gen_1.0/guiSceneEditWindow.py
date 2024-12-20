@@ -35,7 +35,12 @@ class SceneEditWindow(ModelObserver):
         self.window = window
         self.model_controller = descendant.get_model_controller()
         self.choice_entries = []
-        self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
+        self.model_controller.add_observer(self)
+        self.model_controller.ask_can_generate()
+        if self.model_controller.get_current_project():
+            self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
+        else:
+            self.quit_window()
         #input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20 , background="#0D0B0B")
         #input_frame.pack(fill="both", expand=0, side=TOP)
 
@@ -144,11 +149,6 @@ class SceneEditWindow(ModelObserver):
         self.reload_image_path()
         self.reload_image()
 
-    def launch_ia(self):
-        if not self.is_linked_to_model_handler:
-            self.is_linked_to_model_handler = True
-            self.model_controller.add_observer(self)
-
     def update_output(self,data):
         # self.descendant.set_text(data[0]['generated_text'])
         self.user_input_dialog_global.delete(0, END) #deletes the current value
@@ -199,6 +199,12 @@ class SceneEditWindow(ModelObserver):
             case "image":
                 self.update_image(data)
                 self.reload_image()
+            case "ask_can_generate":
+                if not self.is_linked_to_model_handler:
+                    if not data: # Not true, can't generate
+                        self.quit_window()
+                    else:
+                        self.is_linked_to_model_handler = True
             case _: # We don't care about most updates, only about receiving the output data
                 print("ERROR : DISCARDED SUBJECT DATA")
         pass
