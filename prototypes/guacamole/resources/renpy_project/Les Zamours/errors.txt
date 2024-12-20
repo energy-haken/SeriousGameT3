@@ -2,9 +2,37 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 9: Line is indented, but the preceding scene statement statement does not expect a block. Please check this line's indentation. You may have forgotten a colon (:).
-    show Willy Wonka
-    ^
+File "game/script.rpy", line 12: end of line expected.
+    jump jump_to_54a1eebe-004b-4390-97f5-2b2ed0390661
+                         ^
+
+File "game/script.rpy", line 15: end of line expected.
+    jump jump_to_b38dbfd2-4cc9-4866-bbb1-466f2f4ce34c
+                         ^
+
+File "game/script.rpy", line 16: expected ':' not found.
+    label jump_to_54a1eebe-004b-4390-97f5-2b2ed0390661:
+                          ^
+
+File "game/script.rpy", line 31: expected ':' not found.
+    label jump_to_7b1de40f-9a2a-4e2f-ba0b-77190f53a94c:
+                          ^
+
+File "game/script.rpy", line 47: expected ':' not found.
+    label jump_to_7dd49ea9-3045-432a-a59c-0e13d1bcd7b6:
+                          ^
+
+File "game/script.rpy", line 62: expected ':' not found.
+    label jump_to_ca7e5386-7821-4264-83bc-502276a88563:
+                          ^
+
+File "game/script.rpy", line 75: expected ':' not found.
+    label jump_to_28af8b10-2bce-4681-b625-23417155c90e:
+                          ^
+
+File "game/script.rpy", line 88: expected ':' not found.
+    label jump_to_b3b3abd8-61cd-4e3d-8522-e450449cf9ae:
+                          ^
 
 Ren'Py Version: Ren'Py 8.3.2.24090902
-Thu Nov 28 18:20:12 2024
+Wed Dec 18 19:23:50 2024

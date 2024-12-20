@@ -28,7 +28,7 @@ def generate_text(origin):
 
 
     obj_converter = ObjToScriptConverter()
-    obj_converter.set_dialogs_dict(tree_information["dialogs"])
+    obj_converter.set_label_list(tree_information["labels"])
     obj_converter.set_characters_list(tree_information["characters"])
 
     # Convert and write to file

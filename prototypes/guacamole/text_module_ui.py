@@ -180,11 +180,12 @@ class TextModule(ModelObserver):
 
         def test_is_float(e):
             test_char = e.char
-            if not is_float(test_char):
-                if not test_char == '.': # for float
-                    # error_handler("NO >:( ")
-                    delete_last_character(e.widget,is_float)
-            float_delete_dots(e.widget)
+            if not test_char == "\r":
+                if not is_float(test_char):
+                    if not test_char == '.': # for float
+                        # error_handler("NO >:( ")
+                        delete_last_character(e.widget,is_float)
+                float_delete_dots(e.widget)
 
         def test_is_alpha(e):
             test_char = e.char
@@ -199,13 +200,16 @@ class TextModule(ModelObserver):
                 return True
 
         def is_float(char):
-            if not char.isnumeric() and not char == '\b':
-                return False
-            else:
+            try:
+                float(char)
                 return True
+            except ValueError:
+                return False
+
 
         def is_alpha(char):
-            if not char.isalnum() and not char.isspace() and not char == '\b': # \b is backspace
+            if (not char.isalnum() and not char.isspace() and not char == '\b'
+            and not char == '.'and not char == ','): # \b is backspace
                 return False
             else:
                 return True
