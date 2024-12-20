@@ -28,5 +28,3 @@ Fenêtre d'un dialogue
 
 L'objectif d'un Gamelab est de créer un jeu ou une application avec un code réutilisable par un petit groupe et cela dans une période définie.
 Ici le but est que le code que l'on a produit soit réutilisé et amélioré par d'autres étudiants, qui pourront réaliser une nouvelle version du jeu ou de l'application.
-
-**Remarque** : Ce projet n'a pas d'objectifs pédagogiques comme les autres projets T3, il est donc normal que vous n'en trouviez pas en testant notre application.
