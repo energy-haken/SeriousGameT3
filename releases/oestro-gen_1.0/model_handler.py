@@ -285,10 +285,22 @@ class ModelHandler:
     def switch_can_generate(self):
         nb_observer = len(self.__observers)
         self.update_observers("can_generate", nb_observer)
+    def clean_up_dead_observers(self):
+        list_dead = []
+        i = 0
+        for obs in self.__observers:
+            if not obs:
+                list_dead.append(i)
+            i += 1
+        for index in list_dead:
+            self.__observers.pop(index)
+
     def ask_can_generate(self):
         reply = True
+        self.clean_up_dead_observers()
         if len(self.__observers)>2:
             reply = False
+        print(len(self.__observers))
         self.update_observers("ask_can_generate", reply)
     # Get rid of unused model according to the current generation type
     def broadcast_message(self,message,message_type):
