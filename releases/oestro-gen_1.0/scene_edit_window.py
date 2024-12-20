@@ -61,7 +61,7 @@ class SceneEditWindow(ModelObserver):
         self.user_input_dialog_global = dialog_input
 
         # Menu
-        if len(descendant.get_descendants())>1:
+        if len(descendant.get_choices())>1:
             menu_frame = LabelFrame(self.window, text="Menu", padx=20, pady=20)
             menu_frame.pack(fill="both", expand=0, side=TOP)
             # Menu Name
