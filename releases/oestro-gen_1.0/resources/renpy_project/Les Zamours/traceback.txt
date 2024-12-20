@@ -1,0 +1,24 @@
+﻿I'm sorry, but an uncaught exception occurred.
+
+While running game code:
+  File "game/script.rpy", line 10, in script
+    willy_wonka " I hate cappuccino "
+Exception: Sayer 'willy_wonka' is not defined.
+
+-- Full Traceback ------------------------------------------------------------
+
+Full traceback:
+  File "game/script.rpy", line 10, in script
+    willy_wonka " I hate cappuccino "
+  File "S:\zoneTest\renpy\renpy-8.3.2-sdk\renpy\ast.py", line 2573, in execute
+    Say.execute(self)
+  File "S:\zoneTest\renpy\renpy-8.3.2-sdk\renpy\ast.py", line 575, in execute
+    who = eval_who(self.who, self.who_fast)
+  File "S:\zoneTest\renpy\renpy-8.3.2-sdk\renpy\ast.py", line 464, in eval_who
+    raise Exception("Sayer '%s' is not defined." % who)
+Exception: Sayer 'willy_wonka' is not defined.
+
+Windows-10-10.0.22621 AMD64
+Ren'Py 8.3.2.24090902
+Les Zamours 1.0
+Fri Nov 29 10:32:39 2024

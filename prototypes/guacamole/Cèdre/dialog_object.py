@@ -1,7 +1,9 @@
 from tkinter import *
 from uuid import uuid4
 
-
+from renpy_converter.choice import Choice
+from renpy_converter.dialogmenu import DialogMenu
+from renpy_converter.labelobject import LabelObject
 from scene_edit_window import SceneEditWindow
 
 
@@ -50,21 +52,6 @@ def build_ui_part(descendant,index_x,index_y, canvas):
                                fill="black", font=('Helvetica 15 bold'))
     descendant.set_tkinter_label(label)
 
-    # Adding the buttons
-
-
-    # btn = Button(canvas, text='KILL', width=5,
-    #              height=1, bd='1', command=lambda: descendant.destroy_self(canvas))
-    # btn.place(x=40 + offset_x * index_x, y=50 + offset_y * index_y)
-    # descendant.set_tkinter_kill_button(btn)
-    #
-    # btn_add = Button(canvas, text='Add', width=5,
-    #                  height=1, bd='1', command=lambda: descendant.add_descendant_gui(canvas))
-    # btn_add.place(x=0 + offset_x * index_x, y=50 + offset_y * index_y)
-    # descendant.set_tkinter_add_button(btn_add)
-
-    # "BUTTON" (Home-made button made on the canvas, it's in fact just shapes)
-
     btn_kill = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="red", width=2)
     canvas.move(btn_kill, 10 + offset_x * index_x, 50 + offset_y * index_y)
     btn_window = canvas.create_rectangle(5, 0, 20, 15, outline="black", fill="grey", width=2)
@@ -78,6 +65,7 @@ def build_ui_part(descendant,index_x,index_y, canvas):
             btn_choice = canvas.create_rectangle(0, 0, 10, 10, outline="black", fill="orange", width=2)
             canvas.move(btn_choice, 70 + offset_x * index_x, 30 +10*i + offset_y * index_y)
             descendant.add_tkinter_choice(btn_choice)
+            descendant.add_choice("test_banana"+str(uuid4().int>>64))
             i+=1
 
     descendant.set_tkinter_kill_button(btn_kill)
@@ -133,6 +121,7 @@ class DialogObject:
     canvas = None
     tkinter_choices = None
     choices = None
+    menu_name = None
     model_controller = None
 
     def __init__(self):
@@ -186,10 +175,18 @@ class DialogObject:
         self.tkinter_add_button = obj
     def set_tkinter_window_button(self,obj):
         self.tkinter_window_button = obj
+    def set_menu_name(self,name):
+        self.menu_name = name
+    def get_menu_name(self):
+        return self.menu_name
     def add_tkinter_choice(self,choice):
         self.tkinter_choices.append(choice)
-    def add__choice(self,choice):
+    def add_choice(self, choice):
         self.choices.append(choice)
+    def set_choice(self,choices):
+        self.choices = choices
+    def get_choices(self):
+        return self.choices
     def get_character(self):
         return self.character
     def get_text(self):
@@ -280,36 +277,6 @@ class DialogObject:
             index += 1
         return index
 
-    ########## POSTPONED FOR THE RELEASE OF HALF LIFE THREE
-    # def check_x_y_placement_offset(self):
-    #     y_offset = 0
-    #     index_x = self.get_index_x_level()
-    #     index_y = self.get_index_y_level()
-    #
-    #     obj = self.get_parent()
-    #     while obj.get_parent() is not None: # go to the mainline
-    #         obj = obj.get_parent()
-    #
-    #     total_y_offset = obj.explore(index_x,index_y)
-    #     return y_offset
-    #
-    # def explore(self,index_x_limit,index_y_limit):
-    #     """
-    #     Explore each timeline according to the limits and return the y offset of the object
-    #     STILL WIP AND NON-FUNCTIONAL
-    #     """
-    #
-    #     index_y = 0
-    #     obj = self
-    #
-    #     for i in range(index_x_limit): # shit code, going to do something that explore the lines next time
-    #         obj_x = obj
-    #         for y in range(index_y_limit):  # shit code, going to do something that explore the lines next time
-    #             if obj_x.get_descendants() and len(obj_x.get_descendants())>=y:
-    #                 obj_y = obj_x.get_descendants()[y]
-    #         obj_x = obj.get_descendants()[i]
-    #     return index_y
-
     def add_descendant_gui(self,canvas):
         """
         Create a new descendant on the called object before adding it to the canvas
@@ -373,11 +340,6 @@ class DialogObject:
         canvas.delete(self.get_tkinter_add_button())
         canvas.delete(self.get_tkinter_window_button())
         self.destroy_ui_choices(canvas)
-        # Destroy buttons
-        # if self.get_tkinter_kill_button():
-        #     self.get_tkinter_kill_button().destroy()
-        # if self.get_tkinter_add_button():
-        #     self.get_tkinter_add_button().destroy()
 
     def destroy_tree(self,canvas):
         """
@@ -415,18 +377,70 @@ class DialogObject:
         # print("### Mainline : " + str(self.get_mainline_length()))
         canvas.configure(scrollregion=(0, 0, 120 * self.get_mainline_length(), 2000))
 
-    def gather_object_information(self):
+    def gather_object_information(self,parent_label):
         character_list = [self.get_character()]
+        # dialog_dict = {((self.get_character())
+        #                +"*"+ str(uuid4())).lower(): self.get_text()} # create a unique id for the dialog
+        labels_list = []
+        current_label = LabelObject()
         dialog_dict = {((self.get_character())
                        +"*"+ str(uuid4())).lower(): self.get_text()} # create a unique id for the dialog
-        dialog_tree_info = {"characters": character_list, "dialogs": dialog_dict}
+        if not parent_label:
+            current_label.set_name("start")
+            current_label.set_background("room")
+            current_label.set_dialogs_dict(dialog_dict)
+            labels_list.append(current_label)
+        else:
+            current_label = parent_label
+            current_label.add_to_dialogs_dict(dialog_dict)
+
+        menu = None
+        if self.get_choices() or len(self.get_choices()) != 0:  # there's a menu
+            menu = DialogMenu()
+            menu.set_tile(self.menu_name)
+            # menu.set_choices()
+            for choice in self.choices:
+                new_choice = Choice()
+                new_choice.set_title(choice)
+                new_choice.set_text("You chose : "+choice)
+                new_choice.set_jump("jump_to_"+str(uuid4().int>>64))
+                menu.add_choice(new_choice)
+            new_menu_label = LabelObject()
+            new_menu_label.set_menu(menu)
+            new_menu_label.set_type("menu")
+            labels_list.append(new_menu_label)
+        dialog_tree_info = {"characters": character_list, "labels": labels_list}
+        i = 0 # for the choices
         for descendant in self.descendants:
-            temp_dict_info = descendant.gather_object_information() # get information from downstream
-            # append the information to the characters list
-            dialog_tree_info["characters"].extend(temp_dict_info["characters"])
-            # append the information to the dialogs dictionary
-            dialog_tree_info["dialogs"].update(temp_dict_info["dialogs"])
+            if not menu:
+                temp_dict_info = descendant.gather_object_information(current_label) # get information from downstream
+                # append the information to the characters list
+                dialog_tree_info["characters"].extend(temp_dict_info["characters"])
+                temp_list = dialog_tree_info["labels"]
+                for label in temp_dict_info["labels"]:
+                    temp_list.append(label)
+                temp_list = list(dict.fromkeys(temp_list)) # remove duplicates
+                dialog_tree_info["labels"] = temp_list
+            else:
+                new_choice_label = LabelObject()
+                current_choice = menu.get_choice_list()[i]
+                new_choice_label.set_name(current_choice.get_jump())
+                new_choice_label.set_type("label")
+                new_choice_label.set_background("room")
+                dialog_tree_info["labels"].append(new_choice_label)
+                temp_dict_info = descendant.gather_object_information(new_choice_label)  # get information from downstream
+                dialog_tree_info["characters"].extend(temp_dict_info["characters"])
+                temp_list = dialog_tree_info["labels"]
+                for label in temp_dict_info["labels"]:
+                    temp_list.append(label)
+                temp_list = list(dict.fromkeys(temp_list)) # remove duplicates
+                dialog_tree_info["labels"] = temp_list
+                i += 1 # for the choices
+
+        if len(self.descendants)==0:
+            current_label.set_type("label-end")
+
         return dialog_tree_info
 
     def get_tree_information(self):
-        return self.get_origin_object().gather_object_information()
+        return self.get_origin_object().gather_object_information(None)
