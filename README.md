@@ -18,7 +18,10 @@ Il inclut :
 - un studio de création de personnages
 - un studio de création d'histoires avec des dialogues et des choix
 
+Écran principal d'Œstro-gen
 ![Image d'illustration de la fenêtre principale](/images/mainWindow.png)
+
+Fenêtre d'un dialogue
 ![Image d'illustration d'un dialogue](/images/dialog.png)
 
 ## Gamelab
