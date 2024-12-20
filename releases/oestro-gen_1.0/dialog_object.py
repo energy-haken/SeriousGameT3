@@ -145,7 +145,7 @@ class DialogObject:
         if self.tkinter_label:
             self.update_tkinter_character_label()
     def set_text(self,text):
-        self.text = text
+        self.text = text.replace("\"", "")
     def update_tkinter_character_label(self):
         self.canvas.itemconfig(self.tkinter_label, text=self.character)
     def set_img(self,img):
