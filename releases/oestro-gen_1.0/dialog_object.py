@@ -88,7 +88,11 @@ def build_ui_part(descendant,index_x,index_y, canvas):
         # print('Got object click', event.x, event.y)
         # print(event.widget.find_closest(event.x, event.y))
         if descendant.get_model_controller().get_current_project():
-            scene_window = SceneEditWindow(Toplevel(descendant.get_model_controller().get_current_window()),descendant)
+            try:
+                scene_window = SceneEditWindow(Toplevel(),descendant)
+                #descendant.get_model_controller().get_current_window()
+            except ValueError:
+                print("ERROR : Multiple scene_edit_window opened at the same time !")
         else:
             descendant.get_model_controller().broadcast_message("No project selected","error")
 
