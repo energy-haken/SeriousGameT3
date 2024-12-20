@@ -232,7 +232,7 @@ class SceneEditWindow(ModelObserver):
                 if not self.is_linked_to_model_handler:
                     if not data: # Not true, can't generate
                         self.model_controller.broadcast_message("Not allowed to open more than 1 window","error")
-                        self.quit_window()
+                        # self.quit_window()
                     else:
                         self.is_linked_to_model_handler = True
             case _: # We don't care about most updates, only about receiving the output data
