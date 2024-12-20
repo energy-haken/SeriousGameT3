@@ -289,10 +289,18 @@ class Gui(ModelObserver):
 
         listContexte["values"] = ["Context Perso" , "Medieval , with knights and royalty" , "School , with students and teachers" , "Sci-fi , with aliens and spaceships" , "Fantasy , with elves and dragons" , "Modern , with cars and buildings"]
         listContexte.configure(state="readonly")    
-        if(listContexte.get() == "Context Perso" or listContexte.get() == ""):
-            self.context = listContexte.get()
-        else:
-            self.context = textContexte.get() ## store the context to use it later
+
+        ## Button to apply the context
+        buttonValidateContext = Button(frameContexte , text="Validate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: validateContext())
+        buttonValidateContext.place(x=150 , y=150)
+
+        def validateContext():
+            if(listContexte.get() == "Context Perso" or listContexte.get() == ""):
+                self.context = textContexte.get()
+                change_validate(self.window , "Context " + textContexte.get() + " validated")
+            else:
+                self.context = listContexte.get()
+                change_validate(self.window , "Context " + listContexte.get() + " validated")
 
         ## frame Prompt
 
@@ -525,6 +533,8 @@ class Gui(ModelObserver):
                 
     def generate(self):
         self.update_prompt()
+        self.prompt = self.context + " \n " + self.prompt 
+        print(self.prompt)
         self.model_controller.generate(self.prompt)
         self.button_generate.configure(text="Regenerate") # change the button text to regenerate
         
