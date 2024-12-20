@@ -666,6 +666,11 @@ class Gui(ModelObserver):
             case "can_generate":
                 x = 0
                 # self.switch()
+            case "broadcast":
+                if data["type"]=="error":
+                    error_handler(self.window,data["message"])
+                else:
+                    change_validate(self.window,data["message"])
             case _:
                 print("ERROR : COULDN'T READ SUBJECT DATA")
         pass
