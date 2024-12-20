@@ -31,4 +31,4 @@ Une fois que emf-cli a téléchargé les modules nécéssaire au bon fonctionnem
 #### 1. Ouvrir AppLauncher.bat
 
 
-![Logo Œstro-gen](/prototypes/guacamole/images/logo.png) 
+![Logo Œstro-gen](/images/logo.png)
