@@ -24,6 +24,9 @@ Il inclut :
 Fenêtre d'un dialogue
 ![Image d'illustration d'un dialogue](/images/dialog.png)
 
+## Installation
+Pour savoir comment installer le projet, suivez [ce lien](/releases/oestro-gen_1.0/README.md)!
+
 ## Gamelab
 
 L'objectif d'un Gamelab est de créer un jeu ou une application avec un code réutilisable par un petit groupe et cela dans une période définie.

@@ -28,7 +28,13 @@ Une fois que emf-cli a téléchargé les modules nécéssaires au bon fonctionne
 
 ### Mise en place du launcher automatisé (pour Windows seulement)
 
-#### 1. Ouvrir AppLauncher.bat
+#### 1. Installer les dépendances
+Une fois EMF-CLI installé et le prototype téléchargé, effectuez la commande suivante dans le dossier de l'application :
+```
+emf-cli install
+```
+#### 2. Ouvrir AppLauncher.bat
+Démarre l'application
 
 
 ![Logo Evilious](images/eviouschronicle.jpg)

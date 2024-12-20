@@ -11,7 +11,7 @@ Lien vers le github :  [EMF : Easy Model Fusion](https://github.com/easy-model-f
 
 ### Mettre en place EMF-CLI
 
-Une fois EMF-CLI installé et le prototype téléchargé, effectuez la commande suivante dans le dossier du prototype :
+Une fois EMF-CLI installé et le prototype téléchargé, effectuez la commande suivante dans le dossier du logiciel :
 ```
 emf-cli install
 ```
@@ -28,7 +28,12 @@ Une fois que emf-cli a téléchargé les modules nécéssaire au bon fonctionnem
 
 ### Mise en place du launcher automatisé (pour Windows seulement) 
 
-#### 1. Ouvrir AppLauncher.bat
-
+#### 1. Installer les dépendances
+Une fois EMF-CLI installé et le prototype téléchargé, effectuez la commande suivante dans le dossier de l'application :
+```
+emf-cli install
+```
+#### 2. Ouvrir AppLauncher.bat
+Démarre l'application
 
 ![Logo Œstro-gen](/images/logo.png)
