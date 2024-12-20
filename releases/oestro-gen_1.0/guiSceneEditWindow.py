@@ -128,8 +128,37 @@ class SceneEditWindow(ModelObserver):
         self.canvas.pack(fill=BOTH, expand=True)
         self.reload_image()
 
+        # Add the bindings to the entries
+        self.user_input_dialog_global.bind("<KeyRelease>", self.test_is_alpha)
+        self.user_input_character_global.bind("<KeyRelease>", self.test_is_alpha)
+        self.menu_entry.bind("<KeyRelease>", self.test_is_alpha)
+        for choice in self.choice_entries:
+            choice.bind("<KeyRelease>", self.test_is_alpha)
+
         # close the window properly
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
+
+    def test_is_alpha(self,e):
+        test_char = e.char
+        if not self.is_alpha(test_char):
+            # error_handler("NO >:( ")
+            self.delete_last_character(e.widget, self.is_alpha)
+
+    def delete_last_character(self,widget,test):
+        current_widget = widget
+        new_text = current_widget.get()
+        for char in current_widget.get():
+            if not test(char):
+                new_text = new_text.replace(char,'')
+        current_widget.delete(0,END)
+        current_widget.insert(0,new_text)
+
+    def is_alpha(self,char):
+        if (not char.isalnum() and not char.isspace() and not char == '\b'
+        and not char == '.'and not char == ',' and not char=='!' and not char=='?'): # \b is backspace
+            return False
+        else:
+            return True
 
     # close the window properly
     def quit_window(self):

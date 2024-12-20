@@ -418,10 +418,9 @@ class Gui(ModelObserver):
             except ValueError:
                 return False
 
-
-        def is_alpha(char):
+        def is_alpha(self, char):
             if (not char.isalnum() and not char.isspace() and not char == '\b'
-            and not char == '.'and not char == ','): # \b is backspace
+                    and not char == '.' and not char == ',' and not char == '!' and not char == '?'):  # \b is backspace
                 return False
             else:
                 return True
