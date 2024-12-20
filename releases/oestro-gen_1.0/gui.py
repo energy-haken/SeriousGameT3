@@ -174,8 +174,7 @@ class Gui(ModelObserver):
         listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=initial_data , state="readonly")
         listModel.place(x=0, y=0)
 
-        button_apply_parameters = Button(frameParametersZone, text="Apply Parameters & model", command=lambda : self.update_parameters())
-        button_apply_parameters.place(x=25, y=500)
+        
         
 
         ## Paremtres du model
@@ -253,7 +252,9 @@ class Gui(ModelObserver):
         textNumberOfBeam = Entry(frameParameterModel, textvariable=value6 ,  width=10)
         textNumberOfBeam.place(x=240 , y=340)
         
-
+        button_apply_parameters = Button(frameParametersZone, background="#383535" , foreground="white" ,text="Apply Parameters & model" , font=("Khmer", 15), command=lambda : self.update_parameters())
+        button_apply_parameters.place(x=75, y=960)
+        
         self.parameters_entry_list = {"selected_model":listModel,
                                     "temperature":textTemperature,
                                     "num_beams":textNumberOfBeam,
@@ -327,10 +328,10 @@ class Gui(ModelObserver):
 
         self.prompt_label_global = labelPrompt
 
-        # labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25 ) , justify="left")
-        # labelOutput.place(x=400 , y=100)
+        labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25 ) , justify="left")
+        #labelOutput.place(x=400 , y=100)
 
-        # self.output_label_global = labelOutput
+        self.output_label_global = labelOutput
 
         
 
@@ -476,17 +477,26 @@ class Gui(ModelObserver):
 
 
     def generate_tree_with_ai(self):
+        self.canvas.delete("all") # clean up the canvas before generating anything with ai
         count = self.output.count('\n')
         dialogue = self.output.split('\n')
         # print(dialogue)
         self.first_obj.destroy_self(self.canvas)
         obj_p = self.first_obj
+        obj_p.set_character("Character0")
+        if(dialogue[0] != '' or dialogue[0] != "." or dialogue[0] != '."'):
+            obj_p.set_text(dialogue[0])
+        else:
+            obj_p.set_text(dialogue[1])    
+        
         for i in range(count):
-            obj = DialogObject()
-            obj.set_character("Character1")
-            obj.set_text(dialogue[i])
-            obj.set_parent(obj_p)
-            obj_p = obj
+            if( i > 0):
+                if(dialogue[i] != '' or dialogue[i] != "." or dialogue[i] != ".\"" and dialogue[i] != obj_p.get_text()) : # if the line is not empty
+                    obj = DialogObject()
+                    obj.set_character("Character" + str(i))
+                    obj.set_text(dialogue[i])
+                    obj.set_parent(obj_p)
+                    obj_p = obj
         obj_p.build_tree(self.canvas)
         
     def change_processing_type(self):
@@ -558,6 +568,9 @@ class Gui(ModelObserver):
             # self.output_label_global.place_forget()
             # self.output_label_global.place(x=75, y=100)
             self.output = message[0]['generated_text']
+           
+            self.generate_tree_with_ai()
+           
             # self.output_label_global.config(text=message[0]['generated_text'])
 
     def update_prompt(self):
@@ -571,6 +584,9 @@ class Gui(ModelObserver):
                 if selected_model:
                     self.parameters.update({"selected_model": selected_model})
                     change_validate(self.window, "Model " + selected_model + " selected")
+                if selected_model == "":
+                    error_handler(self.window, "No model selected")
+                    return
                 else:
                     self.parameters.update({"selected_model": self.get_specific_param("selected_model")})
             else:
