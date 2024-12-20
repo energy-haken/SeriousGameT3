@@ -2,9 +2,9 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 3: is not terminated with a newline. (Check strings and parenthesis.)
+File "game/script.rpy", line 12: is not terminated with a newline. (Check strings and parenthesis.)
 (Perhaps you left out a " at the end of the first line.)
-        e "noooo. " "
+        character0 "  builder. "  " 
 
 Ren'Py Version: Ren'Py 8.3.2.24090902
-Fri Dec  6 15:44:20 2024
+Fri Dec 20 12:15:29 2024
