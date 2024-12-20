@@ -2,11 +2,12 @@
 
 
 ## Installation
-### Dépendances : 
+
+### Dépendances :
+
 Ce prototype nécessite EMF-CLI, suivez les instructions d'installation via ce lien : [Lien vers EMF-CLI](https://easy-model-fusion.github.io/docs/installation.html)
 
 Lien vers le github :  [EMF : Easy Model Fusion](https://github.com/easy-model-fusion)
-
 
 ### Mettre en place EMF-CLI
 
@@ -14,7 +15,7 @@ Une fois EMF-CLI installé et le prototype téléchargé, effectuez la commande 
 ```
 emf-cli install
 ```
-Une fois que emf-cli a télécharger les modules nécéssaire au bon fonctionnement du prototype, vous n'avez plus qu'à lancer l'éxécutable main.py avec la commande :
+Une fois que emf-cli a téléchargé les modules nécéssaires au bon fonctionnement du prototype, vous n'avez plus qu'à lancer l'éxécutable main.py avec la commande :
 (pour Windows):
 ```
 .\venv\Scripts\python.exe main.py
@@ -25,10 +26,9 @@ Une fois que emf-cli a télécharger les modules nécéssaire au bon fonctionnem
 ```
 
 
-### Mise en place du launcher automatisé 
+### Mise en place du launcher automatisé (pour Windows seulement)
 
-#### 1) Ouvrir AppLauncher.bat 
-#### 2) Profit
+#### 1. Ouvrir AppLauncher.bat
 
 
 ![Logo Evilious](images/eviouschronicle.jpg)
