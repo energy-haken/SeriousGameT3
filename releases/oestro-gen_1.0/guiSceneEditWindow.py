@@ -5,7 +5,7 @@ from tkinter.messagebox import showerror, showinfo
 from PIL import ImageTk, Image
 
 from model_observer import ModelObserver
-
+from idlelib.tooltip import Hovertip
 
 
 def error_handler(message):
@@ -23,75 +23,102 @@ class SceneEditWindow(ModelObserver):
     base_path = "resources/renpy_project/Les Zamours/game/images/"
     image_is_ai = False
     window = None
-    # is_linked_to_model_handler = False
+    is_linked_to_model_handler = False
     menu_entry = None
     choice_entries = None
-    is_allowed_to_generate = False
 
     def __init__(self,window,descendant):
+
+        window.configure(bg="#0D0B0B")
 
         self.descendant = descendant
         self.window = window
         self.model_controller = descendant.get_model_controller()
         self.choice_entries = []
+        self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
+        #input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20 , background="#0D0B0B")
+        #input_frame.pack(fill="both", expand=0, side=TOP)
+
+        frameNameDia = Frame(self.window, background="#1D1B1B" , pady=20, padx=80)
+        frameNameDia.pack( expand=0, side=TOP)
 
 
-        if self.model_controller.get_current_project():
-            self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
-        else:
-            self.base_path = "resources/images/"
-        self.model_controller.add_observer(self)
-        self.model_controller.ask_can_generate()
-        input_frame = LabelFrame(self.window, text="Text Zone", padx=20, pady=20)
-        input_frame.pack(fill="both", expand=0, side=TOP)
-
+        
         character_str = StringVar()
         character_str.set(self.descendant.get_character())
 
         dialog_str = StringVar()
         dialog_str.set(self.descendant.get_text())
 
-        character_input = Entry(input_frame, textvariable=character_str, width=30)
+        labelCharName = Label(frameNameDia, text="Character Name", background="#1D1B1B", fg="white" , font=("Khmer" , 15))
+        labelCharName.pack()
+        character_input = Entry(frameNameDia, textvariable=character_str, width=30)
         character_input.pack()
         self.user_input_character_global = character_input
 
-
-        dialog_input = Entry(input_frame, textvariable=dialog_str, width=30)
+        labelDialog = Label(frameNameDia, text="Dialog", background="#1D1B1B", fg="white" , font=("Khmer" , 15))
+        labelDialog.pack()
+        dialog_input = Entry(frameNameDia, textvariable=dialog_str, width=30)
         dialog_input.pack()
         self.user_input_dialog_global = dialog_input
 
         # Menu
         if len(descendant.get_choices())>1:
-            menu_frame = LabelFrame(self.window, text="Menu", padx=20, pady=20)
-            menu_frame.pack(fill="both", expand=0, side=TOP)
+            #menu_frame = LabelFrame(self.window, text="Menu", padx=20, pady=20)
+            #menu_frame.pack(fill="both", expand=0, side=TOP)
+
+            frameVide = Frame(self.window, background="#0D0B0B" , height=50)
+            frameVide.pack( fill="none" , expand=0, side=TOP)
+
+            frameMenu = Frame(self.window, background="#1D1B1B" , pady=20, padx=80)
+            frameMenu.pack(expand=0, side=TOP)
             # Menu Name
             menu_str_name = StringVar()
             menu_str_name.set("Menu name here")
-            menu_name_input = Entry(menu_frame, textvariable=menu_str_name, width=30)
+
+            labelMenuName = Label(frameMenu, text="Menu Name", background="#1D1B1B", fg="white" , font=("Khmer" , 15))
+            labelMenuName.pack()
+            menu_name_input = Entry(frameMenu, textvariable=menu_str_name, width=30)
             menu_name_input.pack()
             self.menu_entry = menu_name_input
-            choices_frame = LabelFrame(menu_frame, text="Choices", padx=20, pady=20)
-            choices_frame.pack(fill="both", expand=0, side=TOP)
+            #choices_frame = LabelFrame(frameMenu, text="Choices", padx=20, pady=20)
+            #choices_frame.pack(fill="both", expand=0, side=TOP)
+
+            frameChoices = Frame(frameMenu, background="#383535" , pady=20, padx=60)
+            frameChoices.pack( expand=0, side=TOP)
+
+            labelChoices = Label(frameChoices, text="Choices", background="#383535", fg="white" , font=("Khmer" , 15))
+            labelChoices.pack()
 
             for choice in descendant.get_choices():
                 menu_str = StringVar()
                 menu_str.set(choice)
-                menu_input = Entry(choices_frame, textvariable=menu_str, width=30)
+                menu_input = Entry(frameChoices, textvariable=menu_str, width=30)
                 menu_input.pack()
                 self.choice_entries.append(menu_input)
 
-        button_send = Button(input_frame, text="Validate", command=lambda : self.update_fields())
+        button_send = Button(frameNameDia, background="#383535" , foreground="white" ,text="Validate", command=lambda : self.update_fields())
         button_send.pack()
 
-        # button_ia = Button(input_frame, text="Generate with ai", command=lambda : self.launch_ia())
-        # button_ia.pack()
+        
+        #button_ia = Button(frameNameDia, background="#383535" , foreground="white" , text="Generate with ai", command=lambda : self.launch_ia())
+        #button_ia.pack()
 
-        button_save_image = Button(input_frame, text="Discard Generated Image", command=lambda : self.discard_image())
-        button_save_image.pack()
+        labelGenerateImage = Label(frameNameDia, text="To generate an image \n -Keep this window open and click on \"Generate\" \n -Wait", background="#1D1B1B", fg="white" , font=("Khmer" , 15))
+        labelGenerateImage.pack()
+
+        button_discard_image = Button(frameNameDia, background="#383535" , foreground="white" ,  text="Discard Generated Image", command=lambda : self.discard_image())
+        button_discard_image.pack()
+        tipDiscard = Hovertip(button_discard_image, "Discard the image just generated and reload the original one")
 
         self.reload_image_path()
 
-        self.canvas = Canvas(self.window, width=500, height=500, highlightthickness=0)
+        frameImage = Frame(self.window, background="#0D0B0B" , pady=20, padx=80)
+        frameImage.pack( expand=0, side=TOP)
+        labelImage = Label(frameImage, text="Image", background="#0D0B0B", fg="white" , font=("Khmer" , 15))
+        labelImage.pack()
+        self.canvas = Canvas(frameImage, width=500, height=500, highlightthickness=0 , background="#0D0B0B")
+        
         self.image_object = self.canvas.create_image(10, 10, image=self.image, anchor=NW, tags="image")
         self.canvas.pack(fill=BOTH, expand=True)
         self.reload_image()
@@ -102,7 +129,6 @@ class SceneEditWindow(ModelObserver):
     # close the window properly
     def quit_window(self):
         self.model_controller.remove_observer(self)
-        self.model_controller.switch_can_generate()
         self.window.destroy()
 
     def update_fields(self):
@@ -118,10 +144,10 @@ class SceneEditWindow(ModelObserver):
         self.reload_image_path()
         self.reload_image()
 
-    # def launch_ia(self):
-    #     if not self.is_linked_to_model_handler:
-    #         self.is_linked_to_model_handler = True
-    #         self.model_controller.add_observer(self)
+    def launch_ia(self):
+        if not self.is_linked_to_model_handler:
+            self.is_linked_to_model_handler = True
+            self.model_controller.add_observer(self)
 
     def update_output(self,data):
         # self.descendant.set_text(data[0]['generated_text'])
@@ -173,13 +199,6 @@ class SceneEditWindow(ModelObserver):
             case "image":
                 self.update_image(data)
                 self.reload_image()
-            case "ask_can_generate":
-                if not self.is_allowed_to_generate:
-                    if not data: # not allowed to generate
-                        self.quit_window()
-                    else: # Allowed, and tell the GUI
-                        self.model_controller.switch_can_generate()
-                        self.is_allowed_to_generate = True
             case _: # We don't care about most updates, only about receiving the output data
                 print("ERROR : DISCARDED SUBJECT DATA")
         pass

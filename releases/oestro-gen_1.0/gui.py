@@ -101,17 +101,17 @@ class Gui(ModelObserver):
         image_label.place(x=-30, y=-30)
 
         
-        ## Frame pour la case [Project : nomProjet]
+        ## Frame to select the Ren'py project to use
         frameProject = Frame(frameParametersZone, width=366, height=54, bg="#383535")
         frameProject.place(x=25, y=150)
 
         
 
-        pathFolder = pathlib.Path(__file__).parent ## Recuperation du chemin du fichier
-        pathFolder = pathlib.Path.joinpath( pathFolder , "resources/renpy_project") ## Ajout du chemin du dossier ressources
+        pathFolder = pathlib.Path(__file__).parent ## to get the path of the current file
+        pathFolder = pathlib.Path.joinpath( pathFolder , "resources/renpy_project") ## add the renpy_project folder to the path
 
-        files = os.listdir(pathFolder) ## Recuperation de la liste des fichiers dans le dossier ressources
-        # print(files)
+        files = os.listdir(pathFolder) ## to get all the files/folder in the directory
+       
 
 
 
@@ -119,7 +119,7 @@ class Gui(ModelObserver):
         valueProject.set(pathFolder)
 
         firstProjectBase = "Project : " 
-        firstProjectBase += str(pathFolder) ## Ajout du nom du dossier
+        firstProjectBase += str(pathFolder) ## add the path of the project to the label
 
         style = ttk.Style()
 
@@ -129,33 +129,31 @@ class Gui(ModelObserver):
                                     {'selectbackground': 'blue',
                                     'fieldbackground': '#383535',
                                     'background': 'white'
-                                    }}}
+                                    }}} ## change the style of the combobox
                         )
-        style.theme_use('combostyle')
+        style.theme_use('combostyle') ## use the style for ALL the combobox
+        
+        ## Combobox to select the project
         comboProject = ttk.Combobox(frameProject , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=files , state="readonly")
         comboProject.bind("<<ComboboxSelected>>", self.update_project_name)
         comboProject.place(x=0 , y=0)
         # comboProject.bind('<>', self.update_project_name())
-        self.combobox_project = comboProject
+        self.combobox_project = comboProject # store the combobox to update the project name
 
-        ##labelProject = Label(frameProject , text=firstProjectBase ,background="#383535" , foreground="white" , font=("Khmer", 25))
-        ##labelProject.place(x=1 , y=5)
-        style = ttk.Style()
+       
 
-
-
-
-        ## Frame pour le bouton pour changer de mode d'utilisation (entre le CPU et le GPU)
+        ## Frame for the button to change the processing mode (between CPU and GPU)
         frameProcessingMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
         frameProcessingMode.place(x=25, y=250)
 
+        ## Button to change the processing mode
         button_processing_type = Button(frameProcessingMode, background="#383535" , fg="white" ,text="Processing-Mode : CPU",  font=("Khmer", 24) , command=lambda: self.change_processing_type())
         button_processing_type.pack()
         self.processing_type_button = button_processing_type
 
         
 
-            ## Frame pour le bouton pour changer de mode d'utilisation (entre image et le text)
+        ## Frame for the button to change the generation mode (between text and image)
         frameGenerationMode = Frame(frameParametersZone, width=366, height=54, bg="#383535")
         frameGenerationMode.place(x=25, y=350)
 
@@ -163,28 +161,26 @@ class Gui(ModelObserver):
         button_generationMode.pack(fill=BOTH)
         self.gen_type_label = button_generationMode
 
-        #button_generationMode.place(x=0 , y=0)
-
-        ## Liste des models
+        ## Frame for the combobox to select the model
         frameListModel = Frame(frameParametersZone , background="#383535" , width=366 , height=53)
         frameListModel.place(x=25, y=450)
 
-        initial_data = ["Plan A", "Plan B"]
-
-        listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="white" , values=initial_data , state="readonly")
+        ## Combobox to select the model (yes it's a combobox, not a listbox)
+        listModel = ttk.Combobox(frameListModel , background="#383535" , font=("Khmer" , 23) , foreground="white"  , state="readonly")
         listModel.place(x=0, y=0)
 
-        button_apply_parameters = Button(frameParametersZone, text="Apply Parameters & model", command=lambda : self.update_parameters())
-        button_apply_parameters.place(x=25, y=500)
-        
 
-        ## Paremtres du model
+        ## All the parameters of the model
 
+        ## Frame for the parameters
         frameParameterModel = Frame(frameParametersZone , width=311 , height=400 , background="#383535")
         frameParameterModel.place(x=50 , y=550) 
 
+        ## Labels for the parameters
         labelParameters = Label(frameParameterModel , text="PARAMETERS" , background="#383535" , foreground="white" , font=("Khmer" , 25))
         labelParameters.place(x=40 , y=5)
+
+        ## Parameters : max_length
 
         labelMaxLength = Label(frameParameterModel , text="Max length" , background="#383535" , foreground="white" , font=("Khmer" , 20))
         labelMaxLength.place(x=5 , y=55)
@@ -195,19 +191,18 @@ class Gui(ModelObserver):
         textMaxLenth = Entry(frameParameterModel, textvariable=value1 ,width=10)
         textMaxLenth.place(x=240 , y=70)
 
-
+        ## Parameters : num_return_sequences
 
         labelReturnedSequence = Label(frameParameterModel , text="Number of returned \n sequences" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
         labelReturnedSequence.place(x=5 , y=110)
         tipReturnedSequence = Hovertip(labelReturnedSequence,' self explicit')
-
 
         value2 = StringVar()
         value2.set(self.get_specific_param("num_return_sequences"))
         textReturnedSequence = Entry(frameParameterModel,textvariable=value2 , width=10)
         textReturnedSequence.place(x=240 , y=150)
 
-
+        ## Parameters : repetition_penalty
 
         labelRepetionPenalty = Label(frameParameterModel , text="Repetition penalty" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
         labelRepetionPenalty.place(x=5 , y=190)
@@ -218,42 +213,46 @@ class Gui(ModelObserver):
         textRepetionPenalty = Entry(frameParameterModel,textvariable=value3 , width=10)
         textRepetionPenalty.place(x=240 , y=200)
 
-
+        ## Parameters : temperature
 
         labelTemperature = Label(frameParameterModel , text="Temperature" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
         labelTemperature.place(x=5 , y=240)
         tipTemperature = Hovertip(labelTemperature,' affecte le caractère aléatoire du model \n (plus c\'est petit, plus c\'est prévisible, plus c\'est grand, plus c\'est imprévisible)')
         
-        
+        ## Parameters : temperature
 
         value4 = StringVar()
         value4.set(self.get_specific_param("temperature"))
         textTemperature = Entry(frameParameterModel,textvariable=value4 , width=10)
         textTemperature.place(x=240 , y=250)
 
+        ## Parameters : top_k
 
         labelTopK = Label(frameParameterModel , text="Top K" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
         labelTopK.place(x=5 , y=285)
         tipTopK = Hovertip(labelTopK,'nombre de mots à considérer pour la génération')
-
         
         value5 = StringVar()
         value5.set(self.get_specific_param("top_k"))
         textTopK = Entry(frameParameterModel,textvariable=value5,  width=10)
         textTopK.place(x=240 , y=295)
 
+        ## Parameters : num_beams
 
         labelNumberOfBeam = Label(frameParameterModel , text="Number of Beam" ,justify="left", background="#383535" , foreground="white" , font=("Khmer" , 20))
         labelNumberOfBeam.place(x=5 , y=330)
         tipNumberOfBeam = Hovertip(labelNumberOfBeam,'nombre de beam pour la génération')
-
 
         value6 = StringVar()
         value6.set(self.get_specific_param("num_beams"))
         textNumberOfBeam = Entry(frameParameterModel, textvariable=value6 ,  width=10)
         textNumberOfBeam.place(x=240 , y=340)
         
-
+        ## Button to apply the parameters
+        button_apply_parameters = Button(frameParametersZone, background="#383535" , foreground="white" ,text="Apply Parameters & model" , font=("Khmer", 15), command=lambda : self.update_parameters())
+        button_apply_parameters.place(x=75, y=960)
+        
+        ## Dictionary with the initial parameters
         self.parameters_entry_list = {"selected_model":listModel,
                                     "temperature":textTemperature,
                                     "num_beams":textNumberOfBeam,
@@ -262,26 +261,21 @@ class Gui(ModelObserver):
                                     "top_k":textTopK,
                                     "max_length":textMaxLenth}            
 
-        ## Frame Droite pour l'historique
+        ## Frame at the right of the screen with the history of the conversation and the images generated (NOT IMPLEMENTED YET)
 
         frameHistory = Frame(self.window ,  width=410, height=1000, bg="#1D1B1B")
         frameHistory.pack(side=RIGHT)
 
-        frameTest = Frame(frameHistory , width=366 , height=54 , bg="#383535")
-        frameTest.place(x=25 , y=150)  
-        ## frame contexto + prompt
+      
+        ## frame contexto + prompt 
 
         frameConIn = Frame(self.window, width=1000 , height=200 , background="#0D0B0B")
         frameConIn.pack(side=TOP , fill=X)
 
-
         ## Frame Contexto
 
-        
         frameContexte = Frame(frameConIn, width=400 , height=200 , background="#383535")
         frameContexte.pack(side=LEFT)
-
-        
 
         labelContexte = Label(frameContexte , text="Context" , background="#383535" , foreground="white" , font=("Khmer" , 25))
         labelContexte.place(x=150 , y=5)
@@ -289,15 +283,16 @@ class Gui(ModelObserver):
         textContexte = Entry(frameContexte , width=25 , font=("Khmer" , 20))
         textContexte.place(x=5 , y=50)
 
+        ## Combobox Contexte (yes it's a combobox, not a listbox AGAIN)
         listContexte = ttk.Combobox(frameContexte , width=25 , font=("Khmer" , 20) , foreground="white")
         listContexte.place(x=5 , y=100)
 
-        listContexte["values"] = ["Context Perso" , "Context 2" , "Context 3"]
+        listContexte["values"] = ["Context Perso" , "Medieval , with knights and royalty" , "School , with students and teachers" , "Sci-fi , with aliens and spaceships" , "Fantasy , with elves and dragons" , "Modern , with cars and buildings"]
         listContexte.configure(state="readonly")    
         if(listContexte.get() == "Context Perso" or listContexte.get() == ""):
             self.context = listContexte.get()
         else:
-            self.context = textContexte.get()
+            self.context = textContexte.get() ## store the context to use it later
 
         ## frame Prompt
 
@@ -313,33 +308,30 @@ class Gui(ModelObserver):
         textInput = Entry(frameInput ,textvariable=value ,  width=25 , font=("Khmer" , 20))
         textInput.place(x=5 , y=50)
 
-        self.user_input_global = textInput
+    
+        self.user_input_global = textInput # store the user input to use it later
         
 
         
-        ## Frame Milieu pour le output
+        ## Canva at the middle of the screen with the output of the generation
 
         canvaOutput = Canvas(self.window , width=900 , height=700 , background="#383535")
         canvaOutput.pack()
         self.canvas = canvaOutput
         labelPrompt = Label(canvaOutput , text="The prompt :" , background="#383535" , foreground="white" , font=("Khmer" , 25))
-        #labelPrompt.place(x=5 , y=5)
+       
 
         self.prompt_label_global = labelPrompt
 
-        # labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25 ) , justify="left")
-        # labelOutput.place(x=400 , y=100)
+        labelOutput = Label(canvaOutput , text="Output" , background="#383535" , foreground="white" , font=("Khmer" , 25 ) , justify="left")
 
-        # self.output_label_global = labelOutput
+        self.output_label_global = labelOutput ## store the output label (it's not displayed on the screen but used to create the tree)
 
-        
-
-        
-        
-
+        ## Error_handler in case Torch.Cuda (Nvidia GPU) is not available
         if not torch.cuda.is_available():
             error_handler(self.window , "CUDA not available, expect unhandled bugs")
 
+        ## SCROLLBARS ZONE (for the canvas to navigate through the tree)
         hbar = Scrollbar(self.window, orient=HORIZONTAL)
         hbar.pack(side=BOTTOM, fill=X)
         hbar.config(command=canvaOutput.xview)
@@ -348,6 +340,7 @@ class Gui(ModelObserver):
         vbar.config(command=canvaOutput.yview)
         canvaOutput.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
 
+        ## Create the first object of the tree
         first_obj = DialogObject()
         first_obj.set_character("Willy Wonka")
         first_obj.set_img("Willy Beans")
@@ -356,8 +349,9 @@ class Gui(ModelObserver):
 
         first_obj.build_tree(self.canvas)
         self.first_obj = first_obj
-        self.model_controller.set_current_window(window)
+        self.model_controller.set_current_window(window) # set the current window to the model controller
 
+        ## Button to generate with the model (and create the tree)
         buttonGenerate = Button(self.window , text="Generate" , background="#383535" , foreground="white" , font=("Khmer" , 15) , command=lambda: self.generate())
         buttonGenerate.pack(side=BOTTOM)
     
@@ -366,12 +360,14 @@ class Gui(ModelObserver):
         nb_obj = 10
         self.canvas.configure(scrollregion=(0, 0, 120*nb_obj, 2000))
         
-
-        button_generate_script = Button(self.window, text="Generate as file", command=lambda : self.generate_text())
+        ## Button to generate the tree as a script file for renpy
+        button_generate_script = Button(self.window,  background="#383535" , foreground="white" , font=("Khmer" , 12) ,text="Generate as file", command=lambda : self.generate_text())
         button_generate_script.pack()
-
-        button_gen_ai = Button(self.window, text="Generate the tree with ai", command=lambda : self.generate_tree_with_ai())
+        
+        ## Button to generate the tree with the generated output
+        button_gen_ai = Button(self.window,  background="#383535" , foreground="white"  ,  text="Generate the tree with ai", font=("Khmer" , 12) , command=lambda : self.generate_tree_with_ai())
         button_gen_ai.pack()
+        
         # close the window properly
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.quit_window())
 
@@ -476,17 +472,26 @@ class Gui(ModelObserver):
 
 
     def generate_tree_with_ai(self):
+        self.canvas.delete("all") # clean up the canvas before generating anything with ai
         count = self.output.count('\n')
         dialogue = self.output.split('\n')
         # print(dialogue)
         self.first_obj.destroy_self(self.canvas)
         obj_p = self.first_obj
+        obj_p.set_character("Character0")
+        if(dialogue[0] != '' or dialogue[0] != "." or dialogue[0] != '."'):
+            obj_p.set_text(dialogue[0])
+        else:
+            obj_p.set_text(dialogue[1])    
+        
         for i in range(count):
-            obj = DialogObject()
-            obj.set_character("Character1")
-            obj.set_text(dialogue[i])
-            obj.set_parent(obj_p)
-            obj_p = obj
+            if( i > 0):
+                if(dialogue[i] != '' or dialogue[i] != "." or dialogue[i] != ".\"" and dialogue[i] != obj_p.get_text()) : # if the line is not empty
+                    obj = DialogObject()
+                    obj.set_character("Character" + str(i))
+                    obj.set_text(dialogue[i])
+                    obj.set_parent(obj_p)
+                    obj_p = obj
         obj_p.build_tree(self.canvas)
         
     def change_processing_type(self):
@@ -558,6 +563,9 @@ class Gui(ModelObserver):
             # self.output_label_global.place_forget()
             # self.output_label_global.place(x=75, y=100)
             self.output = message[0]['generated_text']
+           
+            self.generate_tree_with_ai()
+           
             # self.output_label_global.config(text=message[0]['generated_text'])
 
     def update_prompt(self):
@@ -571,6 +579,9 @@ class Gui(ModelObserver):
                 if selected_model:
                     self.parameters.update({"selected_model": selected_model})
                     change_validate(self.window, "Model " + selected_model + " selected")
+                if selected_model == "":
+                    error_handler(self.window, "No model selected")
+                    return
                 else:
                     self.parameters.update({"selected_model": self.get_specific_param("selected_model")})
             else:

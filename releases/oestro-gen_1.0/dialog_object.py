@@ -4,7 +4,7 @@ from uuid import uuid4
 from renpy_converter.choice import Choice
 from renpy_converter.dialogmenu import DialogMenu
 from renpy_converter.labelobject import LabelObject
-from scene_edit_window import SceneEditWindow
+from guiSceneEditWindow import SceneEditWindow
 
 
 def build_descendant(descendants_list, index_x,index_y, canvas):
