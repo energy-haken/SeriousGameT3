@@ -5,7 +5,6 @@ define character3 = Character("Character3")
 define character4 = Character("Character4")
 define character5 = Character("Character5")
 define character6 = Character("Character6")
-define character7 = Character("Character7")
 label start:
     scene room
     show character0
@@ -28,7 +27,4 @@ label start:
     hide character5
     show character6
     character6 "   yes, you do.   " 
-    hide character6
-    show character7
-    character7 "   no, i don't.   " 
     return
