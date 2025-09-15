@@ -15,16 +15,16 @@ label start:
         "What will you do"
         "Work":
             "You chose : Work"
-            jump jump_to_4848701439648416416
+            jump jump_to_choice1
         "Find a stage":
             "You chose : Find a stage"
-            jump jump_to_1579036270752386664
-label jump_to_4848701439648416416:
+            jump jump_to_choice2
+label jump_to_choice1:
     scene room
     show z
     z " Good work ! " 
     return
-label jump_to_1579036270752386664:
+label jump_to_choice2:
     scene room
     show a
     a " I'm proud of you " 

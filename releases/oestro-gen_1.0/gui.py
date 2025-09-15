@@ -532,7 +532,7 @@ class Gui(ModelObserver):
                 
     def generate(self):
         self.update_prompt()
-        self.prompt = str(self.context) + " \n " + str(self.prompt)
+        self.prompt = self.context + " \n " + self.prompt 
         print(self.prompt)
         self.model_controller.generate(self.prompt)
         self.button_generate.configure(text="Regenerate") # change the button text to regenerate
@@ -663,8 +663,7 @@ class Gui(ModelObserver):
                 self.obs_update_processing_type(data["processing_type"])
                 self.obs_update_parameters(data["parameters"])
             case "can_generate":
-                x = 0
-                # self.switch()
+                self.nb_opened_window = data
             case "broadcast":
                 if data["type"]=="error":
                     error_handler(self.window,data["message"])

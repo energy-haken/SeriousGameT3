@@ -1,5 +1,6 @@
 # Œstro-gen
 
+### Avertissement : Si vous avez un PC de l'IUT, sans privilèges d'administrateur etc... Vous êtes foutu. Cordialement.
 
 ## Installation
 

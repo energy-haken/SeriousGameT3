@@ -37,6 +37,7 @@ class SceneEditWindow(ModelObserver):
         self.choice_entries = []
         self.model_controller.add_observer(self)
         self.model_controller.ask_can_generate()
+        self.model_controller.switch_can_generate() # to inform the main gui it cannot generate
         if self.model_controller.get_current_project():
             self.base_path = "resources/renpy_project/"+self.model_controller.get_current_project()+"/game/images/"
         else:
@@ -79,8 +80,10 @@ class SceneEditWindow(ModelObserver):
             frameMenu.pack(expand=0, side=TOP)
             # Menu Name
             menu_str_name = StringVar()
-            menu_str_name.set("Menu name here")
-
+            if descendant.get_menu_name():
+                menu_str_name.set(str(descendant.get_menu_name()))
+            else:
+                menu_str_name.set("Menu name here")
             labelMenuName = Label(frameMenu, text="Menu Name", background="#1D1B1B", fg="white" , font=("Khmer" , 15))
             labelMenuName.pack()
             menu_name_input = Entry(frameMenu, textvariable=menu_str_name, width=30)
@@ -131,7 +134,8 @@ class SceneEditWindow(ModelObserver):
         # Add the bindings to the entries
         self.user_input_dialog_global.bind("<KeyRelease>", self.test_is_alpha)
         self.user_input_character_global.bind("<KeyRelease>", self.test_is_alpha)
-        self.menu_entry.bind("<KeyRelease>", self.test_is_alpha)
+        if self.menu_entry:
+            self.menu_entry.bind("<KeyRelease>", self.test_is_alpha)
         for choice in self.choice_entries:
             choice.bind("<KeyRelease>", self.test_is_alpha)
 

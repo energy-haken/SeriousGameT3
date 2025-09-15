@@ -1,0 +1,318 @@
+@startuml Oestrogen
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+skinparam classFontStyle Bold
+hide empty members
+
+class Main{
+
+}
+
+Main .-> view.Gui : <<uses>>
+Main .-> .controller.ModelController : <<use>>
+Main .-> .model.ModelHandler : <<use>>
+
+package model{
+    class Character{
+        - name : String
+        - expressions : String[*]
+        + get_name() : String
+        + get_expressions() : String[*]
+    }
+
+    DialogObject *-l-> "1\n - character" Character : possède un interprète
+
+    class DialogObject{
+        - character : Character
+        - text : String
+        - img  : String
+        - parent
+        - descendants : []
+        - tkinter_label
+        - tkinter_object
+        - tkinter_line
+        - tkinter_kill_button
+        - tkinter_add_button
+        - tkinter_window_button
+        - canvas
+        - tkinter_choices
+        - choices
+        - menu_name
+        + <<create>> __init__()
+        + set_canvas()
+        + set_character(character : String)
+        + set_text(text : String)
+        + update_tkinter_character_label()
+        + set_img(img : String)
+        + set_parent(parent :)
+        + set_model_controller(controller : ModelController)
+        + set_model_controller_from_parent()
+        + get_model_controller() : ModelController
+        + add_descendant(descendant : )
+        + set_tkinter_label(obj)
+        + set_tkinter_object(obj)
+        + set_tkinter_line(obj)
+        + set_tkinter_kill_button(obj)
+        + set_tkinter_add_button(obj)
+        + set_tkinter_window_button(obj)
+        + set_menu_name(name : String)
+        + get_menu_name() : String
+        + add_tkinter_choice(choice : )
+        + set_choice(choices)
+        + get_choices()
+        + get_character()
+        + get_text()
+        + get_img()
+        + get_parent()
+        + get_descendants()
+        + get_tkinter_label()
+        + get_tkinter_object()
+        + get_tkinter_line()
+        + get_tkinter_kill_button()
+        + get_tkinter_add_button()
+        + get_tkinter_window_button()
+        + get_index_x_level()
+        + get_index_y_level()
+        + get_y_level_parent_scope()
+        + get_origin_object()
+        + get_mainline_length()
+        + get_line_length(index : Integer) : Integer
+        + add_descendant_gui(canvas)
+        + __del__()
+        + destroy_downhill(canvas)
+        + destroy_ui_choices(canvas)
+        + destroy_(,canvas)
+        + destroy_all_gui_objects(canvas)
+        + destroy_tree(,canvas)
+        + destroy_tree_branch(canvas)
+        + build_tree(,canvas)
+        + gather_object_information(parent_label)
+        + get_tree_information()
+    }
+
+    DialogObject o-> "1\n -model_controller" .controller.ModelController : possède un controller
+    DialogObject .-> renpy_converter.Choice : <<use>>
+    DialogObject .-> renpy_converter.DialogMenu : <<use>>
+    DialogObject .-> renpy_converter.LabelObject : <<use>>
+    DialogObject o-> "[0 , * ]"DialogObject : descendants
+
+    Gui .--> DialogObject : <<uses>>
+    DialogObject .--> .view.SceneEditWindow : <<uses>>
+
+
+    class Filewriter{
+        - current_file : String
+        - mode : String
+        + <<creates>> __init__()
+        + set_file(file : String)
+        + set_mode(mode : String)
+        + write(text : String)
+        + write_character_and_output(character1, character2, output)
+    }
+
+    Gui .-> Filewriter : <<uses>>
+
+    class ModelHandler{
+        - model_management : ModelManagement
+        - available_models : []
+        - is_active : Boolean
+        - parameters : []
+        - processing : String
+        + <<creates>> __init__()
+        + add_observer(observer : ModelObserver)
+        + remove_observer(observer : ModelObserver)
+        + flush_observers()
+        + update_observers(data_type,data)
+        + __get_loaded_model()
+        + __gather_downloaded_models()
+        + __instantiate_models(array)
+        + __gather_model_of_type(model_type : sdk)
+        + change_processing_method()
+        + __return_processing_method()
+        + generate(user_prompt : String)
+        + __generate_image(user_prompt : String)
+        + __generate_dialog(prompt : String)
+        + __select_model(model_name : String)
+        + __load_model()
+        + turn_off_model()
+        + __get_models_name()
+        + get_current_model()
+        + update_parameters(new_parameters)
+        + set_generation_type(new_type : GenerationType)
+        + __reload()
+        + update_reload()
+        + switch_can_generate()
+        + ask_can_generate()
+        + broadcast_message(message : String, message_type : String)
+        + __sort_model_by_type()
+    }
+
+    ModelHandler o-> "*\n -observers" ModelObserver : possède
+    ModelHandler o-> "1\n -generation_type" GenerationType : génère des éléments de type >
+
+
+
+    enum GenerationType{
+        TEXT
+        IMAGE
+    }
+}
+package renpy_converter{
+
+    class Choice{
+        - title : String
+        - jump : String
+        + <<create>> __init__()
+        + set_title(title : String)
+        + set_text(text : String)
+        + set_jump(jump : String)
+        + get_title() : String
+        + get_text() : String
+        + get_jump() : String
+    }
+
+
+    class DialogMenu{
+        - title : String
+        - choice_list : String[]
+        + <<create>> __init__()
+        + set_title(title : String)
+        + add_choice(choice : String)
+        + set_choices(choices : String[])
+        + get_title() : String
+        + get_choice_list() : String[]
+    }
+
+    class LabelObject{
+        - name : String
+        - background : String
+        - dialogs_dict : String[]
+        - label_type : String
+        - menu : String
+        + <<create>> __init__()
+        + set_name(name : String)
+        + set_background(background : String)
+        + set_dialog_dict(dialogs_dict : String)
+        + add_to_dialog_dict(new_dict : String)
+        + set_menu(menu : String)
+        + set_type(type : String)
+        + get_type() : String
+        + get_name() : String
+        + get_background() : String
+        + get_dialog_dict() : String[]
+        + get_menu() : String
+    }
+
+    class ObjToScriptConverter{
+        - list_characters : String[]
+        - dialogs_dict : String[]
+        - label_list : String[]
+        + <<create>> __init__()
+        + set_character_list(character_list : String[])
+        + set_label_list(label_list : String[])
+        + remove_duplicate(dup_list : String[])
+        + instantiate_character(character : String)
+        + instantiate_characters()
+        + generate_menu(menu : String)
+        + generate_choice(choice : String)
+        + generate_dialog(dialogs_dict : String[])
+        + convert()
+    }
+}
+
+interface ModelObserver{
+    + update(subject, data_type, data)
+}
+
+
+package controller{
+    class ModelController{
+        - current_window
+        - current_project : String
+        + <<creates>> __init__(model_handler : ModelHandler)
+        + set_current_project(current_project : String)
+        + get_current_project() : String
+        + update_reload()
+        + change_processing_method()
+        + set_generation_type(generation_type : GenereationType)
+        + generate(prompt)
+        + turn_off_model()
+        + update_parameters(parameters)
+        + add_observer(observer : ModelObserver)
+        + remove_observer(observer : ModelObserver)
+        + flush_observers()
+        + switch_can_generate()
+        + ask_can_generate()
+        + broadcast_message(message, message_type)
+    }
+
+    ModelController *--> "1\n -modelHandler"ModelHandler : gère >
+}
+
+package view{
+    class Gui implements .model.ModelObserver{
+        - image
+        - prompt : String
+        - output
+        - prompt_label_global
+        - button_generate
+        - user_input_global
+        - model_label
+        - parameters
+        - parameters_entry_list
+        - image_label
+        - generation_type
+        - gen_type_label
+        - processing_type_button
+        - image_cache
+        - context
+        - window
+        - canvas
+        - first_obj
+        - resize_ratio
+        - project_name
+        - combobox_project
+        - model_controller
+        + <<creates>> __init__(window, model_controller)
+        + update_project_name()
+        + quit_window()
+        + generate_tree_with_ai()
+        + change_processing_type()
+        + obs_update_processing_type(processing_type)
+        + update_gen_type()
+        + obs_update_models_list()
+        + generate()
+        + save_image()
+        + unload_model()
+        + update_output(message)
+        + update_prompt()
+        + update_parameters()
+        + obs_update_parameters()
+        + obs_update_current_model(current_model)
+        + get_specific_param(param)
+        + switch()
+        + generate_text()
+        + update(subject, data_type, data)
+    }
+
+
+
+    class SceneEditWindow implements .model.ModelObserver{
+        + <<creates>> __init__(window,descendant)
+        + test_is_alpha(e) : Boolean
+        + delete_last_character(widget,test)
+        + is_alpha(char : Char) : Boolean
+        + quit_window()
+        + update_fields()
+        + update_output(data)
+        + reload_image_path()
+        + reload_image()
+        + update_image(img : String)
+        + save_image()
+        + discard_image()
+        + update(subject, data_type,data)
+    }
+
+    Gui .-> .model.renpy_converter.ObjToScriptConverter : <<uses>>
+}
+@enduml
