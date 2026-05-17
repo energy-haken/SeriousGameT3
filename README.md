@@ -1,16 +1,6 @@
 # Œstro-gen
 
 - **Nom du groupe** : LGB-Team  
-- **Membres du groupe** :
-  - LE ROUX Aymeric
-  - REUTENAUER--LONGEAU Nathan
-  - BRUNSTEIN Damien 
-  - GLADY Yann
-- **Liens vers les évaluations T4** :
-  - [Aparicio	Diego](https://git.unistra.fr/lgb-team/oestro-gen/-/blob/main/evaluations/Evaluation-T4-Diego_Aparicio.md?ref_type=heads)
-  - [Cuiller	Joseph](https://git.unistra.fr/lgb-team/oestro-gen/-/blob/main/evaluations/Evaluation-T4-Joseph_Cuiller.md?ref_type=heads)
-  - [Flieller	Maxence](https://git.unistra.fr/lgb-team/oestro-gen/-/blob/main/evaluations/Evaluation-T4-Maxence_Flieller.md?ref_type=heads)
-  - [Lasfar	Omar Farouk](https://git.unistra.fr/lgb-team/oestro-gen/-/blob/main/evaluations/Evaluation-T4-Omar-Farouk_Lasfar.md?ref_type=heads)
 
 ---
 
